@@ -20,21 +20,24 @@ public class CubilineController : MonoBehaviour
 	public float arenaSize = 11.0f; // Units per side of the arena.
 	public float speed = 4.0f; // Units per second.
 	public enum PLACE { TOP, BOTTOM, RIGHT, LEFT, FRONT, BACK, NONE };
+	public bool inputEnabled = true;
+	public bool playing = true;
 
 	//////////////////////////////////////////////////////////////
-	////////////////////// Control variables /////////////////////
+	////////////////////// CONTROL VARIABLES /////////////////////
 	//////////////////////////////////////////////////////////////
 
 	private float arenaLogicalLimit; // The side limit plus the 0.5 units offset for the head to be aout of the side.
 
-	////////////////////// Direction control /////////////////////
+	////////////////////// DIRECTION CONTROL /////////////////////
 
 	private bool toTurn; // Use this when a handle has been requested.
 	PLACE nextHeadDirection; // Based on the current head position in te arena when a turn is requested this is the direction that whas actually requested.
 	private Vector3 directionVector;
 	private Vector3 toTurnPosition;
+	private Queue turnsQueue;
 
-	/////////////////////// Body Control ////////////////////////
+	/////////////////////// BODY CONTROL ////////////////////////
 
 	private Vector3 lastHeadPosition; // To now how much the head has been avanzado.
 	private bool toNew; // Use this wen forced position; Manage the body add the new part and activtae this because this frame the body has been managed already.
@@ -60,7 +63,13 @@ public class CubilineController : MonoBehaviour
 
 	void FixedUpdate()
 	{
+		if(playing)
+		{
+			if (inputEnabled)
+				ControlInput();
 
+			Play();
+		}
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -88,7 +97,7 @@ public class CubilineController : MonoBehaviour
 		lastHeadPosition = head.transform.localPosition;
 
 		// First body part with size of 2 units.
-		AddBodyWithSize(2.0f);
+		AddBody(2.0f);
 
 		// Reset control
 		nextHeadDirection = PLACE.NONE;
@@ -100,96 +109,55 @@ public class CubilineController : MonoBehaviour
 		stepUnGrown = 0.0f;
 	}
 
-	////////////////////////////////////////////////////////////////////////////////////////////////
-	///////////////////////////////////////////// Arena ////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////////
-
 	public void SetArenaSize(float size)
 	{
+		// Keep size odd
 		if (size < 5)
 			arenaSize = 5;
 		if (size % 2 == 0)
 			arenaSize += 1;
 
+		// Arena logical limit is the space limit of the arena plus 0.5 for the siz of the head.
 		arenaLogicalLimit = size / 2.0f + 0.5f;
 
+		// Set the scale of the arena object.
 		arena.transform.localScale = new Vector3(arenaSize, arenaSize, arenaSize);
 	}
 
-	void AddBodyWithSize(float size)
-	{
-		CubilineBody newBody = Instantiate(baseBody);
-		newBody.transform.parent = transform;
-		newBody.initialize(headZone, headDirection, head.transform.localPosition, size);
-		bodyQueue.Enqueue(newBody);
-		lastBody = newBody;
-	}
-
-	void ManageBody()
-	{
-		float delta = (lastHeadPosition - head.transform.localPosition).magnitude;
-
-		lastBody.Grow(delta);
-
-		CubilineBody first = (CubilineBody)bodyQueue.Peek();
-
-		if (eating)
-		{
-			stepGrown += delta;
-
-			if (stepGrown >= toGrow)
-			{
-				first.Grow(-(stepGrown - toGrow));
-				eating = false;
-				stepGrown = 0.0f;
-				toGrow = 0.0f;
-			}
-		}
-		else
-		{
-			float deltaX = first.Grow(-delta);
-
-			if (deltaX <= 0.0f)
-			{
-				bodyQueue.Dequeue();
-
-				Destroy(first.gameObject);
-
-				((CubilineBody)bodyQueue.Peek()).Grow(deltaX);
-			}
-		}
-
-		first = (CubilineBody)bodyQueue.Peek();
-
-		if (unEating)
-		{
-			stepUnGrown += delta;
-
-			if (stepUnGrown >= toUnGrow)
-			{
-				delta -= (stepUnGrown - toUnGrow);
-				unEating = false;
-				stepUnGrown = 0.0f;
-				toUnGrow = 0;
-			}
-
-			delta = first.Grow(-delta);
-
-			if (delta <= 0.0f)
-			{
-				bodyQueue.Dequeue();
-				Destroy(first.gameObject);
-				((CubilineBody)bodyQueue.Peek()).Grow(delta);
-			}
-		}
-	}
-
-
 	////////////////////////////////////////////////////////////////////////////////////////////////
-	/////////////////////////////////////////// Moviment ///////////////////////////////////////////
+	///////////////////////////////////////// Input Control ////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////
 
-	void ManageZones()
+	void ControlInput()
+	{
+
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////// Direction Control //////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////
+
+	void Play()
+	{
+		// Unit directiom vector base the head direction var.
+		directionVector = new Vector3(headDirection == PLACE.RIGHT ? 1.0f : (headDirection == PLACE.LEFT ? -1.0f : 0.0f), headDirection == PLACE.TOP ? 1.0f : (headDirection == PLACE.BOTTOM ? -1.0f : 0.0f), headDirection == PLACE.BACK ? 1.0f : (headDirection == PLACE.FRONT ? -1.0f : 0.0f));
+
+		// Move the head one step.
+		head.transform.localPosition += directionVector * speed * Time.deltaTime;
+
+		// Control what zone is the head on.
+		ControlZoneChange();
+
+		// Control the body if it wasn't control for a turn or zone change already.
+		if (!toNew)
+			ControlBody();
+		toNew = false;
+
+		// This is step is the last known head's position.
+		lastHeadPosition = head.transform.localPosition;
+	}
+
+	void ControlZoneChange()
 	{
 		Vector3 playerPosition = head.transform.localPosition;
 
@@ -215,8 +183,8 @@ public class CubilineController : MonoBehaviour
 				head.transform.localPosition = playerPosition;
 
 				// At turn add body.
-				ManageBody();
-				AddBodyWithSize(0.0f);
+				ControlBody();
+				AddBody(0.0f);
 				toNew = true;
 			}
 			else if (playerPosition.x <= -arenaLogicalLimit)
@@ -238,8 +206,8 @@ public class CubilineController : MonoBehaviour
 				head.transform.localPosition = playerPosition;
 
 				// At turn add body.
-				ManageBody();
-				AddBodyWithSize(0.0f);
+				ControlBody();
+				AddBody(0.0f);
 				toNew = true;
 			}
 			else if (playerPosition.y >= arenaLogicalLimit)
@@ -261,8 +229,8 @@ public class CubilineController : MonoBehaviour
 				head.transform.localPosition = playerPosition;
 
 				// At turn add body.
-				ManageBody();
-				AddBodyWithSize(0.0f);
+				ControlBody();
+				AddBody(0.0f);
 				toNew = true;
 			}
 			else if (playerPosition.y <= -arenaLogicalLimit)
@@ -284,8 +252,8 @@ public class CubilineController : MonoBehaviour
 				head.transform.localPosition = playerPosition;
 
 				// At turn add body.
-				ManageBody();
-				AddBodyWithSize(0.0f);
+				ControlBody();
+				AddBody(0.0f);
 				toNew = true;
 			}
 		}
@@ -310,8 +278,8 @@ public class CubilineController : MonoBehaviour
 				head.transform.localPosition = playerPosition;
 
 				// At turn add body.
-				ManageBody();
-				AddBodyWithSize(0.0f);
+				ControlBody();
+				AddBody(0.0f);
 				toNew = true;
 			}
 			else if (playerPosition.x <= -arenaLogicalLimit)
@@ -333,8 +301,8 @@ public class CubilineController : MonoBehaviour
 				head.transform.localPosition = playerPosition;
 
 				// At turn add body.
-				ManageBody();
-				AddBodyWithSize(0.0f);
+				ControlBody();
+				AddBody(0.0f);
 				toNew = true;
 			}
 			else if (playerPosition.y >= arenaLogicalLimit)
@@ -356,8 +324,8 @@ public class CubilineController : MonoBehaviour
 				head.transform.localPosition = playerPosition;
 
 				// At turn add body.
-				ManageBody();
-				AddBodyWithSize(0.0f);
+				ControlBody();
+				AddBody(0.0f);
 				toNew = true;
 			}
 			else if (playerPosition.y <= -arenaLogicalLimit)
@@ -379,8 +347,8 @@ public class CubilineController : MonoBehaviour
 				head.transform.localPosition = playerPosition;
 
 				// At turn add body.
-				ManageBody();
-				AddBodyWithSize(0.0f);
+				ControlBody();
+				AddBody(0.0f);
 				toNew = true;
 			}
 		}
@@ -405,8 +373,8 @@ public class CubilineController : MonoBehaviour
 				head.transform.localPosition = playerPosition;
 
 				// At turn add body.
-				ManageBody();
-				AddBodyWithSize(0.0f);
+				ControlBody();
+				AddBody(0.0f);
 				toNew = true;
 			}
 			else if (playerPosition.z >= arenaLogicalLimit)
@@ -428,8 +396,8 @@ public class CubilineController : MonoBehaviour
 				head.transform.localPosition = playerPosition;
 
 				// At turn add body.
-				ManageBody();
-				AddBodyWithSize(0.0f);
+				ControlBody();
+				AddBody(0.0f);
 				toNew = true;
 			}
 			else if (playerPosition.y >= arenaLogicalLimit)
@@ -451,8 +419,8 @@ public class CubilineController : MonoBehaviour
 				head.transform.localPosition = playerPosition;
 
 				// At turn add body.
-				ManageBody();
-				AddBodyWithSize(0.0f);
+				ControlBody();
+				AddBody(0.0f);
 				toNew = true;
 			}
 			else if (playerPosition.y <= -arenaLogicalLimit)
@@ -474,8 +442,8 @@ public class CubilineController : MonoBehaviour
 				head.transform.localPosition = playerPosition;
 
 				// At turn add body.
-				ManageBody();
-				AddBodyWithSize(0.0f);
+				ControlBody();
+				AddBody(0.0f);
 				toNew = true;
 			}
 		}
@@ -500,8 +468,8 @@ public class CubilineController : MonoBehaviour
 				head.transform.localPosition = playerPosition;
 
 				// At turn add body.
-				ManageBody();
-				AddBodyWithSize(0.0f);
+				ControlBody();
+				AddBody(0.0f);
 				toNew = true;
 			}
 			else if (playerPosition.z >= arenaLogicalLimit)
@@ -523,8 +491,8 @@ public class CubilineController : MonoBehaviour
 				head.transform.localPosition = playerPosition;
 
 				// At turn add body.
-				ManageBody();
-				AddBodyWithSize(0.0f);
+				ControlBody();
+				AddBody(0.0f);
 				toNew = true;
 			}
 			else if (playerPosition.y >= arenaLogicalLimit)
@@ -546,8 +514,8 @@ public class CubilineController : MonoBehaviour
 				head.transform.localPosition = playerPosition;
 
 				// At turn add body.
-				ManageBody();
-				AddBodyWithSize(0.0f);
+				ControlBody();
+				AddBody(0.0f);
 				toNew = true;
 			}
 			else if (playerPosition.y <= -arenaLogicalLimit)
@@ -569,8 +537,8 @@ public class CubilineController : MonoBehaviour
 				head.transform.localPosition = playerPosition;
 
 				// At turn add body.
-				ManageBody();
-				AddBodyWithSize(0.0f);
+				ControlBody();
+				AddBody(0.0f);
 				toNew = true;
 			}
 		}
@@ -595,8 +563,8 @@ public class CubilineController : MonoBehaviour
 				head.transform.localPosition = playerPosition;
 
 				// At turn add body.
-				ManageBody();
-				AddBodyWithSize(0.0f);
+				ControlBody();
+				AddBody(0.0f);
 				toNew = true;
 			}
 			else if (playerPosition.z >= arenaLogicalLimit)
@@ -618,8 +586,8 @@ public class CubilineController : MonoBehaviour
 				head.transform.localPosition = playerPosition;
 
 				// At turn add body.
-				ManageBody();
-				AddBodyWithSize(0.0f);
+				ControlBody();
+				AddBody(0.0f);
 				toNew = true;
 			}
 			else if (playerPosition.x >= arenaLogicalLimit)
@@ -641,8 +609,8 @@ public class CubilineController : MonoBehaviour
 				head.transform.localPosition = playerPosition;
 
 				// At turn add body.
-				ManageBody();
-				AddBodyWithSize(0.0f);
+				ControlBody();
+				AddBody(0.0f);
 				toNew = true;
 			}
 			else if (playerPosition.x <= -arenaLogicalLimit)
@@ -664,8 +632,8 @@ public class CubilineController : MonoBehaviour
 				head.transform.localPosition = playerPosition;
 
 				// At turn add body.
-				ManageBody();
-				AddBodyWithSize(0.0f);
+				ControlBody();
+				AddBody(0.0f);
 				toNew = true;
 			}
 		}
@@ -690,8 +658,8 @@ public class CubilineController : MonoBehaviour
 				head.transform.localPosition = playerPosition;
 
 				// At turn add body.
-				ManageBody();
-				AddBodyWithSize(0.0f);
+				ControlBody();
+				AddBody(0.0f);
 				toNew = true;
 			}
 			else if (playerPosition.z >= arenaLogicalLimit)
@@ -713,8 +681,8 @@ public class CubilineController : MonoBehaviour
 				head.transform.localPosition = playerPosition;
 
 				// At turn add body.
-				ManageBody();
-				AddBodyWithSize(0.0f);
+				ControlBody();
+				AddBody(0.0f);
 				toNew = true;
 			}
 			else if (playerPosition.x >= arenaLogicalLimit)
@@ -736,8 +704,8 @@ public class CubilineController : MonoBehaviour
 				head.transform.localPosition = playerPosition;
 
 				// At turn add body.
-				ManageBody();
-				AddBodyWithSize(0.0f);
+				ControlBody();
+				AddBody(0.0f);
 				toNew = true;
 			}
 			else if (playerPosition.x <= -arenaLogicalLimit)
@@ -759,8 +727,8 @@ public class CubilineController : MonoBehaviour
 				head.transform.localPosition = playerPosition;
 
 				// At turn add body.
-				ManageBody();
-				AddBodyWithSize(0.0f);
+				ControlBody();
+				AddBody(0.0f);
 				toNew = true;
 			}
 		}
@@ -951,17 +919,6 @@ public class CubilineController : MonoBehaviour
 		return 0;
 	}
 
-	PLACE GetHandleForheadDirection(PLACE headDirection)
-	{
-		if (headDirection == PLACE.FRONT) return PLACE.FRONT;
-		if (headDirection == PLACE.BACK) return PLACE.BACK;
-		if (headDirection == PLACE.RIGHT) return PLACE.RIGHT;
-		if (headDirection == PLACE.LEFT) return PLACE.LEFT;
-		if (headDirection == PLACE.TOP) return PLACE.TOP;
-		if (headDirection == PLACE.BOTTOM) return PLACE.BOTTOM;
-		return 0;
-	}
-
 	void ManageHandles()
 	{
 		if (nextHeadDirection == PLACE.NONE) return;
@@ -1009,7 +966,7 @@ public class CubilineController : MonoBehaviour
 		nextHeadDirection = PLACE.NONE;
 	}
 
-	void ManageTurns()
+	void LookForTrun()
 	{
 		if (!toTurn) return;
 
@@ -1053,8 +1010,8 @@ public class CubilineController : MonoBehaviour
 		headDirection = nextHeadDirection;
 		toTurn = false;
 
-		ManageBody();
-		AddBodyWithSize(0.0f);
+		ControlBody();
+		AddBody(0.0f);
 		toNew = true;
 	}
 
@@ -1064,7 +1021,7 @@ public class CubilineController : MonoBehaviour
 		if (headDirection == up) return;
 
 		if (headDirection != GetDownOfZone(headZone, headUp))
-			nextHeadDirection = GetHandleForheadDirection(up);
+			nextHeadDirection = up;
 	}
 
 	public void TurnDown()
@@ -1073,7 +1030,7 @@ public class CubilineController : MonoBehaviour
 		if (headDirection == down) return;
 
 		if (headDirection != GetUpOfZone(headZone, headUp))
-			nextHeadDirection = GetHandleForheadDirection(down);
+			nextHeadDirection = down;
 	}
 
 	public void TurnRight()
@@ -1082,7 +1039,7 @@ public class CubilineController : MonoBehaviour
 		if (headDirection == right) return;
 
 		if (headDirection != GetLeftOfZone(headZone, headUp))
-			nextHeadDirection = GetHandleForheadDirection(right);
+			nextHeadDirection = right;
 	}
 
 	public void TurnLeft()
@@ -1091,6 +1048,78 @@ public class CubilineController : MonoBehaviour
 		if (headDirection == left) return;
 
 		if (headDirection != GetRightOfZone(headZone, headUp))
-			nextHeadDirection = GetHandleForheadDirection(left);
+			nextHeadDirection = left;
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////// BODY CONTROL /////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////
+
+	void AddBody(float size)
+	{
+		CubilineBody newBody = Instantiate(baseBody);
+		newBody.transform.parent = transform;
+		newBody.initialize(headZone, headDirection, head.transform.localPosition, size);
+		bodyQueue.Enqueue(newBody);
+		lastBody = newBody;
+	}
+
+	void ControlBody()
+	{
+		float delta = (lastHeadPosition - head.transform.localPosition).magnitude;
+
+		lastBody.Grow(delta);
+
+		CubilineBody first = (CubilineBody)bodyQueue.Peek();
+
+		if (eating)
+		{
+			stepGrown += delta;
+
+			if (stepGrown >= toGrow)
+			{
+				first.Grow(-(stepGrown - toGrow));
+				eating = false;
+				stepGrown = 0.0f;
+				toGrow = 0.0f;
+			}
+		}
+		else
+		{
+			float deltaX = first.Grow(-delta);
+
+			if (deltaX <= 0.0f)
+			{
+				bodyQueue.Dequeue();
+
+				Destroy(first.gameObject);
+
+				((CubilineBody)bodyQueue.Peek()).Grow(deltaX);
+			}
+		}
+
+		first = (CubilineBody)bodyQueue.Peek();
+
+		if (unEating)
+		{
+			stepUnGrown += delta;
+
+			if (stepUnGrown >= toUnGrow)
+			{
+				delta -= (stepUnGrown - toUnGrow);
+				unEating = false;
+				stepUnGrown = 0.0f;
+				toUnGrow = 0;
+			}
+
+			delta = first.Grow(-delta);
+
+			if (delta <= 0.0f)
+			{
+				bodyQueue.Dequeue();
+				Destroy(first.gameObject);
+				((CubilineBody)bodyQueue.Peek()).Grow(delta);
+			}
+		}
 	}
 }
