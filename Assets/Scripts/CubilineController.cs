@@ -20,7 +20,7 @@ public class CubilineController : MonoBehaviour
 	public float arenaSize = 11.0f; // Units per side of the arena.
 	public float speed = 4.0f; // Units per second.
 	public enum PLACE { TOP, BOTTOM, RIGHT, LEFT, FRONT, BACK, NONE };
-	public enum TURN { UP, DOWN, RIGHT, LEFT };
+	public enum TURN { UP, DOWN, RIGHT, LEFT, NONE };
 	public bool inputEnabled = true; // The Cube can muve but can or not resive input.
 	public bool playing = true; // The cube can or not move.
 
@@ -30,6 +30,7 @@ public class CubilineController : MonoBehaviour
 
 	private float arenaLogicalLimit; // The side limit plus the 0.5 units offset for the head to be aout of the side.
 	private float arenaZoneLimit; // The side limit minus 0.5 that is the tolerance distance to made a turn.
+
 	////////////////////// DIRECTION CONTROL /////////////////////
 
 	PLACE nextHeadDirection; // Based on the current head position in te arena when a turn is requested this is the direction that whas actually requested.
@@ -38,6 +39,10 @@ public class CubilineController : MonoBehaviour
 	private Queue turnsQueue = new Queue(); // Acumulated turns;
 	private bool turning; // A turn has been appled so wait until it happens.
 	private bool noZone; // When it reach the far the side of the arena is a no zono so it can't turn at all.
+
+	//////////////////////// INPUT CONTROL //////////////////////
+
+	private TURN lastKey;
 
 	/////////////////////// BODY CONTROL ////////////////////////
 
@@ -55,7 +60,7 @@ public class CubilineController : MonoBehaviour
 	CubilineBody lastBody; // Last body in the queue.
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////// Mono behaviour ////////////////////////////////////////
+	//////////////////////////////////////// MONO BEHAVIOR ////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////
 
 	void Start()
@@ -133,19 +138,43 @@ public class CubilineController : MonoBehaviour
 
 	void getInput()
 	{
+		TURN key = TURN.NONE;
+
 		if (Input.GetAxis("Vertical") > 0)
-			AddTurn(TURN.UP);
+			key = TURN.UP;
 		else if (Input.GetAxis("Vertical") < 0)
-			AddTurn(TURN.DOWN);
+			key = TURN.DOWN;
 		else if (Input.GetAxis("Horizontal") > 0)
-			AddTurn(TURN.RIGHT);
+			key = TURN.RIGHT;
 		else if (Input.GetAxis("Horizontal") < 0)
-			AddTurn(TURN.LEFT);
+			key = TURN.LEFT;
+
+		if(lastKey != key)
+			AddTurn(key);
+
+		lastKey = key;
 	}
 
 	void AddTurn(TURN turn)
 	{
 		turnsQueue.Enqueue(turn);
+
+		if(turn == TURN.UP)
+		{
+			print("Key Up");
+		}
+		if (turn == TURN.DOWN)
+		{
+			print("Key Down");
+		}
+		if (turn == TURN.RIGHT)
+		{
+			print("Key Right");
+		}
+		if (turn == TURN.LEFT)
+		{
+			print("Key Left");
+		}
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -272,6 +301,8 @@ public class CubilineController : MonoBehaviour
 
 		setTurn();
 
+		print("Turn Up");
+
 		return true;
 	}
 
@@ -283,6 +314,8 @@ public class CubilineController : MonoBehaviour
 		nextHeadDirection = down;
 
 		setTurn();
+
+		print("Turn Down");
 
 		return true;
 	}
@@ -296,6 +329,8 @@ public class CubilineController : MonoBehaviour
 
 		setTurn();
 
+		print("Turn Right");
+
 		return true;
 	}
 
@@ -307,6 +342,8 @@ public class CubilineController : MonoBehaviour
 		nextHeadDirection = left;
 
 		setTurn();
+
+		print("Turn Left");
 
 		return true;
 	}
