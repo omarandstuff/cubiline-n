@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class CubilineController : MonoBehaviour
 {
@@ -9,6 +10,8 @@ public class CubilineController : MonoBehaviour
 	public GameObject arena;
 	public GameObject head;
 	public CubilineBody baseBody;
+	public GameObject commonTarget;
+
 
 	//////////////////////////////////////////////////////////////
 	//////////////////// CUBILINE PARAMETERS /////////////////////
@@ -59,6 +62,10 @@ public class CubilineController : MonoBehaviour
 	private Queue bodyQueue = new Queue(); // Body parts queue.
 	CubilineBody lastBody; // Last body in the queue.
 
+	//////////////////////// TARGET CONTROL /////////////////////
+
+	private Dictionary<string, Vector3> slots = new Dictionary<string, Vector3>();
+
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// MONO BEHAVIOR ////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -105,6 +112,9 @@ public class CubilineController : MonoBehaviour
 
 		// First body part with size of 2 units.
 		AddBody(2.0f);
+
+		// Sots
+		slots.Clear();
 
 		// Reset control
 		toNew = false;
