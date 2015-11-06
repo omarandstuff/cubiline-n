@@ -63,6 +63,8 @@ public class CubilineController : MonoBehaviour
 	private Queue bodyQueue = new Queue(); // Body parts queue.
 	CubilineBody lastBody; // Last body in the queue.
 
+	private int bodyLength;
+
 	//////////////////////// TARGET CONTROL /////////////////////
 
 	private Dictionary<string, Vector3> freeSlots = new Dictionary<string, Vector3>();
@@ -83,7 +85,7 @@ public class CubilineController : MonoBehaviour
 		if (playing)
 		{
 			if (inputEnabled)
-				getInput();
+				GetInput();
 
 			Play();
 		}
@@ -189,6 +191,7 @@ public class CubilineController : MonoBehaviour
 		toUnGrow = 0.0f;
 		stepGrown = 0.0f;
 		stepUnGrown = 0.0f;
+		bodyLength = 3;
 	}
 
 	public void SetArenaSize(float size)
@@ -213,7 +216,7 @@ public class CubilineController : MonoBehaviour
 	///////////////////////////////////////// INPUT CONTROL ////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////
 
-	void getInput()
+	void GetInput()
 	{
 		TURN key = TURN.NONE;
 
@@ -225,8 +228,25 @@ public class CubilineController : MonoBehaviour
 			key = TURN.RIGHT;
 		else if (Input.GetAxis("Horizontal") < 0)
 			key = TURN.LEFT;
+		
+		if(Input.GetButtonUp("Fire1"))
+		{
+			eating = true;
+			toGrow += 1;
+			bodyLength++;
+		}
 
-		if(lastKey != key)
+		if (Input.GetButtonUp("Fire2"))
+		{
+			if(bodyLength > 3)
+			{
+				unEating = true;
+				toUnGrow += 1;
+				bodyLength--;
+			}
+		}
+
+		if (lastKey != key)
 			AddTurn(key);
 
 		lastKey = key;
@@ -278,6 +298,31 @@ public class CubilineController : MonoBehaviour
 			usedSlots.Enqueue(Instantiate(collitionTest, lastSlotUsed, Quaternion.identity));
 			freeSlots.Remove(lastSlotUsed.ToString());
 		}
+		else
+		{
+			//usedSlots.Enqueue(Vector3.zero);
+			usedSlots.Enqueue(Instantiate(collitionTest, Vector3.zero, Quaternion.identity));
+		}
+
+		if (!eating && unEating)
+		{
+			FreeSlot();
+			FreeSlot();
+		}
+		else if ((!eating && !unEating) || (eating && unEating))
+		{
+			FreeSlot();
+		}
+	}
+
+	void FreeSlot()
+	{
+		//Vector3 slot = (Vector3)usedSlots.Peek();
+		GameObject slot = (GameObject)usedSlots.Dequeue();
+		Vector3 slotPos = slot.transform.localPosition;
+		Destroy(slot);
+		if(slotPos != Vector3.zero)
+			freeSlots.Add(slotPos.ToString(), slotPos);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
