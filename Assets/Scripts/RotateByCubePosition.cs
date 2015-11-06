@@ -29,7 +29,7 @@ public class RotateByCubePosition : MonoBehaviour
 		fixedPlace = place;
 
 		transform.position = Vector3.SmoothDamp(transform.position, ghost.position, ref velocity, smoothTime);
-		curretGhostUp = Vector3.SmoothDamp(curretGhostUp, targetGhostUp, ref ghostVelocityUp, smoothTime * 5.0f);
+		curretGhostUp = Vector3.SmoothDamp(curretGhostUp, targetGhostUp, ref ghostVelocityUp, smoothTime * 3.0f);
 		transform.LookAt(target, curretGhostUp);
 	}
 

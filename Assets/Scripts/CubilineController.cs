@@ -11,6 +11,7 @@ public class CubilineController : MonoBehaviour
 	public GameObject head;
 	public CubilineBody baseBody;
 	public GameObject commonTarget;
+	public GameObject collitionTest;
 
 
 	//////////////////////////////////////////////////////////////
@@ -18,7 +19,7 @@ public class CubilineController : MonoBehaviour
 	//////////////////////////////////////////////////////////////
 
 	public PLACE headDirection = PLACE.RIGHT; // Directon of the head.
-	public PLACE headZone = PLACE.FRONT; // Where the head is.
+	public PLACE headPlace = PLACE.FRONT; // Where the head is.
 	public PLACE headUp = PLACE.TOP; // Direction to where the screen is up.
 	public float arenaSize = 11.0f; // Units per side of the arena.
 	public float speed = 4.0f; // Units per second.
@@ -32,7 +33,7 @@ public class CubilineController : MonoBehaviour
 	//////////////////////////////////////////////////////////////
 
 	private float arenaLogicalLimit; // The side limit plus the 0.5 units offset for the head to be aout of the side.
-	private float arenaZoneLimit; // The side limit minus 0.5 that is the tolerance distance to made a turn.
+	private float arenaPlaceLimit; // The side limit minus 0.5 that is the tolerance distance to made a turn.
 
 	////////////////////// DIRECTION CONTROL /////////////////////
 
@@ -41,7 +42,7 @@ public class CubilineController : MonoBehaviour
 	private Vector3 toTurnPosition; // When it has to turn where is it gonna be.
 	private Queue turnsQueue = new Queue(); // Acumulated turns;
 	private bool turning; // A turn has been appled so wait until it happens.
-	private bool noZone; // When it reach the far the side of the arena is a no zono so it can't turn at all.
+	private bool noPalce; // When it reach the far the side of the arena is a no zono so it can't turn at all.
 
 	//////////////////////// INPUT CONTROL //////////////////////
 
@@ -64,7 +65,9 @@ public class CubilineController : MonoBehaviour
 
 	//////////////////////// TARGET CONTROL /////////////////////
 
-	private Dictionary<string, Vector3> slots = new Dictionary<string, Vector3>();
+	private Dictionary<string, Vector3> freeSlots = new Dictionary<string, Vector3>();
+	private Queue usedSlots = new Queue();
+	private Vector3 lastSlotUsed;
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// MONO BEHAVIOR ////////////////////////////////////////
@@ -87,7 +90,7 @@ public class CubilineController : MonoBehaviour
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
-	///////////////////////////////////////////// SetUp ////////////////////////////////////////////
+	///////////////////////////////////////////// SETUP ////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////
 
 	public void NewGame()
@@ -98,9 +101,9 @@ public class CubilineController : MonoBehaviour
 		// Sey initial arena size.
 		SetArenaSize(arenaSize);
 
-		initialPosition.x = headZone == PLACE.RIGHT ? arenaLogicalLimit : (headZone == PLACE.LEFT ? -arenaLogicalLimit : 0.0f);
-		initialPosition.y = headZone == PLACE.TOP ? arenaLogicalLimit : (headZone == PLACE.BOTTOM ? -arenaLogicalLimit : 0.0f);
-		initialPosition.z = headZone == PLACE.FRONT ? -arenaLogicalLimit : (headZone == PLACE.BACK ? arenaLogicalLimit : 0.0f);
+		initialPosition.x = headPlace == PLACE.RIGHT ? arenaLogicalLimit : (headPlace == PLACE.LEFT ? -arenaLogicalLimit : 0.0f);
+		initialPosition.y = headPlace == PLACE.TOP ? arenaLogicalLimit : (headPlace == PLACE.BOTTOM ? -arenaLogicalLimit : 0.0f);
+		initialPosition.z = headPlace == PLACE.FRONT ? -arenaLogicalLimit : (headPlace == PLACE.BACK ? arenaLogicalLimit : 0.0f);
 
 		// Clear body parts.
 		bodyQueue.Clear();
@@ -114,9 +117,73 @@ public class CubilineController : MonoBehaviour
 		AddBody(2.0f);
 
 		// Sots
-		slots.Clear();
+		freeSlots.Clear();
+		usedSlots.Clear();
+
+		// Fill free slots with the position information of every slot;
+		// Front and Back
+		for (int j = 0; j < arenaSize; j++)
+		{
+			for (int k = 0; k < arenaSize; k++)
+			{
+				Vector3 position = new Vector3(-arenaPlaceLimit + k, arenaPlaceLimit - j, -arenaLogicalLimit);
+				freeSlots.Add(position.ToString(), position);
+
+				position = new Vector3(-arenaPlaceLimit + k, arenaPlaceLimit - j, arenaLogicalLimit);
+				freeSlots.Add(position.ToString(), position);
+			}
+		}
+		// Right and Left
+		for (int j = 0; j < arenaSize; j++)
+		{
+			for (int k = 0; k < arenaSize; k++)
+			{
+				Vector3 position = new Vector3(arenaLogicalLimit, arenaPlaceLimit - j, arenaPlaceLimit - k);
+				freeSlots.Add(position.ToString(), position);
+
+				position = new Vector3(-arenaLogicalLimit, arenaPlaceLimit - j, arenaPlaceLimit - k);
+				freeSlots.Add(position.ToString(), position);
+			}
+		}
+		// Top and Bottom
+		for (int j = 0; j < arenaSize; j++)
+		{
+			for (int k = 0; k < arenaSize; k++)
+			{
+				Vector3 position = new Vector3(-arenaPlaceLimit + k, arenaLogicalLimit, arenaPlaceLimit - j);
+				freeSlots.Add(position.ToString(), position);
+
+				position = new Vector3(-arenaPlaceLimit + k, -arenaLogicalLimit, arenaPlaceLimit - j);
+				freeSlots.Add(position.ToString(), position);
+			}
+		}
+
+		if (headPlace == PLACE.FRONT)
+		{
+			if(headDirection == PLACE.RIGHT)
+			{
+				initialPosition.x -= 2.0f;
+				//usedSlots.Enqueue(initialPosition);
+				usedSlots.Enqueue(Instantiate(collitionTest, initialPosition, Quaternion.identity));
+				freeSlots.Remove(initialPosition.ToString());
+
+				initialPosition.x += 1.0f;
+				//usedSlots.Enqueue(initialPosition);
+				usedSlots.Enqueue(Instantiate(collitionTest, initialPosition, Quaternion.identity));
+				freeSlots.Remove(initialPosition.ToString());
+
+				initialPosition.x += 1.0f;
+				//usedSlots.Enqueue(initialPosition);
+				usedSlots.Enqueue(Instantiate(collitionTest, initialPosition, Quaternion.identity));
+				freeSlots.Remove(initialPosition.ToString());
+			}
+		}
+
+		lastSlotUsed = initialPosition;
 
 		// Reset control
+		eating = false;
+		unEating = false;
 		toNew = false;
 		toGrow = 0.0f;
 		toUnGrow = 0.0f;
@@ -136,14 +203,14 @@ public class CubilineController : MonoBehaviour
 		arenaLogicalLimit = size / 2.0f + 0.5f;
 
 		// Arena Zone limit.
-		arenaZoneLimit = arenaLogicalLimit - 1.0f;
+		arenaPlaceLimit = arenaLogicalLimit - 1.0f;
 
 		// Set the scale of the arena object.
 		arena.transform.localScale = new Vector3(arenaSize, arenaSize, arenaSize);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
-	///////////////////////////////////////// Input Control ////////////////////////////////////////
+	///////////////////////////////////////// INPUT CONTROL ////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////
 
 	void getInput()
@@ -168,27 +235,53 @@ public class CubilineController : MonoBehaviour
 	void AddTurn(TURN turn)
 	{
 		turnsQueue.Enqueue(turn);
+	}
 
-		if(turn == TURN.UP)
+	////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////// SLOTS CONTROL ////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////
+
+	void ControlSlots()
+	{
+		Vector3 headPosition = head.transform.localPosition;
+		int units = (int)(lastSlotUsed - headPosition).magnitude;
+
+		if(units > 0)
 		{
-			print("Key Up");
+			for (int i = 0; i < units; i++)
+			{
+				TakeSlot();
+			}
 		}
-		if (turn == TURN.DOWN)
+	}
+
+	void TakeSlot()
+	{
+		if (headDirection == PLACE.FRONT)
+			lastSlotUsed.z -= 1;
+		else if (headDirection == PLACE.BACK)
+			lastSlotUsed.z += 1;
+		else if (headDirection == PLACE.RIGHT)
+			lastSlotUsed.x += 1;
+		else if (headDirection == PLACE.LEFT)
+			lastSlotUsed.x -= 1;
+		else if (headDirection == PLACE.TOP)
+			lastSlotUsed.y += 1;
+		else if (headDirection == PLACE.BOTTOM)
+			lastSlotUsed.y -= 1;
+
+		bool exist = freeSlots.ContainsKey(lastSlotUsed.ToString());
+
+		if (exist)
 		{
-			print("Key Down");
-		}
-		if (turn == TURN.RIGHT)
-		{
-			print("Key Right");
-		}
-		if (turn == TURN.LEFT)
-		{
-			print("Key Left");
+			//usedSlots.Enqueue(lastSlotUsed);
+			usedSlots.Enqueue(Instantiate(collitionTest, lastSlotUsed, Quaternion.identity));
+			freeSlots.Remove(lastSlotUsed.ToString());
 		}
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
-	/////////////////////////////////////// Direction Control //////////////////////////////////////
+	/////////////////////////////////////// DIRECTION CONTROL //////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////
 
 	void Play()
@@ -200,14 +293,17 @@ public class CubilineController : MonoBehaviour
 		head.transform.localPosition += directionVector * speed * Time.deltaTime;
 
 		// Control what zone is the head on.
-		ControlZoneChange();
+		ControlPlaceChange();
 
 		// Do turn if are there some to do.
 		ControlTurn();
 
 		// Control the body if it wasn't control for a turn or zone change already.
 		if (!toNew)
+		{
 			ControlBody();
+			ControlSlots();
+		}
 		toNew = false;
 
 		// This is step is the last known head's position.
@@ -218,7 +314,7 @@ public class CubilineController : MonoBehaviour
 	{
 		if (!turning)
 		{
-			if (turnsQueue.Count != 0 && (!noZone || special))
+			if (turnsQueue.Count != 0 && (!noPalce || special))
 			{
 				bool secureTurn = false;
 
@@ -244,7 +340,7 @@ public class CubilineController : MonoBehaviour
 			}
 		}
 		
-		// Look for aturn if all guide to that even the last code.
+		// Look for a turn if all lead to that even the last code.
 		if(turning)
 		{
 			LookForTurn();
@@ -291,11 +387,13 @@ public class CubilineController : MonoBehaviour
 		{
 			head.transform.localPosition = toTurnPosition;
 
+			ControlBody();
+			ControlSlots();
+			toNew = true;
+
 			headDirection = nextHeadDirection;
 
-			ControlBody();
 			AddBody(0.0f);
-			toNew = true;
 
 			turning = false;
 		}
@@ -304,56 +402,48 @@ public class CubilineController : MonoBehaviour
 
 	private bool TurnUp()
 	{
-		PLACE up = GetUpOfZone(headZone, headUp);
-		if (headDirection == up || headDirection == GetDownOfZone(headZone, headUp)) return false;
+		PLACE up = GetUpOfPlace(headPlace, headUp);
+		if (headDirection == up || headDirection == GetDownOfPlace(headPlace, headUp)) return false;
 
 		nextHeadDirection = up;
 
 		setTurn();
-
-		print("Turn Up");
 
 		return true;
 	}
 
 	private bool TurnDown()
 	{
-		PLACE down = GetDownOfZone(headZone, headUp);
-		if (headDirection == down || headDirection == GetUpOfZone(headZone, headUp)) return false;
+		PLACE down = GetDownOfPlace(headPlace, headUp);
+		if (headDirection == down || headDirection == GetUpOfPlace(headPlace, headUp)) return false;
 
 		nextHeadDirection = down;
 
 		setTurn();
-
-		print("Turn Down");
 
 		return true;
 	}
 
 	private bool TurnRight()
 	{
-		PLACE right = GetRightOfZone(headZone, headUp);
-		if (headDirection == right || headDirection == GetLeftOfZone(headZone, headUp)) return false;
+		PLACE right = GetRightOfPlace(headPlace, headUp);
+		if (headDirection == right || headDirection == GetLeftOfPlace(headPlace, headUp)) return false;
 
 		nextHeadDirection = right;
 
 		setTurn();
-
-		print("Turn Right");
 
 		return true;
 	}
 
 	private bool TurnLeft()
 	{
-		PLACE left = GetLeftOfZone(headZone, headUp);
-		if (headDirection == left || headDirection == GetRightOfZone(headZone, headUp)) return false;
+		PLACE left = GetLeftOfPlace(headPlace, headUp);
+		if (headDirection == left || headDirection == GetRightOfPlace(headPlace, headUp)) return false;
 
 		nextHeadDirection = left;
 
 		setTurn();
-
-		print("Turn Left");
 
 		return true;
 	}
@@ -400,24 +490,20 @@ public class CubilineController : MonoBehaviour
 		}
 	}
 
-	void ControlZoneChange()
+	void ControlPlaceChange()
 	{
 		Vector3 headPosition = head.transform.localPosition;
 
 		// headDirection and stuff.
-		if (headZone == PLACE.FRONT)
+		if (headPlace == PLACE.FRONT)
 		{
-			noZone = false;
+			noPalce = false;
 			// Take care of the no zone stuff.
-			if (headPosition.x > arenaZoneLimit || headPosition.x < -arenaZoneLimit || headPosition.y > arenaZoneLimit || headPosition.y < -arenaZoneLimit)
-				noZone = true;
+			if (headPosition.x > arenaPlaceLimit || headPosition.x < -arenaPlaceLimit || headPosition.y > arenaPlaceLimit || headPosition.y < -arenaPlaceLimit)
+				noPalce = true;
 
 			if (headPosition.x >= arenaLogicalLimit)
 			{
-				// New arena positional info.
-				headDirection = PLACE.BACK;
-				headZone = PLACE.RIGHT;
-
 				// New up.
 				if (headUp == PLACE.RIGHT)
 					headUp = PLACE.BACK;
@@ -430,20 +516,23 @@ public class CubilineController : MonoBehaviour
 				// Apply boundaries.
 				head.transform.localPosition = headPosition;
 
-				// At turn add body.
+				// Control body stats
 				ControlBody();
-				AddBody(0.0f);
+				ControlSlots();
 				toNew = true;
+
+				// New arena positional info.
+				headDirection = PLACE.BACK;
+				headPlace = PLACE.RIGHT;
+
+				// At turn add body.
+				AddBody(0.0f);
 
 				// Control if has o be a turn after change the zone.
 				ControlTurn(true);
 			}
 			else if (headPosition.x <= -arenaLogicalLimit)
 			{
-				// New arena positional info.
-				headDirection = PLACE.BACK;
-				headZone = PLACE.LEFT;
-
 				// New up.
 				if (headUp == PLACE.RIGHT)
 					headUp = PLACE.FRONT;
@@ -456,20 +545,23 @@ public class CubilineController : MonoBehaviour
 				// Apply boundaries.
 				head.transform.localPosition = headPosition;
 
-				// At turn add body.
+				// Control body stats
 				ControlBody();
-				AddBody(0.0f);
+				ControlSlots();
 				toNew = true;
+
+				// New arena positional info.
+				headDirection = PLACE.BACK;
+				headPlace = PLACE.LEFT;
+
+				// At turn add body.
+				AddBody(0.0f);
 
 				// Control if has o be a turn after change the zone.
 				ControlTurn(true);
 			}
 			else if (headPosition.y >= arenaLogicalLimit)
 			{
-				// New arena positional info.
-				headDirection = PLACE.BACK;
-				headZone = PLACE.TOP;
-
 				// New up.
 				if (headUp == PLACE.TOP)
 					headUp = PLACE.BACK;
@@ -482,20 +574,23 @@ public class CubilineController : MonoBehaviour
 				// Apply boundaries.
 				head.transform.localPosition = headPosition;
 
-				// At turn add body.
+				// Control body stats
 				ControlBody();
-				AddBody(0.0f);
+				ControlSlots();
 				toNew = true;
+
+				// New arena positional info.
+				headDirection = PLACE.BACK;
+				headPlace = PLACE.TOP;
+
+				// At turn add body.
+				AddBody(0.0f);
 
 				// Control if has o be a turn after change the zone.
 				ControlTurn(true);
 			}
 			else if (headPosition.y <= -arenaLogicalLimit)
 			{
-				// New arena positional info.
-				headDirection = PLACE.BACK;
-				headZone = PLACE.BOTTOM;
-
 				// New up.
 				if (headUp == PLACE.TOP)
 					headUp = PLACE.FRONT;
@@ -508,28 +603,31 @@ public class CubilineController : MonoBehaviour
 				// Apply boundaries.
 				head.transform.localPosition = headPosition;
 
-				// At turn add body.
+				// Control body stats
 				ControlBody();
-				AddBody(0.0f);
+				ControlSlots();
 				toNew = true;
+
+				// New arena positional info.
+				headDirection = PLACE.BACK;
+				headPlace = PLACE.BOTTOM;
+
+				// At turn add body.
+				AddBody(0.0f);
 
 				// Control if has o be a turn after change the zone.
 				ControlTurn(true);
 			}
 		}
-		else if (headZone == PLACE.BACK)
+		else if (headPlace == PLACE.BACK)
 		{
-			noZone = false;
+			noPalce = false;
 			// Take care of the no zone stuff.
-			if (headPosition.x > arenaZoneLimit || headPosition.x < -arenaZoneLimit || headPosition.y > arenaZoneLimit || headPosition.y < -arenaZoneLimit)
-				noZone = true;
+			if (headPosition.x > arenaPlaceLimit || headPosition.x < -arenaPlaceLimit || headPosition.y > arenaPlaceLimit || headPosition.y < -arenaPlaceLimit)
+				noPalce = true;
 
 			if (headPosition.x >= arenaLogicalLimit)
 			{
-				// New arena positional info.
-				headDirection = PLACE.FRONT;
-				headZone = PLACE.RIGHT;
-
 				// New up.
 				if (headUp == PLACE.RIGHT)
 					headUp = PLACE.FRONT;
@@ -542,20 +640,23 @@ public class CubilineController : MonoBehaviour
 				// Apply boundaries.
 				head.transform.localPosition = headPosition;
 
-				// At turn add body.
+				// Control body stats
 				ControlBody();
-				AddBody(0.0f);
+				ControlSlots();
 				toNew = true;
+
+				// New arena positional info.
+				headDirection = PLACE.FRONT;
+				headPlace = PLACE.RIGHT;
+
+				// At turn add body.
+				AddBody(0.0f);
 
 				// Control if has o be a turn after change the zone.
 				ControlTurn(true);
 			}
 			else if (headPosition.x <= -arenaLogicalLimit)
 			{
-				// New arena positional info.
-				headDirection = PLACE.FRONT;
-				headZone = PLACE.LEFT;
-
 				// New up.
 				if (headUp == PLACE.RIGHT)
 					headUp = PLACE.BACK;
@@ -568,20 +669,23 @@ public class CubilineController : MonoBehaviour
 				// Apply boundaries.
 				head.transform.localPosition = headPosition;
 
-				// At turn add body.
+				// Control body stats
 				ControlBody();
-				AddBody(0.0f);
+				ControlSlots();
 				toNew = true;
+
+				// New arena positional info.
+				headDirection = PLACE.FRONT;
+				headPlace = PLACE.LEFT;
+
+				// At turn add body.
+				AddBody(0.0f);
 
 				// Control if has o be a turn after change the zone.
 				ControlTurn(true);
 			}
 			else if (headPosition.y >= arenaLogicalLimit)
 			{
-				// New arena positional info.
-				headDirection = PLACE.FRONT;
-				headZone = PLACE.TOP;
-
 				// New up.
 				if (headUp == PLACE.TOP)
 					headUp = PLACE.FRONT;
@@ -594,20 +698,23 @@ public class CubilineController : MonoBehaviour
 				// Apply boundaries.
 				head.transform.localPosition = headPosition;
 
-				// At turn add body.
+				// Control body stats
 				ControlBody();
-				AddBody(0.0f);
+				ControlSlots();
 				toNew = true;
+
+				// New arena positional info.
+				headDirection = PLACE.FRONT;
+				headPlace = PLACE.TOP;
+
+				// At turn add body.
+				AddBody(0.0f);
 
 				// Control if has o be a turn after change the zone.
 				ControlTurn(true);
 			}
 			else if (headPosition.y <= -arenaLogicalLimit)
 			{
-				// New arena positional info.
-				headDirection = PLACE.FRONT;
-				headZone = PLACE.BOTTOM;
-
 				// New up.
 				if (headUp == PLACE.TOP)
 					headUp = PLACE.BACK;
@@ -620,28 +727,31 @@ public class CubilineController : MonoBehaviour
 				// Apply boundaries.
 				head.transform.localPosition = headPosition;
 
-				// At turn add body.
+				// Control body stats
 				ControlBody();
-				AddBody(0.0f);
+				ControlSlots();
 				toNew = true;
+
+				// New arena positional info.
+				headDirection = PLACE.FRONT;
+				headPlace = PLACE.BOTTOM;
+
+				// At turn add body.
+				AddBody(0.0f);
 
 				// Control if has o be a turn after change the zone.
 				ControlTurn(true);
 			}
 		}
-		else if (headZone == PLACE.RIGHT)
+		else if (headPlace == PLACE.RIGHT)
 		{
-			noZone = false;
+			noPalce = false;
 			// Take care of the no zone stuff.
-			if (headPosition.z > arenaZoneLimit || headPosition.z < -arenaZoneLimit || headPosition.y > arenaZoneLimit || headPosition.y < -arenaZoneLimit)
-				noZone = true;
+			if (headPosition.z > arenaPlaceLimit || headPosition.z < -arenaPlaceLimit || headPosition.y > arenaPlaceLimit || headPosition.y < -arenaPlaceLimit)
+				noPalce = true;
 
 			if (headPosition.z <= -arenaLogicalLimit)
 			{
-				// New arena positional info.
-				headDirection = PLACE.LEFT;
-				headZone = PLACE.FRONT;
-
 				// New up.
 				if (headUp == PLACE.FRONT)
 					headUp = PLACE.LEFT;
@@ -654,20 +764,23 @@ public class CubilineController : MonoBehaviour
 				// Apply boundaries.
 				head.transform.localPosition = headPosition;
 
-				// At turn add body.
+				// Control body stats
 				ControlBody();
-				AddBody(0.0f);
+				ControlSlots();
 				toNew = true;
+
+				// New arena positional info.
+				headDirection = PLACE.LEFT;
+				headPlace = PLACE.FRONT;
+
+				// At turn add body.
+				AddBody(0.0f);
 
 				// Control if has o be a turn after change the zone.
 				ControlTurn(true);
 			}
 			else if (headPosition.z >= arenaLogicalLimit)
 			{
-				// New arena positional info.
-				headDirection = PLACE.LEFT;
-				headZone = PLACE.BACK;
-
 				// New up.
 				if (headUp == PLACE.FRONT)
 					headUp = PLACE.RIGHT;
@@ -680,20 +793,23 @@ public class CubilineController : MonoBehaviour
 				// Apply boundaries.
 				head.transform.localPosition = headPosition;
 
-				// At turn add body.
+				// Control body stats
 				ControlBody();
-				AddBody(0.0f);
+				ControlSlots();
 				toNew = true;
+
+				// New arena positional info.
+				headDirection = PLACE.LEFT;
+				headPlace = PLACE.BACK;
+
+				// At turn add body.
+				AddBody(0.0f);
 
 				// Control if has o be a turn after change the zone.
 				ControlTurn(true);
 			}
 			else if (headPosition.y >= arenaLogicalLimit)
 			{
-				// New arena positional info.
-				headDirection = PLACE.LEFT;
-				headZone = PLACE.TOP;
-
 				// New up.
 				if (headUp == PLACE.TOP)
 					headUp = PLACE.LEFT;
@@ -706,20 +822,23 @@ public class CubilineController : MonoBehaviour
 				// Apply boundaries.
 				head.transform.localPosition = headPosition;
 
-				// At turn add body.
+				// Control body stats
 				ControlBody();
-				AddBody(0.0f);
+				ControlSlots();
 				toNew = true;
+
+				// New arena positional info.
+				headDirection = PLACE.LEFT;
+				headPlace = PLACE.TOP;
+
+				// At turn add body.
+				AddBody(0.0f);
 
 				// Control if has o be a turn after change the zone.
 				ControlTurn(true);
 			}
 			else if (headPosition.y <= -arenaLogicalLimit)
 			{
-				// New arena positional info.
-				headDirection = PLACE.LEFT;
-				headZone = PLACE.BOTTOM;
-
 				// New up.
 				if (headUp == PLACE.TOP)
 					headUp = PLACE.RIGHT;
@@ -732,28 +851,31 @@ public class CubilineController : MonoBehaviour
 				// Apply boundaries.
 				head.transform.localPosition = headPosition;
 
-				// At turn add body.
+				// Control body stats
 				ControlBody();
-				AddBody(0.0f);
+				ControlSlots();
 				toNew = true;
+
+				// New arena positional info.
+				headDirection = PLACE.LEFT;
+				headPlace = PLACE.BOTTOM;
+
+				// At turn add body.
+				AddBody(0.0f);
 
 				// Control if has o be a turn after change the zone.
 				ControlTurn(true);
 			}
 		}
-		else if (headZone == PLACE.LEFT)
+		else if (headPlace == PLACE.LEFT)
 		{
-			noZone = false;
+			noPalce = false;
 			// Take care of the no zone stuff.
-			if (headPosition.z > arenaZoneLimit || headPosition.z < -arenaZoneLimit || headPosition.y > arenaZoneLimit || headPosition.y < -arenaZoneLimit)
-				noZone = true;
+			if (headPosition.z > arenaPlaceLimit || headPosition.z < -arenaPlaceLimit || headPosition.y > arenaPlaceLimit || headPosition.y < -arenaPlaceLimit)
+				noPalce = true;
 
 			if (headPosition.z <= -arenaLogicalLimit)
 			{
-				// New arena positional info.
-				headDirection = PLACE.RIGHT;
-				headZone = PLACE.FRONT;
-
 				// New up.
 				if (headUp == PLACE.FRONT)
 					headUp = PLACE.RIGHT;
@@ -766,20 +888,23 @@ public class CubilineController : MonoBehaviour
 				// Apply boundaries.
 				head.transform.localPosition = headPosition;
 
-				// At turn add body.
+				// Control body stats
 				ControlBody();
-				AddBody(0.0f);
+				ControlSlots();
 				toNew = true;
+
+				// New arena positional info.
+				headDirection = PLACE.RIGHT;
+				headPlace = PLACE.FRONT;
+
+				// At turn add body.
+				AddBody(0.0f);
 
 				// Control if has o be a turn after change the zone.
 				ControlTurn(true);
 			}
 			else if (headPosition.z >= arenaLogicalLimit)
 			{
-				// New arena positional info.
-				headDirection = PLACE.RIGHT;
-				headZone = PLACE.BACK;
-
 				// New up.
 				if (headUp == PLACE.FRONT)
 					headUp = PLACE.LEFT;
@@ -792,20 +917,23 @@ public class CubilineController : MonoBehaviour
 				// Apply boundaries.
 				head.transform.localPosition = headPosition;
 
-				// At turn add body.
+				// Control body stats
 				ControlBody();
-				AddBody(0.0f);
+				ControlSlots();
 				toNew = true;
+
+				// New arena positional info.
+				headDirection = PLACE.RIGHT;
+				headPlace = PLACE.BACK;
+
+				// At turn add body.
+				AddBody(0.0f);
 
 				// Control if has o be a turn after change the zone.
 				ControlTurn(true);
 			}
 			else if (headPosition.y >= arenaLogicalLimit)
 			{
-				// New arena positional info.
-				headDirection = PLACE.RIGHT;
-				headZone = PLACE.TOP;
-
 				// New up.
 				if (headUp == PLACE.TOP)
 					headUp = PLACE.RIGHT;
@@ -818,20 +946,23 @@ public class CubilineController : MonoBehaviour
 				// Apply boundaries.
 				head.transform.localPosition = headPosition;
 
-				// At turn add body.
+				// Control body stats
 				ControlBody();
-				AddBody(0.0f);
+				ControlSlots();
 				toNew = true;
+
+				// New arena positional info.
+				headDirection = PLACE.RIGHT;
+				headPlace = PLACE.TOP;
+
+				// At turn add body.
+				AddBody(0.0f);
 
 				// Control if has o be a turn after change the zone.
 				ControlTurn(true);
 			}
 			else if (headPosition.y <= -arenaLogicalLimit)
 			{
-				// New arena positional info.
-				headDirection = PLACE.RIGHT;
-				headZone = PLACE.BOTTOM;
-
 				// New up.
 				if (headUp == PLACE.TOP)
 					headUp = PLACE.LEFT;
@@ -844,28 +975,31 @@ public class CubilineController : MonoBehaviour
 				// Apply boundaries.
 				head.transform.localPosition = headPosition;
 
-				// At turn add body.
+				// Control body stats
 				ControlBody();
-				AddBody(0.0f);
+				ControlSlots();
 				toNew = true;
+
+				// New arena positional info.
+				headDirection = PLACE.RIGHT;
+				headPlace = PLACE.BOTTOM;
+
+				// At turn add body.
+				AddBody(0.0f);
 
 				// Control if has o be a turn after change the zone.
 				ControlTurn(true);
 			}
 		}
-		else if (headZone == PLACE.TOP)
+		else if (headPlace == PLACE.TOP)
 		{
-			noZone = false;
+			noPalce = false;
 			// Take care of the no zone stuff.
-			if (headPosition.z > arenaZoneLimit || headPosition.z < -arenaZoneLimit || headPosition.x > arenaZoneLimit || headPosition.x < -arenaZoneLimit)
-				noZone = true;
+			if (headPosition.z > arenaPlaceLimit || headPosition.z < -arenaPlaceLimit || headPosition.x > arenaPlaceLimit || headPosition.x < -arenaPlaceLimit)
+				noPalce = true;
 
 			if (headPosition.z <= -arenaLogicalLimit)
 			{
-				// New arena positional info.
-				headDirection = PLACE.BOTTOM;
-				headZone = PLACE.FRONT;
-
 				// New up.
 				if (headUp == PLACE.FRONT)
 					headUp = PLACE.BOTTOM;
@@ -878,20 +1012,23 @@ public class CubilineController : MonoBehaviour
 				// Apply boundaries.
 				head.transform.localPosition = headPosition;
 
-				// At turn add body.
+				// Control body stats
 				ControlBody();
-				AddBody(0.0f);
+				ControlSlots();
 				toNew = true;
+
+				// New arena positional info.
+				headDirection = PLACE.BOTTOM;
+				headPlace = PLACE.FRONT;
+
+				// At turn add body.
+				AddBody(0.0f);
 
 				// Control if has o be a turn after change the zone.
 				ControlTurn(true);
 			}
 			else if (headPosition.z >= arenaLogicalLimit)
 			{
-				// New arena positional info.
-				headDirection = PLACE.BOTTOM;
-				headZone = PLACE.BACK;
-
 				// New up.
 				if (headUp == PLACE.FRONT)
 					headUp = PLACE.TOP;
@@ -904,20 +1041,23 @@ public class CubilineController : MonoBehaviour
 				// Apply boundaries.
 				head.transform.localPosition = headPosition;
 
-				// At turn add body.
+				// Control body stats
 				ControlBody();
-				AddBody(0.0f);
+				ControlSlots();
 				toNew = true;
+
+				// New arena positional info.
+				headDirection = PLACE.BOTTOM;
+				headPlace = PLACE.BACK;
+
+				// At turn add body.
+				AddBody(0.0f);
 
 				// Control if has o be a turn after change the zone.
 				ControlTurn(true);
 			}
 			else if (headPosition.x >= arenaLogicalLimit)
 			{
-				// New arena positional info.
-				headDirection = PLACE.BOTTOM;
-				headZone = PLACE.RIGHT;
-
 				// New up.
 				if (headUp == PLACE.RIGHT)
 					headUp = PLACE.BOTTOM;
@@ -930,20 +1070,23 @@ public class CubilineController : MonoBehaviour
 				// Apply boundaries.
 				head.transform.localPosition = headPosition;
 
-				// At turn add body.
+				// Control body stats
 				ControlBody();
-				AddBody(0.0f);
+				ControlSlots();
 				toNew = true;
+
+				// New arena positional info.
+				headDirection = PLACE.BOTTOM;
+				headPlace = PLACE.RIGHT;
+
+				// At turn add body.
+				AddBody(0.0f);
 
 				// Control if has o be a turn after change the zone.
 				ControlTurn(true);
 			}
 			else if (headPosition.x <= -arenaLogicalLimit)
 			{
-				// New arena positional info.
-				headDirection = PLACE.BOTTOM;
-				headZone = PLACE.LEFT;
-
 				// New up.
 				if (headUp == PLACE.RIGHT)
 					headUp = PLACE.TOP;
@@ -956,28 +1099,31 @@ public class CubilineController : MonoBehaviour
 				// Apply boundaries.
 				head.transform.localPosition = headPosition;
 
-				// At turn add body.
+				// Control body stats
 				ControlBody();
-				AddBody(0.0f);
+				ControlSlots();
 				toNew = true;
+
+				// New arena positional info.
+				headDirection = PLACE.BOTTOM;
+				headPlace = PLACE.LEFT;
+
+				// At turn add body.
+				AddBody(0.0f);
 
 				// Control if has o be a turn after change the zone.
 				ControlTurn(true);
 			}
 		}
-		else if (headZone == PLACE.BOTTOM)
+		else if (headPlace == PLACE.BOTTOM)
 		{
-			noZone = false;
+			noPalce = false;
 			// Take care of the no zone stuff.
-			if (headPosition.z > arenaZoneLimit || headPosition.z < -arenaZoneLimit || headPosition.x > arenaZoneLimit || headPosition.x < -arenaZoneLimit)
-				noZone = true;
+			if (headPosition.z > arenaPlaceLimit || headPosition.z < -arenaPlaceLimit || headPosition.x > arenaPlaceLimit || headPosition.x < -arenaPlaceLimit)
+				noPalce = true;
 
 			if (headPosition.z <= -arenaLogicalLimit)
 			{
-				// New arena positional info.
-				headDirection = PLACE.TOP;
-				headZone = PLACE.FRONT;
-
 				// New up.
 				if (headUp == PLACE.FRONT)
 					headUp = PLACE.TOP;
@@ -990,20 +1136,23 @@ public class CubilineController : MonoBehaviour
 				// Apply boundaries.
 				head.transform.localPosition = headPosition;
 
-				// At turn add body.
+				// Control body stats
 				ControlBody();
-				AddBody(0.0f);
+				ControlSlots();
 				toNew = true;
+
+				// New arena positional info.
+				headDirection = PLACE.TOP;
+				headPlace = PLACE.FRONT;
+
+				// At turn add body.
+				AddBody(0.0f);
 
 				// Control if has o be a turn after change the zone.
 				ControlTurn(true);
 			}
 			else if (headPosition.z >= arenaLogicalLimit)
 			{
-				// New arena positional info.
-				headDirection = PLACE.TOP;
-				headZone = PLACE.BACK;
-
 				// New up.
 				if (headUp == PLACE.FRONT)
 					headUp = PLACE.BOTTOM;
@@ -1016,20 +1165,23 @@ public class CubilineController : MonoBehaviour
 				// Apply boundaries.
 				head.transform.localPosition = headPosition;
 
-				// At turn add body.
+				// Control body stats
 				ControlBody();
-				AddBody(0.0f);
+				ControlSlots();
 				toNew = true;
+
+				// New arena positional info.
+				headDirection = PLACE.TOP;
+				headPlace = PLACE.BACK;
+
+				// At turn add body.
+				AddBody(0.0f);
 
 				// Control if has o be a turn after change the zone.
 				ControlTurn(true);
 			}
 			else if (headPosition.x >= arenaLogicalLimit)
 			{
-				// New arena positional info.
-				headDirection = PLACE.TOP;
-				headZone = PLACE.RIGHT;
-
 				// New up.
 				if (headUp == PLACE.RIGHT)
 					headUp = PLACE.TOP;
@@ -1042,20 +1194,23 @@ public class CubilineController : MonoBehaviour
 				// Apply boundaries.
 				head.transform.localPosition = headPosition;
 
-				// At turn add body.
+				// Control body stats
 				ControlBody();
-				AddBody(0.0f);
+				ControlSlots();
 				toNew = true;
+
+				// New arena positional info.
+				headDirection = PLACE.TOP;
+				headPlace = PLACE.RIGHT;
+
+				// At turn add body.
+				AddBody(0.0f);
 
 				// Control if has o be a turn after change the zone.
 				ControlTurn(true);
 			}
 			else if (headPosition.x <= -arenaLogicalLimit)
 			{
-				// New arena positional info.
-				headDirection = PLACE.TOP;
-				headZone = PLACE.LEFT;
-
 				// New up.
 				if (headUp == PLACE.RIGHT)
 					headUp = PLACE.BOTTOM;
@@ -1068,10 +1223,17 @@ public class CubilineController : MonoBehaviour
 				// Apply boundaries.
 				head.transform.localPosition = headPosition;
 
-				// At turn add body.
+				// Control body stats
 				ControlBody();
-				AddBody(0.0f);
+				ControlSlots();
 				toNew = true;
+
+				// New arena positional info.
+				headDirection = PLACE.TOP;
+				headPlace = PLACE.LEFT;
+
+				// At turn add body.
+				AddBody(0.0f);
 
 				// Control if has o be a turn after change the zone.
 				ControlTurn(true);
@@ -1079,14 +1241,14 @@ public class CubilineController : MonoBehaviour
 		}
 	}
 
-	PLACE GetUpOfZone(PLACE zone, PLACE up)
+	PLACE GetUpOfPlace(PLACE place, PLACE up)
 	{
 		return up;
 	}
 
-	PLACE GetDownOfZone(PLACE zone, PLACE up)
+	PLACE GetDownOfPlace(PLACE place, PLACE up)
 	{
-		if (zone == PLACE.FRONT || zone == PLACE.BACK)
+		if (place == PLACE.FRONT || place == PLACE.BACK)
 		{
 			if (up == PLACE.RIGHT)
 				return PLACE.LEFT;
@@ -1097,7 +1259,7 @@ public class CubilineController : MonoBehaviour
 			if (up == PLACE.BOTTOM)
 				return PLACE.TOP;
 		}
-		if (zone == PLACE.RIGHT || zone == PLACE.LEFT)
+		if (place == PLACE.RIGHT || place == PLACE.LEFT)
 		{
 			if (up == PLACE.FRONT)
 				return PLACE.BACK;
@@ -1108,7 +1270,7 @@ public class CubilineController : MonoBehaviour
 			if (up == PLACE.BOTTOM)
 				return PLACE.TOP;
 		}
-		if (zone == PLACE.TOP || zone == PLACE.BOTTOM)
+		if (place == PLACE.TOP || place == PLACE.BOTTOM)
 		{
 			if (up == PLACE.FRONT)
 				return PLACE.BACK;
@@ -1122,9 +1284,9 @@ public class CubilineController : MonoBehaviour
 		return 0;
 	}
 
-	PLACE GetRightOfZone(PLACE zone, PLACE up)
+	PLACE GetRightOfPlace(PLACE place, PLACE up)
 	{
-		if (zone == PLACE.FRONT)
+		if (place == PLACE.FRONT)
 		{
 			if (up == PLACE.RIGHT)
 				return PLACE.BOTTOM;
@@ -1135,7 +1297,7 @@ public class CubilineController : MonoBehaviour
 			if (up == PLACE.BOTTOM)
 				return PLACE.LEFT;
 		}
-		if (zone == PLACE.BACK)
+		if (place == PLACE.BACK)
 		{
 			if (up == PLACE.RIGHT)
 				return PLACE.TOP;
@@ -1146,7 +1308,7 @@ public class CubilineController : MonoBehaviour
 			if (up == PLACE.BOTTOM)
 				return PLACE.RIGHT;
 		}
-		if (zone == PLACE.RIGHT)
+		if (place == PLACE.RIGHT)
 		{
 			if (up == PLACE.FRONT)
 				return PLACE.TOP;
@@ -1157,7 +1319,7 @@ public class CubilineController : MonoBehaviour
 			if (up == PLACE.BOTTOM)
 				return PLACE.FRONT;
 		}
-		if (zone == PLACE.LEFT)
+		if (place == PLACE.LEFT)
 		{
 			if (up == PLACE.FRONT)
 				return PLACE.BOTTOM;
@@ -1168,7 +1330,7 @@ public class CubilineController : MonoBehaviour
 			if (up == PLACE.BOTTOM)
 				return PLACE.BACK;
 		}
-		if (zone == PLACE.TOP)
+		if (place == PLACE.TOP)
 		{
 			if (up == PLACE.FRONT)
 				return PLACE.LEFT;
@@ -1179,7 +1341,7 @@ public class CubilineController : MonoBehaviour
 			if (up == PLACE.LEFT)
 				return PLACE.BACK;
 		}
-		if (zone == PLACE.BOTTOM)
+		if (place == PLACE.BOTTOM)
 		{
 			if (up == PLACE.FRONT)
 				return PLACE.RIGHT;
@@ -1193,9 +1355,9 @@ public class CubilineController : MonoBehaviour
 		return 0;
 	}
 
-	PLACE GetLeftOfZone(PLACE zone, PLACE up)
+	PLACE GetLeftOfPlace(PLACE place, PLACE up)
 	{
-		if (zone == PLACE.FRONT)
+		if (place == PLACE.FRONT)
 		{
 			if (up == PLACE.RIGHT)
 				return PLACE.TOP;
@@ -1206,7 +1368,7 @@ public class CubilineController : MonoBehaviour
 			if (up == PLACE.BOTTOM)
 				return PLACE.RIGHT;
 		}
-		if (zone == PLACE.BACK)
+		if (place == PLACE.BACK)
 		{
 			if (up == PLACE.RIGHT)
 				return PLACE.BOTTOM;
@@ -1217,7 +1379,7 @@ public class CubilineController : MonoBehaviour
 			if (up == PLACE.BOTTOM)
 				return PLACE.LEFT;
 		}
-		if (zone == PLACE.RIGHT)
+		if (place == PLACE.RIGHT)
 		{
 			if (up == PLACE.FRONT)
 				return PLACE.BOTTOM;
@@ -1228,7 +1390,7 @@ public class CubilineController : MonoBehaviour
 			if (up == PLACE.BOTTOM)
 				return PLACE.BACK;
 		}
-		if (zone == PLACE.LEFT)
+		if (place == PLACE.LEFT)
 		{
 			if (up == PLACE.FRONT)
 				return PLACE.TOP;
@@ -1239,7 +1401,7 @@ public class CubilineController : MonoBehaviour
 			if (up == PLACE.BOTTOM)
 				return PLACE.FRONT;
 		}
-		if (zone == PLACE.TOP)
+		if (place == PLACE.TOP)
 		{
 			if (up == PLACE.FRONT)
 				return PLACE.RIGHT;
@@ -1250,7 +1412,7 @@ public class CubilineController : MonoBehaviour
 			if (up == PLACE.LEFT)
 				return PLACE.FRONT;
 		}
-		if (zone == PLACE.BOTTOM)
+		if (place == PLACE.BOTTOM)
 		{
 			if (up == PLACE.FRONT)
 				return PLACE.LEFT;
@@ -1272,7 +1434,7 @@ public class CubilineController : MonoBehaviour
 	{
 		CubilineBody newBody = Instantiate(baseBody);
 		newBody.transform.parent = transform;
-		newBody.initialize(headZone, headDirection, head.transform.localPosition, size);
+		newBody.initialize(headPlace, headDirection, head.transform.localPosition, size);
 		bodyQueue.Enqueue(newBody);
 		lastBody = newBody;
 	}
