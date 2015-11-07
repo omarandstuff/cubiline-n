@@ -11,8 +11,6 @@ public class CubilineController : MonoBehaviour
 	public GameObject head;
 	public CubilineBody baseBody;
 	public GameObject commonTarget;
-	public GameObject collitionTest;
-
 
 	//////////////////////////////////////////////////////////////
 	//////////////////// CUBILINE PARAMETERS /////////////////////
@@ -165,18 +163,15 @@ public class CubilineController : MonoBehaviour
 			if(headDirection == PLACE.RIGHT)
 			{
 				initialPosition.x -= 2.0f;
-				//usedSlots.Enqueue(initialPosition);
-				usedSlots.Enqueue(Instantiate(collitionTest, initialPosition, Quaternion.identity));
+				usedSlots.Enqueue(initialPosition);
 				freeSlots.Remove(initialPosition.ToString());
 
 				initialPosition.x += 1.0f;
-				//usedSlots.Enqueue(initialPosition);
-				usedSlots.Enqueue(Instantiate(collitionTest, initialPosition, Quaternion.identity));
+				usedSlots.Enqueue(initialPosition);
 				freeSlots.Remove(initialPosition.ToString());
 
 				initialPosition.x += 1.0f;
-				//usedSlots.Enqueue(initialPosition);
-				usedSlots.Enqueue(Instantiate(collitionTest, initialPosition, Quaternion.identity));
+				usedSlots.Enqueue(initialPosition);
 				freeSlots.Remove(initialPosition.ToString());
 			}
 		}
@@ -229,14 +224,14 @@ public class CubilineController : MonoBehaviour
 		else if (Input.GetAxis("Horizontal") < 0)
 			key = TURN.LEFT;
 		
-		if(Input.GetButtonUp("Fire1"))
+		if(Input.GetButtonUp("Fire2"))
 		{
 			eating = true;
 			toGrow += 1;
 			bodyLength++;
 		}
 
-		if (Input.GetButtonUp("Fire2"))
+		if (Input.GetButtonUp("Fire3"))
 		{
 			if(bodyLength > 3)
 			{
@@ -294,14 +289,12 @@ public class CubilineController : MonoBehaviour
 
 		if (exist)
 		{
-			//usedSlots.Enqueue(lastSlotUsed);
-			usedSlots.Enqueue(Instantiate(collitionTest, lastSlotUsed, Quaternion.identity));
+			usedSlots.Enqueue(lastSlotUsed);
 			freeSlots.Remove(lastSlotUsed.ToString());
 		}
 		else
 		{
-			//usedSlots.Enqueue(Vector3.zero);
-			usedSlots.Enqueue(Instantiate(collitionTest, Vector3.zero, Quaternion.identity));
+			usedSlots.Enqueue(Vector3.zero);
 		}
 
 		if(usedSlots.Count > bodyLength)
@@ -313,12 +306,9 @@ public class CubilineController : MonoBehaviour
 
 	void FreeSlot()
 	{
-		//Vector3 slot = (Vector3)usedSlots.Peek();
-		GameObject slot = (GameObject)usedSlots.Dequeue();
-		Vector3 slotPos = slot.transform.localPosition;
-		Destroy(slot);
-		if(slotPos != Vector3.zero)
-			freeSlots.Add(slotPos.ToString(), slotPos);
+		Vector3 slot = (Vector3)usedSlots.Dequeue();
+		if(slot != Vector3.zero)
+			freeSlots.Add(slot.ToString(), slot);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
