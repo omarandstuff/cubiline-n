@@ -304,14 +304,10 @@ public class CubilineController : MonoBehaviour
 			usedSlots.Enqueue(Instantiate(collitionTest, Vector3.zero, Quaternion.identity));
 		}
 
-		if (!eating && unEating)
+		if(usedSlots.Count > bodyLength)
 		{
-			FreeSlot();
-			FreeSlot();
-		}
-		else if ((!eating && !unEating) || (eating && unEating))
-		{
-			FreeSlot();
+			for (int i = 0; usedSlots.Count != bodyLength; i++)
+				FreeSlot();
 		}
 	}
 
