@@ -1,29 +1,59 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class RotateByCubePosition : MonoBehaviour
+public class OrbitAndLook : MonoBehaviour
 {
+	//////////////////////////////////////////////////////////////
+	///////////////////////// COMPONENTS /////////////////////////
+	//////////////////////////////////////////////////////////////
+
 	public Transform target;
+	public Transform targetArea;
 	public Transform ghost;
 	public Transform pivot;
 
+	//////////////////////////////////////////////////////////////
+	///////////////////////// PARAMETERS /////////////////////////
+	//////////////////////////////////////////////////////////////
+	public bool automaticDistance = true;
 	public float distance = 22.0f;
 	public float smoothTime = 1.0f;
-	
 
-	public enum PLACE { FRONT, BACK, RIGHT, LEFT, TOP, BOTTOM };
 	public PLACE fixedPlace = PLACE.FRONT;
 	public PLACE currentUp = PLACE.TOP;
 
+	//////////////////////////////////////////////////////////////
+	////////////////////// CONTROL VARIABLES /////////////////////
+	//////////////////////////////////////////////////////////////
+
+	public enum PLACE { FRONT, BACK, RIGHT, LEFT, TOP, BOTTOM };
 	private Vector3 curretGhostUp = Vector3.zero, targetGhostUp = new Vector3(0.0f, 1.0f, 0.0f);
 	private Vector3 ghostVelocityUp = Vector3.zero;
 	private Vector3 velocity = Vector3.zero;
 
+	////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////// MONO BEHAVIOR /////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////
+
 	void FixedUpdate()
 	{
-		PLACE place = getPlace();
-		setghostUp(fixedPlace, place);
-		setghostPosition(place);
+		// Distance
+		if (automaticDistance)
+		{
+			Camera cam = GetComponent<Camera>();
+			float sideSize = targetArea.transform.localScale.x;
+			float frustumHeight = sideSize;
+			if (cam.pixelHeight > cam.pixelWidth )
+			{
+				frustumHeight = frustumHeight / cam.aspect;
+			}
+
+			distance = frustumHeight * 0.5f / Mathf.Tan(GetComponent<Camera>().fieldOfView * 0.5f * Mathf.Deg2Rad) + Mathf.Sqrt(sideSize * sideSize + sideSize * sideSize) / 2.0f;
+		}
+
+		PLACE place = GetPlace();
+		SetGhostUp(fixedPlace, place);
+		SetGhostPosition(place);
 		RotateFromTraget(place);
 
 		fixedPlace = place;
@@ -33,7 +63,11 @@ public class RotateByCubePosition : MonoBehaviour
 		transform.LookAt(target, curretGhostUp);
 	}
 
-	PLACE getPlace()
+	////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////// ROTATION AND LOOK ////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////
+
+	PLACE GetPlace()
 	{
 		float x = target.transform.localPosition.x;
 		float y = target.transform.localPosition.y;
@@ -55,7 +89,7 @@ public class RotateByCubePosition : MonoBehaviour
 		return 0;
 	}
 
-	void setghostPosition(PLACE place)
+	void SetGhostPosition(PLACE place)
 	{
 		if (place == PLACE.FRONT)
 		{
@@ -83,7 +117,7 @@ public class RotateByCubePosition : MonoBehaviour
 		}
 	}
 
-	void setghostUp(PLACE lastPlace, PLACE place)
+	void SetGhostUp(PLACE lastPlace, PLACE place)
 	{
 		if (lastPlace == place) return;
 
