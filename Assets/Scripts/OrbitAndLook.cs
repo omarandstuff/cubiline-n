@@ -59,7 +59,7 @@ public class OrbitAndLook : MonoBehaviour
 		fixedPlace = place;
 
 		transform.position = Vector3.SmoothDamp(transform.position, ghost.position, ref velocity, smoothTime);
-		curretGhostUp = Vector3.SmoothDamp(curretGhostUp, targetGhostUp, ref ghostVelocityUp, smoothTime * 3.0f);
+		curretGhostUp = Vector3.SmoothDamp(curretGhostUp, targetGhostUp, ref ghostVelocityUp, smoothTime * 2.0f);
 		transform.LookAt(target, curretGhostUp);
 	}
 
