@@ -42,7 +42,7 @@ public class OrbitAndLook : MonoBehaviour
 		{
 			Camera cam = GetComponent<Camera>();
 			float sideSize = targetArea.transform.localScale.x;
-			float frustumHeight = sideSize;
+			float frustumHeight = sideSize + 2.0f;
 			if (cam.pixelHeight > cam.pixelWidth )
 			{
 				frustumHeight = frustumHeight / cam.aspect;

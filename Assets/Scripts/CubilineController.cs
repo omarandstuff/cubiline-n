@@ -11,7 +11,6 @@ public class CubilineController : MonoBehaviour
 	public GameObject head;
 	public CubilineBody baseBody;
 	public GameObject commonTarget;
-	public GameObject collision;
 
 	//////////////////////////////////////////////////////////////
 	//////////////////// CUBILINE PARAMETERS /////////////////////
@@ -31,6 +30,8 @@ public class CubilineController : MonoBehaviour
 	public float arenaSize = 11.0f; // Units per side of the arena.
 
 	public uint commonTargetCount = 1;
+
+	public uint totalScore;
 
 	//////////////////////////////////////////////////////////////
 	////////////////////// CONTROL VARIABLES /////////////////////
@@ -64,18 +65,18 @@ public class CubilineController : MonoBehaviour
 	private float toUnGrow; // When uneating how much has be reduced.				|	shorter at the same time.
 	private float stepUnGrown; // How muc has been ungrown since uneating started.--|
 
-	private Queue bodyQueue = new Queue(); // Body parts queue.
+	private Queue<CubilineBody> bodyQueue = new Queue<CubilineBody>(); // Body parts queue.
 	CubilineBody lastBody; // Last body in the queue.
 
 	private int bodyLength;
 
 	//////////////////////// TARGET CONTROL /////////////////////
 
-	private struct slotInf { public PLACE place;  public bool enabled; public Vector3 position; public object collition; }
-	private List<slotInf> slots = new List<slotInf>();
-	private Queue<int> usedSlots = new Queue<int>();
-	private Vector3 lastSlotUsed;
-	private List<GameObject> commonTargets = new List<GameObject>();
+	private struct slotInf { public PLACE place;  public bool enabled; public Vector3 position; public object collision; }
+	private List<slotInf> slots = new List<slotInf>(); // Filled with all the position posibilities of be in the cube.
+	private Queue<int> usedSlots = new Queue<int>(); // Positions used by the body.
+	private Vector3 lastSlotUsed; // Keep traking of where was the las time it take a slot from the arena.
+	private List<GameObject> commonTargets = new List<GameObject>(); // List of common tagets in the arena.
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// MONO BEHAVIOR /////////////////////////////////////////
@@ -114,7 +115,10 @@ public class CubilineController : MonoBehaviour
 		initialPosition.z = headPlace == PLACE.FRONT ? -arenaLogicalLimit : (headPlace == PLACE.BACK ? arenaLogicalLimit : 0.0f);
 
 		// Clear body parts.
-		bodyQueue.Clear();
+		while(bodyQueue.Count != 0)
+		{
+			Destroy(bodyQueue.Dequeue().gameObject);
+		}
 		lastBody = null;
 
 		// Locate the head at the initial position.
@@ -131,7 +135,7 @@ public class CubilineController : MonoBehaviour
 		// Fill free slots with the position information of every slot.
 		slotInf currentSlot;
 		currentSlot.enabled = true;
-		currentSlot.collition = null;
+		currentSlot.collision = null;
 
 		// Front and Back
 		for (int j = 0; j < arenaSize; j++)
@@ -240,6 +244,13 @@ public class CubilineController : MonoBehaviour
 		// Update slots.
 		ControlSlots();
 
+		for(int i = 0; i < commonTargets.Count; i++)
+		{
+			CubilineTarget target = commonTargets[i].GetComponent<CubilineTarget>();
+			target.targetScale = Vector3.zero;
+			Destroy(commonTargets[i], 1.0f);
+		}
+
 		// Targets.
 		commonTargets.Clear();
 	}
@@ -334,7 +345,11 @@ public class CubilineController : MonoBehaviour
 				UnGrow(-target.toGrow);
 			SpawnCommonTarget(other.gameObject);
 		}
-		
+		if (other.tag == "Finish")
+		{
+			NewGame();
+		}
+
 	}
 
 	void Grow(int units)
@@ -439,7 +454,7 @@ public class CubilineController : MonoBehaviour
 		{
 			usedSlots.Enqueue(slotIndex);
 			slot.enabled = false;
-			slot.collition = Instantiate(collision, lastSlotUsed, Quaternion.identity);
+			//slot.collition = Instantiate(collision, lastSlotUsed, Quaternion.identity);
 			slots[slotIndex] = slot;
 		}
 		else
@@ -461,8 +476,8 @@ public class CubilineController : MonoBehaviour
 		{
 			slotInf slot = slots[slotIndex];
 			slot.enabled = true;
-			Destroy((GameObject)slot.collition);
-			slot.collition = null;
+			//Destroy((GameObject)slot.collition);
+			//slot.collition = null;
 			slots[slotIndex] = slot;
 		}
 	}
@@ -1679,7 +1694,7 @@ public class CubilineController : MonoBehaviour
 
 		lastBody.Grow(delta);
 
-		CubilineBody first = (CubilineBody)bodyQueue.Peek();
+		CubilineBody first = bodyQueue.Peek();
 
 		if (eating)
 		{
@@ -1703,11 +1718,11 @@ public class CubilineController : MonoBehaviour
 
 				Destroy(first.gameObject);
 
-				((CubilineBody)bodyQueue.Peek()).Grow(deltaX);
+				bodyQueue.Peek().Grow(deltaX);
 			}
 		}
 
-		first = (CubilineBody)bodyQueue.Peek();
+		first = bodyQueue.Peek();
 
 		if (unEating)
 		{
@@ -1727,7 +1742,7 @@ public class CubilineController : MonoBehaviour
 			{
 				bodyQueue.Dequeue();
 				Destroy(first.gameObject);
-				((CubilineBody)bodyQueue.Peek()).Grow(delta);
+				bodyQueue.Peek().Grow(delta);
 			}
 		}
 	}
