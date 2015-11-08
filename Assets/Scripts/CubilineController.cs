@@ -11,20 +11,26 @@ public class CubilineController : MonoBehaviour
 	public GameObject head;
 	public CubilineBody baseBody;
 	public GameObject commonTarget;
+	public GameObject collision;
 
 	//////////////////////////////////////////////////////////////
 	//////////////////// CUBILINE PARAMETERS /////////////////////
 	//////////////////////////////////////////////////////////////
 
+	public enum PLACE { TOP, BOTTOM, RIGHT, LEFT, FRONT, BACK, NONE };
+	public enum TURN { UP, DOWN, RIGHT, LEFT, NONE };
+
+	public bool inputEnabled = true; // The Cube can muve but can or not resive input.
+	public bool playing = true; // The cube can or not move.
+
 	public PLACE headDirection = PLACE.RIGHT; // Directon of the head.
 	public PLACE headPlace = PLACE.FRONT; // Where the head is.
 	public PLACE headUp = PLACE.TOP; // Direction to where the screen is up.
-	public float arenaSize = 11.0f; // Units per side of the arena.
+
 	public float speed = 4.0f; // Units per second.
-	public enum PLACE { TOP, BOTTOM, RIGHT, LEFT, FRONT, BACK, NONE };
-	public enum TURN { UP, DOWN, RIGHT, LEFT, NONE };
-	public bool inputEnabled = true; // The Cube can muve but can or not resive input.
-	public bool playing = true; // The cube can or not move.
+	public float arenaSize = 11.0f; // Units per side of the arena.
+
+	public int commonTargetCount = 1;
 
 	//////////////////////////////////////////////////////////////
 	////////////////////// CONTROL VARIABLES /////////////////////
@@ -65,9 +71,11 @@ public class CubilineController : MonoBehaviour
 
 	//////////////////////// TARGET CONTROL /////////////////////
 
-	private Dictionary<string, Vector3> freeSlots = new Dictionary<string, Vector3>();
-	private Queue usedSlots = new Queue();
+	private struct slotInf { public PLACE place;  public bool enabled; public Vector3 position; public object collition; }
+	private List<slotInf> freeSlots = new List<slotInf>();
+	private Queue<int> usedSlots = new Queue<int>();
 	private Vector3 lastSlotUsed;
+	private ArrayList commonTargets = new ArrayList();
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// MONO BEHAVIOR /////////////////////////////////////////
@@ -120,17 +128,28 @@ public class CubilineController : MonoBehaviour
 		freeSlots.Clear();
 		usedSlots.Clear();
 
-		// Fill free slots with the position information of every slot;
+		// Fill free slots with the position information of every slot.
+		slotInf currentSlot;
+		currentSlot.enabled = true;
+		currentSlot.collition = null;
+
 		// Front and Back
 		for (int j = 0; j < arenaSize; j++)
 		{
 			for (int k = 0; k < arenaSize; k++)
 			{
-				Vector3 position = new Vector3(-arenaPlaceLimit + k, arenaPlaceLimit - j, -arenaLogicalLimit);
-				freeSlots.Add(position.ToString(), position);
-
-				position = new Vector3(-arenaPlaceLimit + k, arenaPlaceLimit - j, arenaLogicalLimit);
-				freeSlots.Add(position.ToString(), position);
+				currentSlot.place = PLACE.FRONT;
+				currentSlot.position = new Vector3(-arenaPlaceLimit + k, arenaPlaceLimit - j, -arenaLogicalLimit);
+				freeSlots.Add(currentSlot);
+			}
+		}
+		for (int j = 0; j < arenaSize; j++)
+		{
+			for (int k = 0; k < arenaSize; k++)
+			{
+				currentSlot.place = PLACE.BACK;
+				currentSlot.position = new Vector3(-arenaPlaceLimit + k, arenaPlaceLimit - j, arenaLogicalLimit);
+				freeSlots.Add(currentSlot);
 			}
 		}
 		// Right and Left
@@ -138,11 +157,18 @@ public class CubilineController : MonoBehaviour
 		{
 			for (int k = 0; k < arenaSize; k++)
 			{
-				Vector3 position = new Vector3(arenaLogicalLimit, arenaPlaceLimit - j, arenaPlaceLimit - k);
-				freeSlots.Add(position.ToString(), position);
-
-				position = new Vector3(-arenaLogicalLimit, arenaPlaceLimit - j, arenaPlaceLimit - k);
-				freeSlots.Add(position.ToString(), position);
+				currentSlot.place = PLACE.RIGHT;
+				currentSlot.position = new Vector3(arenaLogicalLimit, arenaPlaceLimit - j, -arenaPlaceLimit + k);
+				freeSlots.Add(currentSlot);
+			}
+		}
+		for (int j = 0; j < arenaSize; j++)
+		{
+			for (int k = 0; k < arenaSize; k++)
+			{
+				currentSlot.place = PLACE.LEFT;
+				currentSlot.position = new Vector3(-arenaLogicalLimit, arenaPlaceLimit - j, -arenaPlaceLimit + k);
+				freeSlots.Add(currentSlot);
 			}
 		}
 		// Top and Bottom
@@ -150,33 +176,56 @@ public class CubilineController : MonoBehaviour
 		{
 			for (int k = 0; k < arenaSize; k++)
 			{
-				Vector3 position = new Vector3(-arenaPlaceLimit + k, arenaLogicalLimit, arenaPlaceLimit - j);
-				freeSlots.Add(position.ToString(), position);
-
-				position = new Vector3(-arenaPlaceLimit + k, -arenaLogicalLimit, arenaPlaceLimit - j);
-				freeSlots.Add(position.ToString(), position);
+				currentSlot.place = PLACE.TOP;
+				currentSlot.position = new Vector3(-arenaPlaceLimit + k, arenaLogicalLimit, arenaPlaceLimit - j);
+				freeSlots.Add(currentSlot);
+			}
+		}
+		for (int j = 0; j < arenaSize; j++)
+		{
+			for (int k = 0; k < arenaSize; k++)
+			{
+				currentSlot.place = PLACE.BOTTOM;
+				currentSlot.position = new Vector3(-arenaPlaceLimit + k, -arenaLogicalLimit, arenaPlaceLimit - j);
+				freeSlots.Add(currentSlot);
 			}
 		}
 
-		if (headPlace == PLACE.FRONT)
+		// Fill collisions base the new place and direction.
+		lastSlotUsed = initialPosition;
+		if (headPlace == PLACE.FRONT || headPlace == PLACE.BACK)
 		{
 			if(headDirection == PLACE.RIGHT)
-			{
-				initialPosition.x -= 2.0f;
-				usedSlots.Enqueue(initialPosition);
-				freeSlots.Remove(initialPosition.ToString());
-
-				initialPosition.x += 1.0f;
-				usedSlots.Enqueue(initialPosition);
-				freeSlots.Remove(initialPosition.ToString());
-
-				initialPosition.x += 1.0f;
-				usedSlots.Enqueue(initialPosition);
-				freeSlots.Remove(initialPosition.ToString());
-			}
+				lastSlotUsed.x -= 3.0f;
+			else if (headDirection == PLACE.LEFT)
+				lastSlotUsed.x += 3.0f;
+			else if (headDirection == PLACE.TOP)
+				lastSlotUsed.y -= 3.0f;
+			else if (headDirection == PLACE.LEFT)
+				lastSlotUsed.y += 3.0f;
 		}
-
-		lastSlotUsed = initialPosition;
+		else if (headPlace == PLACE.RIGHT || headPlace == PLACE.LEFT)
+		{
+			if (headDirection == PLACE.FRONT)
+				lastSlotUsed.z += 3.0f;
+			else if (headDirection == PLACE.BACK)
+				lastSlotUsed.z -= 3.0f;
+			else if (headDirection == PLACE.TOP)
+				lastSlotUsed.y -= 3.0f;
+			else if (headDirection == PLACE.LEFT)
+				lastSlotUsed.y += 3.0f;
+		}
+		else if (headPlace == PLACE.TOP || headPlace == PLACE.BOTTOM)
+		{
+			if (headDirection == PLACE.FRONT)
+				lastSlotUsed.z += 3.0f;
+			else if (headDirection == PLACE.BACK)
+				lastSlotUsed.z -= 3.0f;
+			else if (headDirection == PLACE.RIGHT)
+				lastSlotUsed.x -= 3.0f;
+			else if (headDirection == PLACE.LEFT)
+				lastSlotUsed.x += 3.0f;
+		}
 
 		// Reset control
 		eating = false;
@@ -187,6 +236,15 @@ public class CubilineController : MonoBehaviour
 		stepGrown = 0.0f;
 		stepUnGrown = 0.0f;
 		bodyLength = 3;
+
+		// Update slots.
+		ControlSlots();
+
+		// Targets.
+		commonTargets.Clear();
+
+		for (int i = 0; i < commonTargetCount; i++)
+			SpawnCommonTarget();
 	}
 
 	public void SetArenaSize(float size)
@@ -226,19 +284,12 @@ public class CubilineController : MonoBehaviour
 		
 		if(Input.GetButtonUp("Fire2"))
 		{
-			eating = true;
-			toGrow += 1;
-			bodyLength++;
+			Grow(1);
 		}
 
 		if (Input.GetButtonUp("Fire3"))
 		{
-			if(bodyLength > 3)
-			{
-				unEating = true;
-				toUnGrow += 1;
-				bodyLength--;
-			}
+			UnGrow(1);
 		}
 
 		if (lastKey != key)
@@ -250,6 +301,64 @@ public class CubilineController : MonoBehaviour
 	void AddTurn(TURN turn)
 	{
 		turnsQueue.Enqueue(turn);
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////// COLLISION CONTROL //////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////
+
+	void ControlTargets()
+	{
+
+	}
+
+	public void ColliderEnter(Collider other)
+	{
+		if(other.tag == "Target")
+		{
+			CubilineTarget target = other.GetComponent<CubilineTarget>();
+			if (target.toGrow >= 0)
+				Grow(target.toGrow);
+			else
+				UnGrow(-target.toGrow);
+			SpawnCommonTarget(other.gameObject);
+		}
+		
+	}
+
+	void Grow(int units)
+	{
+		eating = true;
+		toGrow += units;
+		bodyLength += units;
+	}
+
+	void UnGrow(int units)
+	{
+		int realUngorw = (bodyLength - units) >= 3 ? units : (bodyLength > 3 ? bodyLength - 3 : 0);
+		unEating = true;
+		toUnGrow += realUngorw;
+		bodyLength -= realUngorw;
+	}
+
+	void SpawnCommonTarget(GameObject old = null)
+	{
+		if(old != null)
+		{
+			
+		}
+		else
+		{
+			if(freeSlots.Count > 0)
+			{
+				//int index = (int)(Random.value * freeSlots.Count);
+
+				//Dictionary<string, Vector3>.Enumerator freeSlotsEnumerator = freeSlots.GetEnumerator();
+
+				//commonTargets.Add(Instantiate(commonTarget, position, Quaternion.identity));
+			}
+		}
+		
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -285,16 +394,22 @@ public class CubilineController : MonoBehaviour
 		else if (headDirection == PLACE.BOTTOM)
 			lastSlotUsed.y -= 1;
 
-		bool exist = freeSlots.ContainsKey(lastSlotUsed.ToString());
+		int slotIndex = GetSlotIndex(headPlace, lastSlotUsed);
+		slotInf slot = new slotInf();
 
-		if (exist)
+		if (slotIndex != -1)
+			slot = freeSlots[slotIndex];
+
+		if (slot.enabled)
 		{
-			usedSlots.Enqueue(lastSlotUsed);
-			freeSlots.Remove(lastSlotUsed.ToString());
+			usedSlots.Enqueue(slotIndex);
+			slot.enabled = false;
+			slot.collition = Instantiate(collision, lastSlotUsed, Quaternion.identity);
+			freeSlots[slotIndex] = slot;
 		}
 		else
 		{
-			usedSlots.Enqueue(Vector3.zero);
+			usedSlots.Enqueue(slotIndex);
 		}
 
 		if(usedSlots.Count > bodyLength)
@@ -306,9 +421,59 @@ public class CubilineController : MonoBehaviour
 
 	void FreeSlot()
 	{
-		Vector3 slot = (Vector3)usedSlots.Dequeue();
-		if(slot != Vector3.zero)
-			freeSlots.Add(slot.ToString(), slot);
+		int slotIndex = usedSlots.Dequeue();
+		if(slotIndex != -1)
+		{
+			slotInf slot = freeSlots[slotIndex];
+			slot.enabled = true;
+			Destroy((GameObject)slot.collition);
+			slot.collition = null;
+			freeSlots[slotIndex] = slot;
+		}
+	}
+
+	int GetSlotIndex(PLACE place, Vector3 slot)
+	{
+		int slotsPerFace = (int)arenaSize * (int)arenaSize;
+
+		if (place == PLACE.FRONT)
+		{
+			if (slot.x > arenaPlaceLimit || slot.x < -arenaPlaceLimit || slot.y > arenaPlaceLimit || slot.y < -arenaPlaceLimit) return -1;
+			int index = (int)((arenaPlaceLimit - slot.y) * arenaSize + (slot.x + arenaPlaceLimit));
+			return index;
+		}
+		else if (place == PLACE.BACK)
+		{
+			if (slot.x > arenaPlaceLimit || slot.x < -arenaPlaceLimit || slot.y > arenaPlaceLimit || slot.y < -arenaPlaceLimit) return -1;
+			int index = slotsPerFace + (int)((arenaPlaceLimit - slot.y) * arenaSize + (slot.x + arenaPlaceLimit));
+			return index;
+		}
+		else if (place == PLACE.RIGHT)
+		{
+			if (slot.z > arenaPlaceLimit || slot.z < -arenaPlaceLimit || slot.y > arenaPlaceLimit || slot.y < -arenaPlaceLimit) return -1;
+			int index = slotsPerFace * 2 + (int)((arenaPlaceLimit - slot.y) * arenaSize + (arenaPlaceLimit + slot.z));
+			return index;
+		}
+		else if (place == PLACE.LEFT)
+		{
+			if (slot.z > arenaPlaceLimit || slot.z < -arenaPlaceLimit || slot.y > arenaPlaceLimit || slot.y < -arenaPlaceLimit) return -1;
+			int index = slotsPerFace * 3 + (int)((arenaPlaceLimit - slot.y) * arenaSize + (arenaPlaceLimit + slot.z));
+			return index;
+		}
+		else if (place == PLACE.TOP)
+		{
+			if (slot.z > arenaPlaceLimit || slot.z < -arenaPlaceLimit || slot.x > arenaPlaceLimit || slot.x < -arenaPlaceLimit) return -1;
+			int index = slotsPerFace * 4 + (int)((arenaPlaceLimit - slot.z) * arenaSize + (arenaPlaceLimit + slot.x));
+			return index;
+		}
+		else if (place == PLACE.BOTTOM)
+		{
+			if (slot.z > arenaPlaceLimit || slot.z < -arenaPlaceLimit || slot.x > arenaPlaceLimit || slot.x < -arenaPlaceLimit) return -1;
+			int index = slotsPerFace * 5 + (int)((arenaPlaceLimit - slot.z) * arenaSize + (arenaPlaceLimit + slot.x));
+			return index;
+		}
+
+		return -1;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -336,6 +501,9 @@ public class CubilineController : MonoBehaviour
 			ControlSlots();
 		}
 		toNew = false;
+
+		// Control targets spawning.
+		ControlTargets();
 
 		// This is step is the last known head's position.
 		lastHeadPosition = head.transform.localPosition;
