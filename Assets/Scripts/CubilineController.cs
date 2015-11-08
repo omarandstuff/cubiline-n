@@ -30,7 +30,7 @@ public class CubilineController : MonoBehaviour
 	public float speed = 4.0f; // Units per second.
 	public float arenaSize = 11.0f; // Units per side of the arena.
 
-	public int commonTargetCount = 1;
+	public uint commonTargetCount = 1;
 
 	//////////////////////////////////////////////////////////////
 	////////////////////// CONTROL VARIABLES /////////////////////
@@ -75,7 +75,7 @@ public class CubilineController : MonoBehaviour
 	private List<slotInf> slots = new List<slotInf>();
 	private Queue<int> usedSlots = new Queue<int>();
 	private Vector3 lastSlotUsed;
-	private ArrayList commonTargets = new ArrayList();
+	private List<GameObject> commonTargets = new List<GameObject>();
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// MONO BEHAVIOR /////////////////////////////////////////
@@ -306,10 +306,20 @@ public class CubilineController : MonoBehaviour
 
 	void ControlTargets()
 	{
-		if(commonTargets.Count < commonTargetCount)
+		if (commonTargets.Count < commonTargetCount)
 		{
-			while(commonTargets.Count != commonTargetCount)
+			while (commonTargets.Count != commonTargetCount)
 				SpawnCommonTarget();
+		}
+		else if (commonTargets.Count > commonTargetCount)
+		{
+			while (commonTargets.Count != commonTargetCount)
+			{
+				CubilineTarget target = commonTargets[commonTargets.Count - 1].GetComponent<CubilineTarget>();
+				target.targetScale = Vector3.zero;
+				Destroy(commonTargets[commonTargets.Count - 1], 1.0f);
+				commonTargets.Remove(commonTargets[commonTargets.Count - 1]);
+			}
 		}
 	}
 
@@ -349,7 +359,7 @@ public class CubilineController : MonoBehaviour
 			commonTargets.Remove(old);
 			Destroy(old);
 		}
-		if (slots.Count != usedSlots.Count)
+		if (slots.Count != usedSlots.Count && commonTargets.Count < commonTargetCount)
 		{
 			int index = (int)(Random.value * slots.Count);
 			slotInf slot = new slotInf();

@@ -14,12 +14,15 @@ public class CubilineTarget : MonoBehaviour
 	public int toGrow = 1;
 	public int score = 1;
 	public Vector3 rotationSpeeds;
+	public Vector3 targetScale = new Vector3(0.8f, 0.8f, 0.8f);
+	public float scaleTime = 0.3f;
 
 	//////////////////////////////////////////////////////////////
 	////////////////////// CONTROL VARIABLES /////////////////////
 	//////////////////////////////////////////////////////////////
 
-	private Vector3 rotation= Vector3.zero;
+	private Vector3 rotation;
+	private Vector3 scaleVelocity = Vector3.zero;
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// MONO BEHAVIOR ////////////////////////////////////////
@@ -32,6 +35,7 @@ public class CubilineTarget : MonoBehaviour
 
 	void FixedUpdate()
 	{
+		if (transform.localScale != targetScale) transform.localScale = Vector3.SmoothDamp(transform.localScale, targetScale, ref scaleVelocity, scaleTime);
 		rotation += (rotationSpeeds * Time.deltaTime);
 		transform.localRotation = Quaternion.Euler(rotation);
 	}
