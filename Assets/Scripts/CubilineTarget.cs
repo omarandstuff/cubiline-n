@@ -27,7 +27,7 @@ public class CubilineTarget : MonoBehaviour
 
 	void Start()
 	{
-		
+		transform.localScale = Vector3.zero;
 	}
 
 	void FixedUpdate()
