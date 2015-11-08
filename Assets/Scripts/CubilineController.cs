@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class CubilineController : MonoBehaviour
 {
@@ -11,6 +12,7 @@ public class CubilineController : MonoBehaviour
 	public GameObject head;
 	public CubilineBody baseBody;
 	public GameObject commonTarget;
+	public Text scoreDisplay;
 
 	//////////////////////////////////////////////////////////////
 	//////////////////// CUBILINE PARAMETERS /////////////////////
@@ -240,6 +242,9 @@ public class CubilineController : MonoBehaviour
 		stepGrown = 0.0f;
 		stepUnGrown = 0.0f;
 		bodyLength = 3;
+		totalScore = 0;
+
+		PlusScore(0); // Reset score.
 
 		// Update slots.
 		ControlSlots();
@@ -343,6 +348,9 @@ public class CubilineController : MonoBehaviour
 				Grow(target.toGrow);
 			else
 				UnGrow(-target.toGrow);
+
+			PlusScore(target.score);
+
 			SpawnCommonTarget(other.gameObject);
 		}
 		if (other.tag == "Finish")
@@ -350,6 +358,12 @@ public class CubilineController : MonoBehaviour
 			NewGame();
 		}
 
+	}
+
+	void PlusScore(uint score)
+	{
+		totalScore += score;
+		scoreDisplay.text = totalScore.ToString();
 	}
 
 	void Grow(int units)

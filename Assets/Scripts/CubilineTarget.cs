@@ -12,7 +12,7 @@ public class CubilineTarget : MonoBehaviour
 	//////////////////////////////////////////////////////////////
 
 	public int toGrow = 1;
-	public int score = 1;
+	public uint score = 1;
 	public Vector3 rotationSpeeds;
 	public Vector3 targetScale = new Vector3(0.8f, 0.8f, 0.8f);
 	public float scaleTime = 0.3f;
