@@ -21,6 +21,9 @@ public class CubilineController : MonoBehaviour
 
 	public enum PLACE { TOP, BOTTOM, RIGHT, LEFT, FRONT, BACK, NONE };
 	public enum TURN { UP, DOWN, RIGHT, LEFT, NONE };
+	public enum PLAYER { PLAYER1, PLAYER2, PLAYER3, PLAYER4 };
+
+	public PLAYER player = PLAYER.PLAYER1;
 
 	public bool inputEnabled = true; // The Cube can muve but can or not resive input.
 	public bool playing = true; // The cube can or not move.
@@ -271,7 +274,8 @@ public class CubilineController : MonoBehaviour
 
 		// Targets.
 		commonTargets.Clear();
-		specialTargetInfs = new SpecialTragetInf[specialTargets.Length];
+		if(specialTargetInfs == null)
+			specialTargetInfs = new SpecialTragetInf[specialTargets.Length];
 
 		for (int i = 0; i < specialTargets.Length; i++)
 		{
@@ -306,23 +310,16 @@ public class CubilineController : MonoBehaviour
 	{
 		TURN key = TURN.NONE;
 
-		if (Input.GetAxis("Vertical") > 0)
-			key = TURN.UP;
-		else if (Input.GetAxis("Vertical") < 0)
-			key = TURN.DOWN;
-		else if (Input.GetAxis("Horizontal") > 0)
-			key = TURN.RIGHT;
-		else if (Input.GetAxis("Horizontal") < 0)
-			key = TURN.LEFT;
-
-		if (Input.GetButtonUp("Fire2"))
+		if(player == PLAYER.PLAYER1)
 		{
-			Grow(1);
-		}
-
-		if (Input.GetButtonUp("Fire3"))
-		{
-			UnGrow(1);
+			if (Input.GetAxis("Vertical Player 1") > 0)
+				key = TURN.UP;
+			else if (Input.GetAxis("Vertical Player 1") < 0)
+				key = TURN.DOWN;
+			else if (Input.GetAxis("Horizontal Player 1") > 0)
+				key = TURN.RIGHT;
+			else if (Input.GetAxis("Horizontal Player 1") < 0)
+				key = TURN.LEFT;
 		}
 
 		if (lastKey != key)
@@ -367,7 +364,6 @@ public class CubilineController : MonoBehaviour
 				{
 					specialTargetInfs[i].waiting = false;
 					specialTargetInfs[i].currentTime = 0.0f;
-					specialTargetInfs[i].inGameObject = Instantiate(specialTargets[i].specialTargetBase);
 					SpawnSpecialTarget(i);
 				}
 			}
