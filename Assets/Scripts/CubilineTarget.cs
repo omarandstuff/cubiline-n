@@ -11,6 +11,7 @@ public class CubilineTarget : MonoBehaviour
 	///////////////////////// PARAMETERS /////////////////////////
 	//////////////////////////////////////////////////////////////
 
+	public int index;
 	public int toGrow = 1;
 	public uint score = 1;
 	public Vector3 rotationSpeeds;

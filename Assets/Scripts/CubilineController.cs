@@ -11,8 +11,9 @@ public class CubilineController : MonoBehaviour
 	public GameObject arena;
 	public GameObject head;
 	public CubilineBody baseBody;
-	public GameObject commonTarget;
 	public Text scoreDisplay;
+	public GameObject commonTarget;
+	public SpecialTarget[] specialTargets;
 
 	//////////////////////////////////////////////////////////////
 	//////////////////// CUBILINE PARAMETERS /////////////////////
@@ -74,11 +75,17 @@ public class CubilineController : MonoBehaviour
 
 	//////////////////////// TARGET CONTROL /////////////////////
 
-	private struct slotInf { public PLACE place;  public bool enabled; public Vector3 position; public object collision; }
+	private struct slotInf { public PLACE place; public bool enabled; public Vector3 position; public object collision; }
 	private List<slotInf> slots = new List<slotInf>(); // Filled with all the position posibilities of be in the cube.
 	private Queue<int> usedSlots = new Queue<int>(); // Positions used by the body.
 	private Vector3 lastSlotUsed; // Keep traking of where was the las time it take a slot from the arena.
 	private List<GameObject> commonTargets = new List<GameObject>(); // List of common tagets in the arena.
+
+	[System.Serializable]
+	public struct SpecialTarget { public GameObject specialTargetBase; public float minimumWaitingTime; public float maximumWaitingTime; public float inShowTime; }
+	private struct SpecialTragetInf { public bool waiting; public float selectedRandomTime, currentTime, showTime; public GameObject inGameObject; }
+
+	private SpecialTragetInf[] specialTargetInfs;
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// MONO BEHAVIOR /////////////////////////////////////////
@@ -117,7 +124,7 @@ public class CubilineController : MonoBehaviour
 		initialPosition.z = headPlace == PLACE.FRONT ? -arenaLogicalLimit : (headPlace == PLACE.BACK ? arenaLogicalLimit : 0.0f);
 
 		// Clear body parts.
-		while(bodyQueue.Count != 0)
+		while (bodyQueue.Count != 0)
 		{
 			Destroy(bodyQueue.Dequeue().gameObject);
 		}
@@ -129,8 +136,8 @@ public class CubilineController : MonoBehaviour
 		turning = false;
 		noPalce = false;
 
-	// Locate the head at the initial position.
-	head.transform.localPosition = initialPosition;
+		// Locate the head at the initial position.
+		head.transform.localPosition = initialPosition;
 		lastHeadPosition = head.transform.localPosition;
 
 		// First body part with size of 2 units.
@@ -207,7 +214,7 @@ public class CubilineController : MonoBehaviour
 		lastSlotUsed = initialPosition;
 		if (headPlace == PLACE.FRONT || headPlace == PLACE.BACK)
 		{
-			if(headDirection == PLACE.RIGHT)
+			if (headDirection == PLACE.RIGHT)
 				lastSlotUsed.x -= 3.0f;
 			else if (headDirection == PLACE.LEFT)
 				lastSlotUsed.x += 3.0f;
@@ -255,7 +262,7 @@ public class CubilineController : MonoBehaviour
 		// Update slots.
 		ControlSlots();
 
-		for(int i = 0; i < commonTargets.Count; i++)
+		for (int i = 0; i < commonTargets.Count; i++)
 		{
 			CubilineTarget target = commonTargets[i].GetComponent<CubilineTarget>();
 			target.targetScale = Vector3.zero;
@@ -264,6 +271,13 @@ public class CubilineController : MonoBehaviour
 
 		// Targets.
 		commonTargets.Clear();
+		specialTargetInfs = new SpecialTragetInf[specialTargets.Length];
+
+		for (int i = 0; i < specialTargets.Length; i++)
+		{
+			specialTargetInfs[i].showTime = specialTargets[i].inShowTime * arenaSize;
+			ResetSpecial(i);
+		}
 	}
 
 	public void SetArenaSize(float size)
@@ -300,8 +314,8 @@ public class CubilineController : MonoBehaviour
 			key = TURN.RIGHT;
 		else if (Input.GetAxis("Horizontal") < 0)
 			key = TURN.LEFT;
-		
-		if(Input.GetButtonUp("Fire2"))
+
+		if (Input.GetButtonUp("Fire2"))
 		{
 			Grow(1);
 		}
@@ -343,11 +357,46 @@ public class CubilineController : MonoBehaviour
 				commonTargets.Remove(commonTargets[commonTargets.Count - 1]);
 			}
 		}
+
+		for(int i = 0; i < specialTargets.Length; i++)
+		{
+			if(specialTargetInfs[i].waiting)
+			{
+				specialTargetInfs[i].currentTime += Time.deltaTime;
+				if(specialTargetInfs[i].currentTime >= specialTargetInfs[i].selectedRandomTime)
+				{
+					specialTargetInfs[i].waiting = false;
+					specialTargetInfs[i].currentTime = 0.0f;
+					specialTargetInfs[i].inGameObject = Instantiate(specialTargets[i].specialTargetBase);
+					SpawnSpecialTarget(i);
+				}
+			}
+			else
+			{
+				specialTargetInfs[i].currentTime += Time.deltaTime;
+				if (specialTargetInfs[i].currentTime >= specialTargetInfs[i].showTime)
+				{
+					ResetSpecial(i);
+				}
+			}
+		}
+    }
+
+	void ResetSpecial(int index)
+	{
+		specialTargetInfs[index].waiting = true;
+		specialTargetInfs[index].currentTime = 0.0f;
+		specialTargetInfs[index].selectedRandomTime = Random.value * (specialTargets[index].maximumWaitingTime - specialTargets[index].minimumWaitingTime) + specialTargets[index].minimumWaitingTime;
+		if(specialTargetInfs[index].inGameObject != null)
+		{
+			Destroy(specialTargetInfs[index].inGameObject, 1.0f);
+			specialTargetInfs[index].inGameObject.GetComponent<CubilineTarget>().targetScale = Vector3.zero;
+		}
 	}
 
 	public void ColliderEnter(Collider other)
 	{
-		if(other.tag == "Target")
+		if (other.tag == "Target")
 		{
 			CubilineTarget target = other.GetComponent<CubilineTarget>();
 			if (target.toGrow >= 0)
@@ -358,6 +407,18 @@ public class CubilineController : MonoBehaviour
 			PlusScore(target.score);
 
 			SpawnCommonTarget(other.gameObject);
+		}
+		if (other.tag == "Special Target")
+		{
+			CubilineTarget target = other.GetComponent<CubilineTarget>();
+			if (target.toGrow >= 0)
+				Grow(target.toGrow);
+			else
+				UnGrow(-target.toGrow);
+
+			PlusScore(target.score);
+
+			ResetSpecial(target.index);
 		}
 		if (other.tag == "Finish")
 		{
@@ -389,12 +450,37 @@ public class CubilineController : MonoBehaviour
 
 	void SpawnCommonTarget(GameObject old = null)
 	{
-		if(old != null)
+		if (old != null)
 		{
 			commonTargets.Remove(old);
 			Destroy(old);
 		}
 		if (slots.Count != usedSlots.Count && commonTargets.Count < commonTargetCount)
+		{
+			Vector3 freePosition = GetFreePosotion();
+
+			GameObject newTarget = Instantiate(commonTarget);
+			newTarget.transform.parent = transform;
+			newTarget.transform.localPosition = freePosition;
+			commonTargets.Add(newTarget);
+		}
+	}
+
+	void SpawnSpecialTarget(int index)
+	{
+		if (slots.Count != usedSlots.Count)
+		{
+			Vector3 freePosition = GetFreePosotion();
+
+			specialTargetInfs[index].inGameObject = Instantiate(specialTargets[index].specialTargetBase);
+			specialTargetInfs[index].inGameObject.transform.parent = transform;
+			specialTargetInfs[index].inGameObject.transform.localPosition = freePosition;
+		}
+	}
+
+	 Vector3 GetFreePosotion()
+	{
+		if (slots.Count != usedSlots.Count)
 		{
 			int index = (int)(Random.value * slots.Count);
 			slotInf slot = new slotInf();
@@ -410,12 +496,12 @@ public class CubilineController : MonoBehaviour
 				List<slotInf>.Enumerator e = slots.GetEnumerator();
 				while (true)
 				{
-					e.MoveNext();
 					if (e.Current.enabled)
 					{
 						slot = e.Current;
 						break;
 					}
+					e.MoveNext();
 				}
 			}
 			else
@@ -423,12 +509,10 @@ public class CubilineController : MonoBehaviour
 				slot = slots[index];
 			}
 
-			GameObject newTarget = Instantiate(commonTarget);
-			newTarget.transform.parent = transform;
-			newTarget.transform.localPosition = slot.position;
-			commonTargets.Add(newTarget);
+			return slot.position;
 		}
 
+		return Vector3.zero;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -440,7 +524,7 @@ public class CubilineController : MonoBehaviour
 		Vector3 headPosition = head.transform.localPosition;
 		int units = (int)(lastSlotUsed - headPosition).magnitude;
 
-		if(units > 0)
+		if (units > 0)
 		{
 			for (int i = 0; i < units; i++)
 			{
@@ -482,7 +566,7 @@ public class CubilineController : MonoBehaviour
 			usedSlots.Enqueue(slotIndex);
 		}
 
-		if(usedSlots.Count > bodyLength)
+		if (usedSlots.Count > bodyLength)
 		{
 			for (int i = 0; usedSlots.Count != bodyLength; i++)
 				FreeSlot();
@@ -492,7 +576,7 @@ public class CubilineController : MonoBehaviour
 	void FreeSlot()
 	{
 		int slotIndex = usedSlots.Dequeue();
-		if(slotIndex != -1)
+		if (slotIndex != -1)
 		{
 			slotInf slot = slots[slotIndex];
 			slot.enabled = true;
@@ -592,7 +676,7 @@ public class CubilineController : MonoBehaviour
 					TURN turn = (TURN)turnsQueue.Dequeue();
 
 					if (turn == TURN.UP)
-						secureTurn =  TurnUp();
+						secureTurn = TurnUp();
 					else if (turn == TURN.DOWN)
 						secureTurn = TurnDown();
 					else if (turn == TURN.RIGHT)
@@ -604,13 +688,13 @@ public class CubilineController : MonoBehaviour
 				}
 				while (!secureTurn);
 
-				if(secureTurn)
+				if (secureTurn)
 					turning = true;
 			}
 		}
-		
+
 		// Look for a turn if all lead to that even the last code.
-		if(turning)
+		if (turning)
 		{
 			LookForTurn();
 		}
