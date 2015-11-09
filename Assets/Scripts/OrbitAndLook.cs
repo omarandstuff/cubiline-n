@@ -42,7 +42,7 @@ public class OrbitAndLook : MonoBehaviour
 		{
 			Camera cam = GetComponent<Camera>();
 			float sideSize = targetArea.transform.localScale.x;
-			float frustumHeight = sideSize + 2.0f;
+			float frustumHeight = sideSize * 1.3f;
 			if (cam.pixelHeight > cam.pixelWidth )
 			{
 				frustumHeight = frustumHeight / cam.aspect;
@@ -59,7 +59,7 @@ public class OrbitAndLook : MonoBehaviour
 		fixedPlace = place;
 
 		transform.position = Vector3.SmoothDamp(transform.position, ghost.position, ref velocity, smoothTime);
-		curretGhostUp = Vector3.SmoothDamp(curretGhostUp, targetGhostUp, ref ghostVelocityUp, smoothTime * 2.0f);
+		curretGhostUp = Vector3.SmoothDamp(curretGhostUp, targetGhostUp, ref ghostVelocityUp, 1.0f);
 		transform.LookAt(target, curretGhostUp);
 	}
 

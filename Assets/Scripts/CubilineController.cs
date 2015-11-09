@@ -123,8 +123,14 @@ public class CubilineController : MonoBehaviour
 		}
 		lastBody = null;
 
-		// Locate the head at the initial position.
-		head.transform.localPosition = initialPosition;
+		// Clear turns;
+		nextHeadDirection = PLACE.NONE;
+		turnsQueue.Clear();
+		turning = false;
+		noPalce = false;
+
+	// Locate the head at the initial position.
+	head.transform.localPosition = initialPosition;
 		lastHeadPosition = head.transform.localPosition;
 
 		// First body part with size of 2 units.
