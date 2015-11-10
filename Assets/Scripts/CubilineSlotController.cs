@@ -1,17 +1,17 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 
 public class CubilineSlotController : MonoBehaviour
 {
-	public GameObject colliderBase;
+	// public GameObject colliderBase;
 	public uint slotsTaken;
+	public uint freeSlots;
 
 	//////////////////////////////////////////////////////////////
 	////////////////////// CONTROL VARIABLES /////////////////////
 	//////////////////////////////////////////////////////////////
 
-	public struct Slot { public CubilinePlayerController.PLACE place; public bool enabled; public Vector3 position; public GameObject collision; }
+	public struct Slot { public CubilinePlayerController.PLACE place; public bool enabled; public Vector3 position; public GameObject collision; public int index;}
 	private List<Slot> slots = new List<Slot>(); // Filled with all the position posibilities of be in the cube.
 
 	private float arenaSize;
@@ -47,6 +47,7 @@ public class CubilineSlotController : MonoBehaviour
 		{
 			for (int k = 0; k < arenaSize; k++)
 			{
+				currentSlot.index = slots.Count;
 				currentSlot.place = CubilinePlayerController.PLACE.FRONT;
 				currentSlot.position = new Vector3(-arenaPlaceLimit + k, arenaPlaceLimit - j, -arenaLogicalLimit);
 				slots.Add(currentSlot);
@@ -56,6 +57,7 @@ public class CubilineSlotController : MonoBehaviour
 		{
 			for (int k = 0; k < arenaSize; k++)
 			{
+				currentSlot.index = slots.Count;
 				currentSlot.place = CubilinePlayerController.PLACE.BACK;
 				currentSlot.position = new Vector3(-arenaPlaceLimit + k, arenaPlaceLimit - j, arenaLogicalLimit);
 				slots.Add(currentSlot);
@@ -66,6 +68,7 @@ public class CubilineSlotController : MonoBehaviour
 		{
 			for (int k = 0; k < arenaSize; k++)
 			{
+				currentSlot.index = slots.Count;
 				currentSlot.place = CubilinePlayerController.PLACE.RIGHT;
 				currentSlot.position = new Vector3(arenaLogicalLimit, arenaPlaceLimit - j, -arenaPlaceLimit + k);
 				slots.Add(currentSlot);
@@ -75,6 +78,7 @@ public class CubilineSlotController : MonoBehaviour
 		{
 			for (int k = 0; k < arenaSize; k++)
 			{
+				currentSlot.index = slots.Count;
 				currentSlot.place = CubilinePlayerController.PLACE.LEFT;
 				currentSlot.position = new Vector3(-arenaLogicalLimit, arenaPlaceLimit - j, -arenaPlaceLimit + k);
 				slots.Add(currentSlot);
@@ -85,6 +89,7 @@ public class CubilineSlotController : MonoBehaviour
 		{
 			for (int k = 0; k < arenaSize; k++)
 			{
+				currentSlot.index = slots.Count;
 				currentSlot.place = CubilinePlayerController.PLACE.TOP;
 				currentSlot.position = new Vector3(-arenaPlaceLimit + k, arenaLogicalLimit, arenaPlaceLimit - j);
 				slots.Add(currentSlot);
@@ -94,12 +99,14 @@ public class CubilineSlotController : MonoBehaviour
 		{
 			for (int k = 0; k < arenaSize; k++)
 			{
+				currentSlot.index = slots.Count;
 				currentSlot.place = CubilinePlayerController.PLACE.BOTTOM;
 				currentSlot.position = new Vector3(-arenaPlaceLimit + k, -arenaLogicalLimit, arenaPlaceLimit - j);
 				slots.Add(currentSlot);
 			}
 		}
 
+		freeSlots = (uint)slots.Count;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -168,14 +175,25 @@ public class CubilineSlotController : MonoBehaviour
 		if (slot.enabled)
 		{
 			slot.enabled = false;
-			slot.collision = (GameObject)Instantiate(colliderBase, lastUsedPosition, Quaternion.identity);
+			// slot.collision = (GameObject)Instantiate(colliderBase, lastUsedPosition, Quaternion.identity);
 			slots[slotIndex] = slot;
 			slotsTaken++;
+			freeSlots--;
 			return slotIndex;
 		}
 
 		return -1;
+	}
 
+	public void TakeSlotAt(int index)
+	{
+		Slot slot = slots[index];
+
+		slot.enabled = false;
+		// slot.collision = (GameObject)Instantiate(colliderBase, slot.position, Quaternion.identity);
+		slots[index] = slot;
+		slotsTaken++;
+		freeSlots--;
 	}
 
 	public void FreeSlot(int index)
@@ -184,10 +202,11 @@ public class CubilineSlotController : MonoBehaviour
 		{
 			Slot slot = slots[index];
 			slot.enabled = true;
-			Destroy(slot.collision);
-			slot.collision = null;
+			// Destroy(slot.collision);
+			// slot.collision = null;
 			slots[index] = slot;
 			slotsTaken--;
+			freeSlots++;
 		}
 	}
 

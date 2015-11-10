@@ -34,6 +34,7 @@ public class CubilineSinglePlayer : MonoBehaviour
 	{
 		player1.Go();
 		player2.Go();
+		arenaController.ManageArena();
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////

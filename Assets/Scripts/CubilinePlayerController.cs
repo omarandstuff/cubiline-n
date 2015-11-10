@@ -8,6 +8,7 @@ public class CubilinePlayerController : MonoBehaviour
 	///////////////////////// COMPONENTS /////////////////////////
 	//////////////////////////////////////////////////////////////
 	public CubilineSlotController slotController;
+	public CubilineTargetController targetController;
 	public GameObject head;
 	public CubilineBody baseBody;
 
@@ -238,6 +239,8 @@ public class CubilinePlayerController : MonoBehaviour
 				Grow(target.toGrow);
 			else
 				UnGrow(-target.toGrow);
+
+			targetController.DismissCommon(target.index);
 		}
 		if (other.tag == "Special Target")
 		{
@@ -246,6 +249,8 @@ public class CubilinePlayerController : MonoBehaviour
 				Grow(target.toGrow);
 			else
 				UnGrow(-target.toGrow);
+
+			targetController.DismissSpecial(target.index);
 		}
 		if (other.tag == "Finish")
 		{
