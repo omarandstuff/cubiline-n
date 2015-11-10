@@ -3,42 +3,42 @@ using System.Collections;
 
 public class CubilineBody : MonoBehaviour
 {
-	public CubilineController.PLACE bodyZone;
-	public CubilineController.PLACE bodyDirection;
+	public CubilinePlayerController.PLACE bodyZone;
+	public CubilinePlayerController.PLACE bodyDirection;
 
-	public void initialize(CubilineController.PLACE zone, CubilineController.PLACE direction, Vector3 bornPosition, float size)
+	public void initialize(CubilinePlayerController.PLACE zone, CubilinePlayerController.PLACE direction, Vector3 bornPosition, float size)
 	{
 		Vector3 scale = new Vector3(1.0f, 1.0f, 1.0f);
 
 		bodyZone = zone;
 		bodyDirection = direction;
 
-		if (bodyDirection == CubilineController.PLACE.FRONT)
+		if (bodyDirection == CubilinePlayerController.PLACE.FRONT)
 		{
 			scale.z = size;
 			bornPosition.z += size / 2.0f + 0.5f;
 		}
-		if (bodyDirection == CubilineController.PLACE.BACK)
+		if (bodyDirection == CubilinePlayerController.PLACE.BACK)
 		{
 			scale.z = size;
 			bornPosition.z -= size / 2.0f + 0.5f;
 		}
-		if (bodyDirection == CubilineController.PLACE.RIGHT)
+		if (bodyDirection == CubilinePlayerController.PLACE.RIGHT)
 		{
 			scale.x = size;
 			bornPosition.x -= size / 2.0f + 0.5f;
 		}
-		if (bodyDirection == CubilineController.PLACE.LEFT)
+		if (bodyDirection == CubilinePlayerController.PLACE.LEFT)
 		{
 			scale.x = size;
 			bornPosition.x += size / 2.0f + 0.5f;
 		}
-		if (bodyDirection == CubilineController.PLACE.TOP)
+		if (bodyDirection == CubilinePlayerController.PLACE.TOP)
 		{
 			scale.y = size;
 			bornPosition.y -= size / 2.0f + 0.5f;
 		}
-		if (bodyDirection == CubilineController.PLACE.BOTTOM)
+		if (bodyDirection == CubilinePlayerController.PLACE.BOTTOM)
 		{
 			scale.y = size;
 			bornPosition.y += size / 2.0f + 0.5f;
@@ -58,42 +58,42 @@ public class CubilineBody : MonoBehaviour
 		Vector3 position = transform.localPosition;
 		float final = 0.0f;
 
-		if (bodyDirection == CubilineController.PLACE.FRONT)
+		if (bodyDirection == CubilinePlayerController.PLACE.FRONT)
 		{
 			scale.z += delta;
 			final = scale.z;
 
 			position.z -= Mathf.Abs(delta / 2.0f);
 		}
-		else if (bodyDirection == CubilineController.PLACE.BACK)
+		else if (bodyDirection == CubilinePlayerController.PLACE.BACK)
 		{
 			scale.z += delta;
 			final = scale.z;
 
 			position.z += Mathf.Abs(delta / 2.0f);
 		}
-		else if (bodyDirection == CubilineController.PLACE.RIGHT)
+		else if (bodyDirection == CubilinePlayerController.PLACE.RIGHT)
 		{
 			scale.x += delta;
 			final = scale.x;
 
 			position.x += Mathf.Abs(delta / 2.0f);
 		}
-		else if (bodyDirection == CubilineController.PLACE.LEFT)
+		else if (bodyDirection == CubilinePlayerController.PLACE.LEFT)
 		{
 			scale.x += delta;
 			final = scale.x;
 
 			position.x -= Mathf.Abs(delta / 2.0f);
 		}
-		else if (bodyDirection == CubilineController.PLACE.TOP)
+		else if (bodyDirection == CubilinePlayerController.PLACE.TOP)
 		{
 			scale.y += delta;
 			final = scale.y;
 
 			position.y += Mathf.Abs(delta / 2.0f);
 		}
-		else if (bodyDirection == CubilineController.PLACE.BOTTOM)
+		else if (bodyDirection == CubilinePlayerController.PLACE.BOTTOM)
 		{
 			scale.y += delta;
 			final = scale.y;

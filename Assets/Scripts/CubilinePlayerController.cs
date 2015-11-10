@@ -1,43 +1,35 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.UI;
 
-public class CubilineController : MonoBehaviour
+public class CubilinePlayerController : MonoBehaviour
 {
 	//////////////////////////////////////////////////////////////
 	///////////////////////// COMPONENTS /////////////////////////
 	//////////////////////////////////////////////////////////////
-	public GameObject arena;
+	public CubilineSlotController slotController;
 	public GameObject head;
 	public CubilineBody baseBody;
-	public Text scoreDisplay;
-	public GameObject commonTarget;
-	public SpecialTarget[] specialTargets;
 
 	//////////////////////////////////////////////////////////////
 	//////////////////// CUBILINE PARAMETERS /////////////////////
 	//////////////////////////////////////////////////////////////
 
-	public enum PLACE { TOP, BOTTOM, RIGHT, LEFT, FRONT, BACK, NONE };
-	public enum TURN { UP, DOWN, RIGHT, LEFT, NONE };
-	public enum PLAYER { PLAYER1, PLAYER2, PLAYER3, PLAYER4 };
+	public enum PLACE { TOP, BOTTOM, RIGHT, LEFT, FRONT, BACK, NONE }
+	public enum TURN { UP, DOWN, RIGHT, LEFT, NONE }
+	public enum PLAYER { PLAYER1, PLAYER2, PLAYER3, PLAYER4 }
+	public enum STATUS { PLAYING, PAUSED, FINISH }
 
 	public PLAYER player = PLAYER.PLAYER1;
+	public STATUS status = STATUS.PLAYING;
 
 	public bool inputEnabled = true; // The Cube can muve but can or not resive input.
-	public bool playing = true; // The cube can or not move.
 
 	public PLACE headDirection = PLACE.RIGHT; // Directon of the head.
 	public PLACE headPlace = PLACE.FRONT; // Where the head is.
 	public PLACE headUp = PLACE.TOP; // Direction to where the screen is up.
 
 	public float speed = 4.0f; // Units per second.
-	public float arenaSize = 11.0f; // Units per side of the arena.
-
-	public uint commonTargetCount = 1;
-
-	public uint totalScore;
 
 	//////////////////////////////////////////////////////////////
 	////////////////////// CONTROL VARIABLES /////////////////////
@@ -74,53 +66,59 @@ public class CubilineController : MonoBehaviour
 	private Queue<CubilineBody> bodyQueue = new Queue<CubilineBody>(); // Body parts queue.
 	CubilineBody lastBody; // Last body in the queue.
 
-	private int bodyLength;
-
-	//////////////////////// TARGET CONTROL /////////////////////
-
-	private struct slotInf { public PLACE place; public bool enabled; public Vector3 position; public object collision; }
-	private List<slotInf> slots = new List<slotInf>(); // Filled with all the position posibilities of be in the cube.
 	private Queue<int> usedSlots = new Queue<int>(); // Positions used by the body.
 	private Vector3 lastSlotUsed; // Keep traking of where was the las time it take a slot from the arena.
-	private List<GameObject> commonTargets = new List<GameObject>(); // List of common tagets in the arena.
 
-	[System.Serializable]
-	public struct SpecialTarget { public GameObject specialTargetBase; public float minimumWaitingTime; public float maximumWaitingTime; public float inShowTime; }
-	private struct SpecialTragetInf { public bool waiting; public float selectedRandomTime, currentTime, showTime; public GameObject inGameObject; }
-
-	private SpecialTragetInf[] specialTargetInfs;
+	private int bodyLength;
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// MONO BEHAVIOR /////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////
 
-	void Start()
+	public void Go()
 	{
-		NewGame();
-	}
+		if (status != STATUS.PLAYING) return;
+		if (inputEnabled)
+			GetInput();
 
-	void FixedUpdate()
-	{
-		if (playing)
+		// Unit directiom vector base the head direction var.
+		directionVector = new Vector3(headDirection == PLACE.RIGHT ? 1.0f : (headDirection == PLACE.LEFT ? -1.0f : 0.0f), headDirection == PLACE.TOP ? 1.0f : (headDirection == PLACE.BOTTOM ? -1.0f : 0.0f), headDirection == PLACE.BACK ? 1.0f : (headDirection == PLACE.FRONT ? -1.0f : 0.0f));
+
+		// Move the head one step.
+		head.transform.localPosition += directionVector * speed * Time.deltaTime;
+
+		// Control what zone is the head on.
+		ControlPlaceChange();
+
+		// Do turn if are there some to do.
+		ControlTurn();
+
+		// Control the body if it wasn't control for a turn or zone change already.
+		if (!toNew)
 		{
-			if (inputEnabled)
-				GetInput();
-
-			Play();
+			ControlBody();
+			ControlSlots();
 		}
+		toNew = false;
+
+		// This is step is the last known head's position.
+		lastHeadPosition = head.transform.localPosition;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////// SETUP ////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////
 
-	public void NewGame()
+	public void Reset(float arenaSize)
 	{
 		// Set this player to the fornt of the arena.
 		Vector3 initialPosition = new Vector3();
 
-		// Sey initial arena size.
-		SetArenaSize(arenaSize);
+		// Arena logical limit is the space limit of the arena plus 0.5 for the siz of the head.
+		arenaLogicalLimit = arenaSize / 2.0f + 0.5f;
+
+		// Arena Zone limit.
+		arenaPlaceLimit = arenaLogicalLimit - 1.0f;
 
 		initialPosition.x = headPlace == PLACE.RIGHT ? arenaLogicalLimit : (headPlace == PLACE.LEFT ? -arenaLogicalLimit : 0.0f);
 		initialPosition.y = headPlace == PLACE.TOP ? arenaLogicalLimit : (headPlace == PLACE.BOTTOM ? -arenaLogicalLimit : 0.0f);
@@ -147,71 +145,7 @@ public class CubilineController : MonoBehaviour
 		AddBody(2.0f);
 
 		// Sots
-		slots.Clear();
 		usedSlots.Clear();
-
-		// Fill free slots with the position information of every slot.
-		slotInf currentSlot;
-		currentSlot.enabled = true;
-		currentSlot.collision = null;
-
-		// Front and Back
-		for (int j = 0; j < arenaSize; j++)
-		{
-			for (int k = 0; k < arenaSize; k++)
-			{
-				currentSlot.place = PLACE.FRONT;
-				currentSlot.position = new Vector3(-arenaPlaceLimit + k, arenaPlaceLimit - j, -arenaLogicalLimit);
-				slots.Add(currentSlot);
-			}
-		}
-		for (int j = 0; j < arenaSize; j++)
-		{
-			for (int k = 0; k < arenaSize; k++)
-			{
-				currentSlot.place = PLACE.BACK;
-				currentSlot.position = new Vector3(-arenaPlaceLimit + k, arenaPlaceLimit - j, arenaLogicalLimit);
-				slots.Add(currentSlot);
-			}
-		}
-		// Right and Left
-		for (int j = 0; j < arenaSize; j++)
-		{
-			for (int k = 0; k < arenaSize; k++)
-			{
-				currentSlot.place = PLACE.RIGHT;
-				currentSlot.position = new Vector3(arenaLogicalLimit, arenaPlaceLimit - j, -arenaPlaceLimit + k);
-				slots.Add(currentSlot);
-			}
-		}
-		for (int j = 0; j < arenaSize; j++)
-		{
-			for (int k = 0; k < arenaSize; k++)
-			{
-				currentSlot.place = PLACE.LEFT;
-				currentSlot.position = new Vector3(-arenaLogicalLimit, arenaPlaceLimit - j, -arenaPlaceLimit + k);
-				slots.Add(currentSlot);
-			}
-		}
-		// Top and Bottom
-		for (int j = 0; j < arenaSize; j++)
-		{
-			for (int k = 0; k < arenaSize; k++)
-			{
-				currentSlot.place = PLACE.TOP;
-				currentSlot.position = new Vector3(-arenaPlaceLimit + k, arenaLogicalLimit, arenaPlaceLimit - j);
-				slots.Add(currentSlot);
-			}
-		}
-		for (int j = 0; j < arenaSize; j++)
-		{
-			for (int k = 0; k < arenaSize; k++)
-			{
-				currentSlot.place = PLACE.BOTTOM;
-				currentSlot.position = new Vector3(-arenaPlaceLimit + k, -arenaLogicalLimit, arenaPlaceLimit - j);
-				slots.Add(currentSlot);
-			}
-		}
 
 		// Fill collisions base the new place and direction.
 		lastSlotUsed = initialPosition;
@@ -258,48 +192,9 @@ public class CubilineController : MonoBehaviour
 		stepGrown = 0.0f;
 		stepUnGrown = 0.0f;
 		bodyLength = 3;
-		totalScore = 0;
-
-		PlusScore(0); // Reset score.
 
 		// Update slots.
 		ControlSlots();
-
-		for (int i = 0; i < commonTargets.Count; i++)
-		{
-			CubilineTarget target = commonTargets[i].GetComponent<CubilineTarget>();
-			target.targetScale = Vector3.zero;
-			Destroy(commonTargets[i], 1.0f);
-		}
-
-		// Targets.
-		commonTargets.Clear();
-		if(specialTargetInfs == null)
-			specialTargetInfs = new SpecialTragetInf[specialTargets.Length];
-
-		for (int i = 0; i < specialTargets.Length; i++)
-		{
-			specialTargetInfs[i].showTime = specialTargets[i].inShowTime * arenaSize;
-			ResetSpecial(i);
-		}
-	}
-
-	public void SetArenaSize(float size)
-	{
-		// Keep size odd
-		if (size < 5)
-			arenaSize = 5;
-		if (size % 2 == 0)
-			arenaSize += 1;
-
-		// Arena logical limit is the space limit of the arena plus 0.5 for the siz of the head.
-		arenaLogicalLimit = size / 2.0f + 0.5f;
-
-		// Arena Zone limit.
-		arenaPlaceLimit = arenaLogicalLimit - 1.0f;
-
-		// Set the scale of the arena object.
-		arena.transform.localScale = new Vector3(arenaSize, arenaSize, arenaSize);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -310,17 +205,14 @@ public class CubilineController : MonoBehaviour
 	{
 		TURN key = TURN.NONE;
 
-		if(player == PLAYER.PLAYER1)
-		{
-			if (Input.GetAxis("Vertical Player 1") > 0)
-				key = TURN.UP;
-			else if (Input.GetAxis("Vertical Player 1") < 0)
-				key = TURN.DOWN;
-			else if (Input.GetAxis("Horizontal Player 1") > 0)
-				key = TURN.RIGHT;
-			else if (Input.GetAxis("Horizontal Player 1") < 0)
-				key = TURN.LEFT;
-		}
+		if (Input.GetAxis("Vertical Player" + (int)(player + 1)) > 0)
+			key = TURN.UP;
+		else if (Input.GetAxis("Vertical Player" + (int)(player + 1)) < 0)
+			key = TURN.DOWN;
+		else if (Input.GetAxis("Horizontal Player" + (int)(player + 1)) > 0)
+			key = TURN.RIGHT;
+		else if (Input.GetAxis("Horizontal Player" + (int)(player + 1)) < 0)
+			key = TURN.LEFT;
 
 		if (lastKey != key)
 			AddTurn(key);
@@ -337,59 +229,6 @@ public class CubilineController : MonoBehaviour
 	/////////////////////////////////////// COLLISION CONTROL //////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////
 
-	void ControlTargets()
-	{
-		if (commonTargets.Count < commonTargetCount)
-		{
-			while (commonTargets.Count != commonTargetCount)
-				SpawnCommonTarget();
-		}
-		else if (commonTargets.Count > commonTargetCount)
-		{
-			while (commonTargets.Count != commonTargetCount)
-			{
-				CubilineTarget target = commonTargets[commonTargets.Count - 1].GetComponent<CubilineTarget>();
-				target.targetScale = Vector3.zero;
-				Destroy(commonTargets[commonTargets.Count - 1], 1.0f);
-				commonTargets.Remove(commonTargets[commonTargets.Count - 1]);
-			}
-		}
-
-		for(int i = 0; i < specialTargets.Length; i++)
-		{
-			if(specialTargetInfs[i].waiting)
-			{
-				specialTargetInfs[i].currentTime += Time.deltaTime;
-				if(specialTargetInfs[i].currentTime >= specialTargetInfs[i].selectedRandomTime)
-				{
-					specialTargetInfs[i].waiting = false;
-					specialTargetInfs[i].currentTime = 0.0f;
-					SpawnSpecialTarget(i);
-				}
-			}
-			else
-			{
-				specialTargetInfs[i].currentTime += Time.deltaTime;
-				if (specialTargetInfs[i].currentTime >= specialTargetInfs[i].showTime)
-				{
-					ResetSpecial(i);
-				}
-			}
-		}
-    }
-
-	void ResetSpecial(int index)
-	{
-		specialTargetInfs[index].waiting = true;
-		specialTargetInfs[index].currentTime = 0.0f;
-		specialTargetInfs[index].selectedRandomTime = Random.value * (specialTargets[index].maximumWaitingTime - specialTargets[index].minimumWaitingTime) + specialTargets[index].minimumWaitingTime;
-		if(specialTargetInfs[index].inGameObject != null)
-		{
-			Destroy(specialTargetInfs[index].inGameObject, 1.0f);
-			specialTargetInfs[index].inGameObject.GetComponent<CubilineTarget>().targetScale = Vector3.zero;
-		}
-	}
-
 	public void ColliderEnter(Collider other)
 	{
 		if (other.tag == "Target")
@@ -399,10 +238,6 @@ public class CubilineController : MonoBehaviour
 				Grow(target.toGrow);
 			else
 				UnGrow(-target.toGrow);
-
-			PlusScore(target.score);
-
-			SpawnCommonTarget(other.gameObject);
 		}
 		if (other.tag == "Special Target")
 		{
@@ -411,104 +246,27 @@ public class CubilineController : MonoBehaviour
 				Grow(target.toGrow);
 			else
 				UnGrow(-target.toGrow);
-
-			PlusScore(target.score);
-
-			ResetSpecial(target.index);
 		}
 		if (other.tag == "Finish")
 		{
-			NewGame();
+			status = STATUS.FINISH;
 		}
 
 	}
 
-	void PlusScore(uint score)
-	{
-		totalScore += score;
-		scoreDisplay.text = totalScore.ToString();
-	}
-
-	void Grow(int units)
+	public void Grow(int units)
 	{
 		eating = true;
 		toGrow += units;
 		bodyLength += units;
 	}
 
-	void UnGrow(int units)
+	public void UnGrow(int units)
 	{
 		int realUngorw = (bodyLength - units) >= 3 ? units : (bodyLength > 3 ? bodyLength - 3 : 0);
 		unEating = true;
 		toUnGrow += realUngorw;
 		bodyLength -= realUngorw;
-	}
-
-	void SpawnCommonTarget(GameObject old = null)
-	{
-		if (old != null)
-		{
-			commonTargets.Remove(old);
-			Destroy(old);
-		}
-		if (slots.Count != usedSlots.Count && commonTargets.Count < commonTargetCount)
-		{
-			Vector3 freePosition = GetFreePosotion();
-
-			GameObject newTarget = Instantiate(commonTarget);
-			newTarget.transform.parent = transform;
-			newTarget.transform.localPosition = freePosition;
-			commonTargets.Add(newTarget);
-		}
-	}
-
-	void SpawnSpecialTarget(int index)
-	{
-		if (slots.Count != usedSlots.Count)
-		{
-			Vector3 freePosition = GetFreePosotion();
-
-			specialTargetInfs[index].inGameObject = Instantiate(specialTargets[index].specialTargetBase);
-			specialTargetInfs[index].inGameObject.transform.parent = transform;
-			specialTargetInfs[index].inGameObject.transform.localPosition = freePosition;
-		}
-	}
-
-	 Vector3 GetFreePosotion()
-	{
-		if (slots.Count != usedSlots.Count)
-		{
-			int index = (int)(Random.value * slots.Count);
-			slotInf slot = new slotInf();
-
-			for (int i = 0; i < 5; i++)
-			{
-				if (slots[index].enabled) break;
-				index = (int)(Random.value * slots.Count);
-			}
-
-			if (!slots[index].enabled)
-			{
-				List<slotInf>.Enumerator e = slots.GetEnumerator();
-				while (true)
-				{
-					if (e.Current.enabled)
-					{
-						slot = e.Current;
-						break;
-					}
-					e.MoveNext();
-				}
-			}
-			else
-			{
-				slot = slots[index];
-			}
-
-			return slot.position;
-		}
-
-		return Vector3.zero;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -524,140 +282,20 @@ public class CubilineController : MonoBehaviour
 		{
 			for (int i = 0; i < units; i++)
 			{
-				TakeSlot();
+				usedSlots.Enqueue(slotController.TakeSlot(headPlace, headDirection, ref lastSlotUsed));
 			}
 		}
-	}
 
-	void TakeSlot()
-	{
-		if (headDirection == PLACE.FRONT)
-			lastSlotUsed.z -= 1;
-		else if (headDirection == PLACE.BACK)
-			lastSlotUsed.z += 1;
-		else if (headDirection == PLACE.RIGHT)
-			lastSlotUsed.x += 1;
-		else if (headDirection == PLACE.LEFT)
-			lastSlotUsed.x -= 1;
-		else if (headDirection == PLACE.TOP)
-			lastSlotUsed.y += 1;
-		else if (headDirection == PLACE.BOTTOM)
-			lastSlotUsed.y -= 1;
-
-		int slotIndex = GetSlotIndex(headPlace, lastSlotUsed);
-		slotInf slot = new slotInf();
-
-		if (slotIndex != -1)
-			slot = slots[slotIndex];
-
-		if (slot.enabled)
+		if(usedSlots.Count > bodyLength)
 		{
-			usedSlots.Enqueue(slotIndex);
-			slot.enabled = false;
-			//slot.collition = Instantiate(collision, lastSlotUsed, Quaternion.identity);
-			slots[slotIndex] = slot;
+			while (usedSlots.Count != bodyLength)
+				slotController.FreeSlot(usedSlots.Dequeue());
 		}
-		else
-		{
-			usedSlots.Enqueue(slotIndex);
-		}
-
-		if (usedSlots.Count > bodyLength)
-		{
-			for (int i = 0; usedSlots.Count != bodyLength; i++)
-				FreeSlot();
-		}
-	}
-
-	void FreeSlot()
-	{
-		int slotIndex = usedSlots.Dequeue();
-		if (slotIndex != -1)
-		{
-			slotInf slot = slots[slotIndex];
-			slot.enabled = true;
-			//Destroy((GameObject)slot.collition);
-			//slot.collition = null;
-			slots[slotIndex] = slot;
-		}
-	}
-
-	int GetSlotIndex(PLACE place, Vector3 slot)
-	{
-		int slotsPerFace = (int)arenaSize * (int)arenaSize;
-
-		if (place == PLACE.FRONT)
-		{
-			if (slot.x > arenaPlaceLimit || slot.x < -arenaPlaceLimit || slot.y > arenaPlaceLimit || slot.y < -arenaPlaceLimit) return -1;
-			int index = (int)((arenaPlaceLimit - slot.y) * arenaSize + (slot.x + arenaPlaceLimit));
-			return index;
-		}
-		else if (place == PLACE.BACK)
-		{
-			if (slot.x > arenaPlaceLimit || slot.x < -arenaPlaceLimit || slot.y > arenaPlaceLimit || slot.y < -arenaPlaceLimit) return -1;
-			int index = slotsPerFace + (int)((arenaPlaceLimit - slot.y) * arenaSize + (slot.x + arenaPlaceLimit));
-			return index;
-		}
-		else if (place == PLACE.RIGHT)
-		{
-			if (slot.z > arenaPlaceLimit || slot.z < -arenaPlaceLimit || slot.y > arenaPlaceLimit || slot.y < -arenaPlaceLimit) return -1;
-			int index = slotsPerFace * 2 + (int)((arenaPlaceLimit - slot.y) * arenaSize + (arenaPlaceLimit + slot.z));
-			return index;
-		}
-		else if (place == PLACE.LEFT)
-		{
-			if (slot.z > arenaPlaceLimit || slot.z < -arenaPlaceLimit || slot.y > arenaPlaceLimit || slot.y < -arenaPlaceLimit) return -1;
-			int index = slotsPerFace * 3 + (int)((arenaPlaceLimit - slot.y) * arenaSize + (arenaPlaceLimit + slot.z));
-			return index;
-		}
-		else if (place == PLACE.TOP)
-		{
-			if (slot.z > arenaPlaceLimit || slot.z < -arenaPlaceLimit || slot.x > arenaPlaceLimit || slot.x < -arenaPlaceLimit) return -1;
-			int index = slotsPerFace * 4 + (int)((arenaPlaceLimit - slot.z) * arenaSize + (arenaPlaceLimit + slot.x));
-			return index;
-		}
-		else if (place == PLACE.BOTTOM)
-		{
-			if (slot.z > arenaPlaceLimit || slot.z < -arenaPlaceLimit || slot.x > arenaPlaceLimit || slot.x < -arenaPlaceLimit) return -1;
-			int index = slotsPerFace * 5 + (int)((arenaPlaceLimit - slot.z) * arenaSize + (arenaPlaceLimit + slot.x));
-			return index;
-		}
-
-		return -1;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////// DIRECTION CONTROL //////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////
-
-	void Play()
-	{
-		// Unit directiom vector base the head direction var.
-		directionVector = new Vector3(headDirection == PLACE.RIGHT ? 1.0f : (headDirection == PLACE.LEFT ? -1.0f : 0.0f), headDirection == PLACE.TOP ? 1.0f : (headDirection == PLACE.BOTTOM ? -1.0f : 0.0f), headDirection == PLACE.BACK ? 1.0f : (headDirection == PLACE.FRONT ? -1.0f : 0.0f));
-
-		// Move the head one step.
-		head.transform.localPosition += directionVector * speed * Time.deltaTime;
-
-		// Control what zone is the head on.
-		ControlPlaceChange();
-
-		// Do turn if are there some to do.
-		ControlTurn();
-
-		// Control the body if it wasn't control for a turn or zone change already.
-		if (!toNew)
-		{
-			ControlBody();
-			ControlSlots();
-		}
-		toNew = false;
-
-		// Control targets spawning.
-		ControlTargets();
-
-		// This is step is the last known head's position.
-		lastHeadPosition = head.transform.localPosition;
-	}
 
 	void ControlTurn(bool special = false)
 	{

@@ -1,15 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class CubilineHeadCollisionsController : MonoBehaviour
+public class CubilineHeadCollider : MonoBehaviour
 {
 	//////////////////////////////////////////////////////////////
 	///////////////////////// COMPONENTS /////////////////////////
 	//////////////////////////////////////////////////////////////
-	public CubilineController cubilineController;
+	public CubilinePlayerController cubilineController;
 
 	void OnTriggerEnter(Collider other)
-    {
+	{
 		cubilineController.ColliderEnter(other);
 	}
 }
