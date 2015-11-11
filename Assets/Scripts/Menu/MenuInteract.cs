@@ -32,7 +32,7 @@ public class MenuInteract : MonoBehaviour
 
 	private void Start()
 	{
-		menuCamera.transform.position = new Vector3(-100, 0, -500);
+		menuCamera.transform.position = new Vector3(-20, 0, -80);
 	}
 
 	public void FixedUpdate()
@@ -52,12 +52,12 @@ public class MenuInteract : MonoBehaviour
 	public void OnMouseDrag()
 	{
 		inRotation.y -= Input.GetAxis("Horizontal Mouse") * 0.3f;
-		targetScale = new Vector3(11.0f, 11.0f, 11.0f);
 	}
 
 	public void OnMouseUp()
 	{
-		targetRotation.y += (inRotation.y > 0 ? Mathf.Ceil(inRotation.y / 135.0f) : Mathf.Floor(inRotation.y / 135f)) * 90;
+		targetRotation.y += (inRotation.y > 0 ? Mathf.Ceil(((int)inRotation.y / 45) / 2.0f) : Mathf.Floor(((int)inRotation.y / 45) / 2.0f)) * 90;
+		targetScale = new Vector3(11.0f, 11.0f, 11.0f);
 		inRotation.y = 0;
 	}
 
