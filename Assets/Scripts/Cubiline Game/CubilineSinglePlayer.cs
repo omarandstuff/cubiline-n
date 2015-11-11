@@ -6,8 +6,7 @@ public class CubilineSinglePlayer : MonoBehaviour
 	///////////////////////// COMPONENTS /////////////////////////
 	//////////////////////////////////////////////////////////////
 	public CubilineArenaController arenaController;
-	public CubilinePlayerController player1;
-	public CubilinePlayerController player2;
+	public CubilinePlayerController player;
 
 	//////////////////////////////////////////////////////////////
 	///////////////////////// PARAMETERS /////////////////////////
@@ -32,9 +31,13 @@ public class CubilineSinglePlayer : MonoBehaviour
 	// Update is called once per frame
 	void FixedUpdate ()
 	{
-		player1.Go();
-		player2.Go();
+		player.Go();
 		arenaController.ManageArena();
+
+		if(player.status == CubilinePlayerController.STATUS.FINISH)
+		{
+			Application.LoadLevel(1);
+		}
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -51,7 +54,6 @@ public class CubilineSinglePlayer : MonoBehaviour
 
 		arenaController.Reset(arenaSize);
 
-		player1.Reset(arenaSize);
-		player2.Reset(arenaSize);
+		player.Reset(arenaSize);
 	}
 }

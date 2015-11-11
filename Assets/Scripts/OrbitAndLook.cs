@@ -16,7 +16,8 @@ public class OrbitAndLook : MonoBehaviour
 	///////////////////////// PARAMETERS /////////////////////////
 	//////////////////////////////////////////////////////////////
 	public bool automaticDistance = true;
-	public float distance = 22.0f;
+	public float automaticDistanceOffset = 1.0f;
+    public float distance = 22.0f;
 	public float smoothTime = 1.0f;
 
 	public PLACE fixedPlace = PLACE.FRONT;
@@ -42,7 +43,7 @@ public class OrbitAndLook : MonoBehaviour
 		{
 			Camera cam = GetComponent<Camera>();
 			float sideSize = targetArea.transform.localScale.x;
-			float frustumHeight = sideSize * 1.3f;
+			float frustumHeight = sideSize * automaticDistanceOffset;
 			if (cam.pixelHeight > cam.pixelWidth )
 			{
 				frustumHeight = frustumHeight / cam.aspect;
