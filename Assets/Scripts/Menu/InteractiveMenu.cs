@@ -6,6 +6,7 @@ public class InteractiveMenu : MonoBehaviour
 	///////////////////////// COMPONENTS /////////////////////////
 	//////////////////////////////////////////////////////////////
 	public OrbitAndLook menuCamera;
+	public EaseTransform focalTarget;
 	public EaseTransform topLight;
 	public EaseTransform cubilineTilte;
 	public EaseTransform actionTitleBase;
@@ -43,7 +44,7 @@ public class InteractiveMenu : MonoBehaviour
 
 	void Start()
 	{
-		menuCamera.transform.localPosition = new Vector3(0, 0, -80);
+		menuCamera.transform.localPosition = new Vector3(-10, 0, -50);
 		SetAction();
 		goingAction = MENU_ACTION.NONE;
 	}
@@ -57,7 +58,7 @@ public class InteractiveMenu : MonoBehaviour
 		}
 		else if(goingAction == MENU_ACTION.PLAY)
 		{
-			if (menuCamera.transform.position.z <= -50)
+			if (menuCamera.transform.position.z >= -22)
 				Application.LoadLevel(1);
 		}
 	}
@@ -96,11 +97,13 @@ public class InteractiveMenu : MonoBehaviour
 				cubilineTilte.easeFace = EaseTransform.EASE_FACE.OUT;
 				actionTitleBase.easeFace = EaseTransform.EASE_FACE.OUT;
 				menuCamera.automaticDistance = false;
-				menuCamera.distance = 51.0f;
 				goingAction = MENU_ACTION.PLAY;
 				playModel.easePosition = true;
 				playModel.easeFace = EaseTransform.EASE_FACE.OUT;
 				topLight.easeFace = EaseTransform.EASE_FACE.OUT;
+				focalTarget.easeFace = EaseTransform.EASE_FACE.OUT;
+				menuCamera.distance = 20;
+				GetComponent<EaseTransform>().outScale = new Vector3(1, 1, 1);
 				GetComponent<EaseTransform>().easeFace = EaseTransform.EASE_FACE.OUT;
 				GetComponent<Collider>().enabled = false;
 			}

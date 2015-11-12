@@ -7,6 +7,7 @@ public class CubilineSinglePlayer : MonoBehaviour
 	//////////////////////////////////////////////////////////////
 	public CubilineArenaController arenaController;
 	public CubilinePlayerController player;
+	public OrbitAndLook followCamera;
 
 	//////////////////////////////////////////////////////////////
 	///////////////////////// PARAMETERS /////////////////////////
@@ -53,6 +54,7 @@ public class CubilineSinglePlayer : MonoBehaviour
 			arenaSize += 1;
 
 		arenaController.Reset(arenaSize);
+		followCamera.transform.localPosition = new Vector3(0.0f, 0.0f, -arenaSize * 2.0f);
 
 		player.Reset(arenaSize);
 	}

@@ -5,6 +5,7 @@ public class EaseTransform : MonoBehaviour
 	//////////////////////////////////////////////////////////////
 	//////////////////////// PARAMETERS //////////////////////////
 	//////////////////////////////////////////////////////////////
+	public bool forceInitialFace = true;
 	public EASE_FACE easeFace = EASE_FACE.IN;
 	public EASE_TYPE easeType = EASE_TYPE.SMOOTH;
 	public float easeSmoothTime = 0.5f;
@@ -95,20 +96,7 @@ public class EaseTransform : MonoBehaviour
 				currentScale = targetOutScale.localScale;
 		}
 
-		if(easeFace == EASE_FACE.IN)
-		{
-			currentPosition = outPosition;
-			currentRotation = outRotation;
-			currentScale = outScale;
-			easeCurretTime = easeTime;
-		}
-		else
-		{
-			currentPosition = inPosition;
-			currentRotation = inRotation;
-			currentScale = inScale;
-			easeCurretTime = 0.0f;
-		}
+		Reset();
 	}
 
 	void FixedUpdate ()
@@ -136,6 +124,44 @@ public class EaseTransform : MonoBehaviour
 		if (easePosition) transform.localPosition = currentPosition;
 		if (easeRotation) transform.localRotation = Quaternion.Euler(currentRotation);
 		if (easeScale) transform.localScale = currentScale;
+	}
+
+	public void Reset()
+	{
+		if (easeFace == EASE_FACE.IN)
+		{
+			if (forceInitialFace)
+			{
+				currentPosition = outPosition;
+				currentRotation = outRotation;
+				currentScale = outScale;
+				easeCurretTime = easeTime;
+			}
+			else
+			{
+				currentPosition = inPosition;
+				currentRotation = inRotation;
+				currentScale = inScale;
+				easeCurretTime = 0.0f;
+			}
+		}
+		else
+		{
+			if (forceInitialFace)
+			{
+				currentPosition = inPosition;
+				currentRotation = inRotation;
+				currentScale = inScale;
+				easeCurretTime = 0.0f;
+			}
+			else
+			{
+				currentPosition = outPosition;
+				currentRotation = outRotation;
+				currentScale = outScale;
+				easeCurretTime = easeTime;
+			}
+		}
 	}
 
 }
