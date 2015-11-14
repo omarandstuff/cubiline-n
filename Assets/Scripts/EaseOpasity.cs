@@ -16,6 +16,9 @@ public class EaseOpasity : MonoBehaviour
 	public float inOpasity;
 	public float outOpasity;
 
+	public Image[] imageChildren;
+	public Text[] textChildren;
+
 	//////////////////////////////////////////////////////////////
 	////////////////////// CONTROL VARIABLES /////////////////////
 	//////////////////////////////////////////////////////////////
@@ -60,6 +63,15 @@ public class EaseOpasity : MonoBehaviour
 		Color imageColor = GetComponent<Image>().color;
 		imageColor.a = currentOpasity;
 		GetComponent<Image>().color = imageColor;
+
+		foreach(Image img in imageChildren)
+		{
+			img.color = imageColor;
+		}
+		foreach (Text txt in textChildren)
+		{
+			txt.color = imageColor;
+		}
 	}
 
 	public void Reset()

@@ -8,6 +8,7 @@ public class CubilineSinglePlayer : MonoBehaviour
 	public CubilineArenaController arenaController;
 	public CubilinePlayerController player;
 	public OrbitAndLook followCamera;
+	public PauseMenuController pauseMenuBase;
 
 	//////////////////////////////////////////////////////////////
 	///////////////////////// PARAMETERS /////////////////////////
@@ -19,6 +20,8 @@ public class CubilineSinglePlayer : MonoBehaviour
 	////////////////////// CONTROL VARIABLES /////////////////////
 	//////////////////////////////////////////////////////////////
 
+	private PauseMenuController pauseMenu;
+
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// MONO BEHAVIOR /////////////////////////////////////////
@@ -26,19 +29,37 @@ public class CubilineSinglePlayer : MonoBehaviour
 
 	void Start ()
 	{
-		Reset(); // First Reset
+		Reset();
 	}
 	
-	// Update is called once per frame
 	void FixedUpdate ()
 	{
-		player.Go();
-		arenaController.ManageArena();
-
-		if(player.status == CubilinePlayerController.STATUS.FINISH)
+		if(pauseMenu != null)
 		{
-			Application.LoadLevel(1);
+			if (pauseMenu.status != PauseMenuController.STATUS.NONE)
+			{
+				pauseMenu.status = PauseMenuController.STATUS.CONTINUE;
+				Destroy(pauseMenu.gameObject, 0.5f);
+				pauseMenu = null;
+				return;
+			}
 		}
+		else
+		{
+			if(Input.GetAxis("Cancel") != 0)
+			{
+				pauseMenu = Instantiate(pauseMenuBase);
+				return;
+			}
+			player.Go();
+			arenaController.ManageArena();
+
+			if (player.status == CubilinePlayerController.STATUS.FINISH)
+			{
+				
+			}
+		}
+
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
