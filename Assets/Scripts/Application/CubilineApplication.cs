@@ -80,6 +80,7 @@ public class CubilineApplication
 	public void LoadScores()
 	{
 		if (!File.Exists(Application.persistentDataPath + "scores.dat")) return;
+
 		DESCryptoServiceProvider des = new DESCryptoServiceProvider();
 
 		// Decryption
