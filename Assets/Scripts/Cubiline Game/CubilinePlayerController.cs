@@ -52,6 +52,7 @@ public class CubilinePlayerController : MonoBehaviour
 	//////////////////////// INPUT CONTROL //////////////////////
 
 	private TURN lastKey;
+	private Touch touchAtBegin;
 
 	/////////////////////// BODY CONTROL ////////////////////////
 
@@ -215,6 +216,36 @@ public class CubilinePlayerController : MonoBehaviour
 			key = TURN.RIGHT;
 		else if (Input.GetAxis("Horizontal Player" + (int)(player + 1)) < 0)
 			key = TURN.LEFT;
+
+		if(Input.touchCount > 0)
+		{
+			Touch touch = Input.GetTouch(0);
+
+			if (touch.phase == TouchPhase.Began)
+			{
+				touchAtBegin = touch;
+			}
+			else if (touch.phase == TouchPhase.Ended)
+			{
+				Vector2 delta = touch.position - touchAtBegin.position;
+
+				if (Mathf.Abs(delta.x) > Mathf.Abs(delta.y))
+				{
+					if (delta.x > 0)
+						key = TURN.RIGHT;
+					else
+						key = TURN.LEFT;
+				}
+				else
+				{
+					if (delta.y > 0)
+						key = TURN.UP;
+					else
+						key = TURN.DOWN;
+				}
+			}
+		}
+
 
 		if (lastKey != key)
 			AddTurn(key);
