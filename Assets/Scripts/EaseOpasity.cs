@@ -60,16 +60,16 @@ public class EaseOpasity : MonoBehaviour
 			currentOpasity += easeSpeed * Time.deltaTime;
 		}
 
-		Color imageColor = GetComponent<Image>().color;
-		imageColor.a = currentOpasity;
-		GetComponent<Image>().color = imageColor;
-
-		foreach(Image img in imageChildren)
+		foreach (Image img in imageChildren)
 		{
+			Color imageColor = img.color;
+			imageColor.a = currentOpasity;
 			img.color = imageColor;
 		}
 		foreach (Text txt in textChildren)
 		{
+			Color imageColor = txt.color;
+			imageColor.a = currentOpasity;
 			txt.color = imageColor;
 		}
 	}
