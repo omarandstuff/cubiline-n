@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
 
 public class CubilineSinglePlayer : MonoBehaviour
 {
 	//////////////////////////////////////////////////////////////
 	///////////////////////// COMPONENTS /////////////////////////
 	//////////////////////////////////////////////////////////////
+	public GameObject gameInstance;
 	public CubilineArenaController arenaController;
 	public CubilinePlayerController player;
 	public OrbitAndLook followCamera;
@@ -63,6 +65,7 @@ public class CubilineSinglePlayer : MonoBehaviour
 			}
 			else if(pauseMenu.status == PauseMenuController.STATUS.MAIN_MENU)
 			{
+				
 				GoOut();
 			}
 		}
