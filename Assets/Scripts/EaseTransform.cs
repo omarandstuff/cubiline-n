@@ -162,6 +162,9 @@ public class EaseTransform : MonoBehaviour
 				easeCurretTime = easeTime;
 			}
 		}
+		if (easePosition) transform.localPosition = currentPosition;
+		if (easeRotation) transform.localRotation = Quaternion.Euler(currentRotation);
+		if (easeScale) transform.localScale = currentScale;
 	}
 
 }

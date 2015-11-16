@@ -6,7 +6,6 @@ public class InteractiveMenu : MonoBehaviour
 	///////////////////////// COMPONENTS /////////////////////////
 	//////////////////////////////////////////////////////////////
 	public OrbitAndLook menuCamera;
-	public EaseTransform focalTarget;
 	public EaseTransform topLight;
 	public EaseTransform cubilineTilte;
 	public EaseTransform actionTitleBase;
@@ -44,7 +43,6 @@ public class InteractiveMenu : MonoBehaviour
 
 	void Start()
 	{
-		menuCamera.transform.localPosition = new Vector3(-10, 0, -50);
 		SetAction();
 		goingAction = MENU_ACTION.NONE;
 	}
@@ -66,7 +64,11 @@ public class InteractiveMenu : MonoBehaviour
 	void OnMouseDown()
 	{
 		actionReady = true;
-		if (currentModelAction != null) currentModelAction.easeFace = EaseTransform.EASE_FACE.OUT;
+		if (currentModelAction != null)
+		{
+			currentModelAction.easePosition = false;
+			currentModelAction.easeFace = EaseTransform.EASE_FACE.OUT;
+		}
 	}
 
 	void OnMouseDrag()
@@ -101,7 +103,6 @@ public class InteractiveMenu : MonoBehaviour
 				playModel.easePosition = true;
 				playModel.easeFace = EaseTransform.EASE_FACE.OUT;
 				topLight.easeFace = EaseTransform.EASE_FACE.OUT;
-				focalTarget.easeFace = EaseTransform.EASE_FACE.OUT;
 				menuCamera.distance = 20;
 				GetComponent<EaseTransform>().outScale = new Vector3(1, 1, 1);
 				GetComponent<EaseTransform>().easeFace = EaseTransform.EASE_FACE.OUT;

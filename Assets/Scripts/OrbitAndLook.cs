@@ -15,6 +15,7 @@ public class OrbitAndLook : MonoBehaviour
 	//////////////////////////////////////////////////////////////
 	///////////////////////// PARAMETERS /////////////////////////
 	//////////////////////////////////////////////////////////////
+	public bool look = true;
 	public bool automaticDistance = true;
 	public float automaticDistanceOffset = 1.0f;
     public float distance = 22.0f;
@@ -36,7 +37,7 @@ public class OrbitAndLook : MonoBehaviour
 	//////////////////////////////////////// MONO BEHAVIOR /////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////
 
-	void FixedUpdate()
+	void Update()
 	{
 		// Distance
 		if (automaticDistance)
@@ -58,10 +59,9 @@ public class OrbitAndLook : MonoBehaviour
 		RotateFromTraget(place);
 
 		fixedPlace = place;
-
 		transform.position = Vector3.SmoothDamp(transform.position, ghost.position, ref velocity, smoothTime);
 		curretGhostUp = Vector3.SmoothDamp(curretGhostUp, targetGhostUp, ref ghostVelocityUp, 1.0f);
-		transform.LookAt(target, curretGhostUp);
+		if (look)transform.LookAt(target, curretGhostUp);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////

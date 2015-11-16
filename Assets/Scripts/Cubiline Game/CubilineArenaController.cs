@@ -8,6 +8,7 @@ public class CubilineArenaController : MonoBehaviour
 	//////////////////////////////////////////////////////////////
 
 	public EaseTransform arenaCube;
+	public CubilinePlayerController.STATUS status;
 
 	//////////////////////////////////////////////////////////////
 	//////////////////////// PARAMETERS //////////////////////////
@@ -26,7 +27,8 @@ public class CubilineArenaController : MonoBehaviour
 
 	public void ManageArena()
 	{
-		targetController.ManageTargets();
+		if(status == CubilinePlayerController.STATUS.PLAYING)
+			targetController.ManageTargets();
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
