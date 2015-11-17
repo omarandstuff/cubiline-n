@@ -9,7 +9,6 @@ public class CubilinePlayerController : MonoBehaviour
 	//////////////////////////////////////////////////////////////
 	public CubilineSlotController slotController;
 	public CubilineTargetController targetController;
-	public CubilineScoreController scoreController;
 	public Follow ghost;
 	public GameObject head;
 	public CubilineBody baseBody;
@@ -278,7 +277,7 @@ public class CubilinePlayerController : MonoBehaviour
 
 			targetController.DismissCommon(target.index);
 
-			scoreController.AddScore(target.score);
+			CubilineScoreController.currentScore += (uint)target.score;
 		}
 		if (other.tag == "Special Target")
 		{
@@ -290,7 +289,7 @@ public class CubilinePlayerController : MonoBehaviour
 
 			targetController.DismissSpecial(target.index);
 
-			scoreController.AddScore(target.score);
+			CubilineScoreController.currentScore += (uint)target.score;
 		}
 		if (other.tag == "Finish")
 		{

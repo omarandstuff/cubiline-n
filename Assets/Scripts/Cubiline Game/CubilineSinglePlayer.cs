@@ -9,6 +9,7 @@ public class CubilineSinglePlayer : MonoBehaviour
 	public CubilinePlayerController player;
 	public OrbitAndLook followCamera;
 	public PauseMenuController pauseMenuBase;
+	public CubilineUIController uiController;
 	public Follow followTarget;
 	public Transform outTarget;
 
@@ -68,6 +69,7 @@ public class CubilineSinglePlayer : MonoBehaviour
 			else if(pauseMenu.status == PauseMenuController.STATUS.MAIN_MENU)
 			{
 				status = STATUS.GIONG_OUT;
+				uiController.GoOut();
 				GoOut();
 			}
 		}
@@ -121,6 +123,8 @@ public class CubilineSinglePlayer : MonoBehaviour
 			arenaSize = 5;
 		if (arenaSize % 2 == 0)
 			arenaSize += 1;
+
+		CubilineScoreController.currentScore = 0;
 
 		arenaController.Reset(arenaSize);
 		followCamera.transform.localPosition = new Vector3(0.0f, 0.0f, -arenaSize * 2.0f);
