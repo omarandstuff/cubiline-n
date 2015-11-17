@@ -8,6 +8,7 @@ public class OrbitAndLook : MonoBehaviour
 	//////////////////////////////////////////////////////////////
 
 	public Transform target;
+	public Transform lookTarget;
 	public Transform targetArea;
 	public Transform ghost;
 	public Transform pivot;
@@ -61,7 +62,7 @@ public class OrbitAndLook : MonoBehaviour
 		fixedPlace = place;
 		transform.position = Vector3.SmoothDamp(transform.position, ghost.position, ref velocity, smoothTime);
 		curretGhostUp = Vector3.SmoothDamp(curretGhostUp, targetGhostUp, ref ghostVelocityUp, 1.0f);
-		if (look)transform.LookAt(target, curretGhostUp);
+		if (look)transform.LookAt(lookTarget, curretGhostUp);
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////

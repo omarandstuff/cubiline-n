@@ -10,6 +10,7 @@ public class CubilinePlayerController : MonoBehaviour
 	public CubilineSlotController slotController;
 	public CubilineTargetController targetController;
 	public CubilineScoreController scoreController;
+	public Follow ghost;
 	public GameObject head;
 	public CubilineBody baseBody;
 
@@ -122,6 +123,9 @@ public class CubilinePlayerController : MonoBehaviour
 
 		// Arena Zone limit.
 		arenaPlaceLimit = arenaLogicalLimit - 1.0f;
+
+		// Ghost speed.
+		ghost.followSpeed = speed;
 
 		initialPosition.x = headPlace == PLACE.RIGHT ? arenaLogicalLimit : (headPlace == PLACE.LEFT ? -arenaLogicalLimit : 0.0f);
 		initialPosition.y = headPlace == PLACE.TOP ? arenaLogicalLimit : (headPlace == PLACE.BOTTOM ? -arenaLogicalLimit : 0.0f);

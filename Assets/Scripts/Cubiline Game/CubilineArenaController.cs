@@ -7,7 +7,7 @@ public class CubilineArenaController : MonoBehaviour
 	///////////////////////// COMPONENTS /////////////////////////
 	//////////////////////////////////////////////////////////////
 
-	public EaseTransform arenaCube;
+	public EaseScale arenaCube;
 	public CubilinePlayerController.STATUS status;
 
 	//////////////////////////////////////////////////////////////
@@ -44,10 +44,9 @@ public class CubilineArenaController : MonoBehaviour
 		targetController.Reset(arenaSize);
 
 		// Set size of arena
-		arenaCube.inScale = new Vector3(arenaSize, arenaSize, arenaSize);
-		//arenaCube.outScale = new Vector3(arenaSize / 2.0f, arenaSize / 2.0f, arenaSize / 2.0f);
-		arenaCube.outScale = new Vector3(1, 1, 1);
+		arenaCube.outValues = new Vector3(arenaSize / 2.0f, arenaSize / 2.0f, arenaSize / 2.0f);
+		arenaCube.inValues = new Vector3(arenaSize, arenaSize, arenaSize);
 		arenaCube.Reset();
-		arenaCube.easeFace = EaseTransform.EASE_FACE.IN;
+		arenaCube.easeFace = EaseVector3.EASE_FACE.IN;
 	}
 }

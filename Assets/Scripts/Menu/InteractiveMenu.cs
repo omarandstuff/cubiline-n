@@ -6,11 +6,11 @@ public class InteractiveMenu : MonoBehaviour
 	///////////////////////// COMPONENTS /////////////////////////
 	//////////////////////////////////////////////////////////////
 	public OrbitAndLook menuCamera;
-	public EaseTransform topLight;
-	public EaseTransform cubilineTilte;
-	public EaseTransform actionTitleBase;
+	public EasePosition cubilineTilte;
+	public EasePosition actionTitleBase;
 	public TextMesh actionTitle;
-	public EaseTransform playModel;
+	public GameObject playModel;
+	public EasePosition focalTarget;
 
 	//////////////////////////////////////////////////////////////
 	//////////////////////// PARAMETERS //////////////////////////
@@ -34,7 +34,7 @@ public class InteractiveMenu : MonoBehaviour
 	private Vector3 rotationVelocity = Vector3.zero;
 
 	/////////////////////////// ACTION ///////////////////////////
-	private EaseTransform currentModelAction;
+	private GameObject currentModelAction;
 	private bool actionReady;
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -49,14 +49,14 @@ public class InteractiveMenu : MonoBehaviour
 
 	void FixedUpdate()
 	{
-		if(goingAction == MENU_ACTION.NONE)
+		if (goingAction == MENU_ACTION.NONE)
 		{
 			currentRotation = Vector3.SmoothDamp(currentRotation, targetRotation + inRotation, ref rotationVelocity, 0.15f);
 			transform.localRotation = Quaternion.Euler(currentRotation);
 		}
-		else if(goingAction == MENU_ACTION.PLAY)
+		else if (goingAction == MENU_ACTION.PLAY)
 		{
-			if (menuCamera.transform.position.z >= -22)
+			if (focalTarget.transform.localPosition == focalTarget.outValues)
 				Application.LoadLevel(1);
 		}
 	}
@@ -65,10 +65,7 @@ public class InteractiveMenu : MonoBehaviour
 	{
 		actionReady = true;
 		if (currentModelAction != null)
-		{
-			currentModelAction.easePosition = false;
-			currentModelAction.easeFace = EaseTransform.EASE_FACE.OUT;
-		}
+			currentModelAction.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.OUT;
 	}
 
 	void OnMouseDrag()
@@ -80,7 +77,7 @@ public class InteractiveMenu : MonoBehaviour
 		if (axis != 0)
 		{
 			actionReady = false;
-			if (currentModelAction != null) currentModelAction.easeFace = EaseTransform.EASE_FACE.IN;
+			if (currentModelAction != null) currentModelAction.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
 		}
 	}
 
@@ -96,22 +93,16 @@ public class InteractiveMenu : MonoBehaviour
 		{
 			if (selectedAction == MENU_ACTION.PLAY)
 			{
-				cubilineTilte.easeFace = EaseTransform.EASE_FACE.OUT;
-				actionTitleBase.easeFace = EaseTransform.EASE_FACE.OUT;
+				cubilineTilte.easeFace = EaseVector3.EASE_FACE.OUT;
+				actionTitleBase.easeFace = EaseVector3.EASE_FACE.OUT;
+				focalTarget.easeFace = EaseVector3.EASE_FACE.OUT;
 				menuCamera.automaticDistance = false;
 				goingAction = MENU_ACTION.PLAY;
-				playModel.easePosition = true;
-				playModel.easeFace = EaseTransform.EASE_FACE.OUT;
-				topLight.easeFace = EaseTransform.EASE_FACE.OUT;
-				menuCamera.distance = 20;
-				GetComponent<EaseTransform>().outScale = new Vector3(1, 1, 1);
-				GetComponent<EaseTransform>().easeFace = EaseTransform.EASE_FACE.OUT;
-				GetComponent<Collider>().enabled = false;
 			}
 		}
 		else
 		{
-			if (currentModelAction != null) currentModelAction.easeFace = EaseTransform.EASE_FACE.IN;
+			if (currentModelAction != null) currentModelAction.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
 		}
 	}
 
@@ -122,7 +113,7 @@ public class InteractiveMenu : MonoBehaviour
 	void SetAction()
 	{
 		float fixedY = Mathf.Repeat(actionRotation.y, 360.0f);
-		if(fixedY == 0.0f || fixedY == 360.0f)
+		if (fixedY == 0.0f || fixedY == 360.0f)
 		{
 			selectedAction = MENU_ACTION.PLAY;
 			currentModelAction = playModel;

@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 
-public class EaseOpasity : MonoBehaviour
+public class EaseFloat : MonoBehaviour
 {
 	//////////////////////////////////////////////////////////////
 	//////////////////////// PARAMETERS //////////////////////////
@@ -13,11 +12,8 @@ public class EaseOpasity : MonoBehaviour
 	public float easeTime = 1.0f;
 	public float easeSpeed = 2.0f;
 
-	public float inOpasity;
-	public float outOpasity;
-
-	public Image[] imageChildren;
-	public Text[] textChildren;
+	public float inValue;
+	public float outValue;
 
 	//////////////////////////////////////////////////////////////
 	////////////////////// CONTROL VARIABLES /////////////////////
@@ -26,66 +22,44 @@ public class EaseOpasity : MonoBehaviour
 	public enum EASE_FACE { IN, OUT }
 	public enum EASE_TYPE { SMOOTH, TIME, SPEED }
 
-	//////////////////////////////////////////////////////////////
-	////////////////////// CONTROL VARIABLES /////////////////////
-	//////////////////////////////////////////////////////////////
-
-	private float currentOpasity;
+	protected float currentValue;
 	private float velocity;
 	private float easeCurretTime;
 
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////// MONO BEHAVIOR /////////////////////////////////////////
+	///////////////////////////////////////////// EASE /////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////
 
-	void Start()
-	{
-		Reset();
-	}
-
-	void FixedUpdate()
+	protected void UpdateEase()
 	{
 		if (easeType == EASE_TYPE.SMOOTH)
 		{
-			currentOpasity = Mathf.SmoothDamp(currentOpasity, easeFace == EASE_FACE.IN ? inOpasity : outOpasity, ref velocity, easeSmoothTime);
+			currentValue = Mathf.SmoothDamp(currentValue, easeFace == EASE_FACE.IN ? inValue : outValue, ref velocity, easeSmoothTime);
 		}
 		else if (easeType == EASE_TYPE.TIME)
 		{
 			easeCurretTime += easeFace == EASE_FACE.IN ? -Time.deltaTime : Time.deltaTime;
-			currentOpasity = Mathf.Lerp(inOpasity, outOpasity, easeCurretTime / easeTime);
+			currentValue = Mathf.Lerp(inValue, outValue, easeCurretTime / easeTime);
 		}
 		else
 		{
-			currentOpasity += easeSpeed * Time.deltaTime;
-		}
-
-		foreach (Image img in imageChildren)
-		{
-			Color imageColor = img.color;
-			imageColor.a = currentOpasity;
-			img.color = imageColor;
-		}
-		foreach (Text txt in textChildren)
-		{
-			Color imageColor = txt.color;
-			imageColor.a = currentOpasity;
-			txt.color = imageColor;
+			currentValue += easeSpeed * Time.deltaTime;
 		}
 	}
 
-	public void Reset()
+	public virtual void Reset()
 	{
 		if (easeFace == EASE_FACE.IN)
 		{
 			if (forceInitialFace)
 			{
-				currentOpasity = outOpasity;
+				currentValue = outValue;
 				easeCurretTime = easeTime;
 			}
 			else
 			{
-				currentOpasity = inOpasity;
+				currentValue = inValue;
 				easeCurretTime = 0.0f;
 			}
 		}
@@ -93,12 +67,12 @@ public class EaseOpasity : MonoBehaviour
 		{
 			if (forceInitialFace)
 			{
-				currentOpasity = inOpasity;
+				currentValue = inValue;
 				easeCurretTime = 0.0f;
 			}
 			else
 			{
-				currentOpasity = outOpasity;
+				currentValue = outValue;
 				easeCurretTime = easeTime;
 			}
 		}
