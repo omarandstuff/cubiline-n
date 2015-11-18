@@ -71,7 +71,7 @@ public class InteractiveMenu : MonoBehaviour
 	void OnMouseDrag()
 	{
 		float axis = Input.GetAxis("Horizontal Mouse");
-		inRotation.y -= axis * 0.3f;
+		inRotation.y -= axis * 0.1f;
 		actionRotation.y = targetRotation.y + (inRotation.y > 0 ? Mathf.Ceil(((int)inRotation.y / 45) / 2.0f) : Mathf.Floor(((int)inRotation.y / 45) / 2.0f)) * 90;
 		SetAction();
 		if (axis != 0)

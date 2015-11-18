@@ -49,6 +49,10 @@ public class CubilineSinglePlayer : MonoBehaviour
 				{
 					Application.LoadLevel(0);
 				}
+				else if (status == STATUS.SHOW_SCORE)
+				{
+					Application.LoadLevel(2);
+				}
 			}
 			return;
 		}
@@ -77,6 +81,7 @@ public class CubilineSinglePlayer : MonoBehaviour
 		if (player.status == CubilinePlayerController.STATUS.FINISH)
 		{
 			status = STATUS.SHOW_SCORE;
+			uiController.GoOut();
 			GoOut();
 		}
 	}
