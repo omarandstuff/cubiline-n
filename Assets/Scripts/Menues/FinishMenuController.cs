@@ -9,6 +9,10 @@ public class FinishMenuController : MonoBehaviour
 	public OrbitAndLook finishCamera;
 	public EasePosition focalTarget;
 	public EaseScore scoreText;
+	public EaseScore scoreText2;
+	public GameObject newRecordText;
+	public GameObject retryModel;
+	public GameObject mainMenuModel;
 
 	//////////////////////////////////////////////////////////////
 	//////////////////////// PARAMETERS //////////////////////////
@@ -18,6 +22,7 @@ public class FinishMenuController : MonoBehaviour
 
 	public MENU_ACTION selectedAction;
 	public MENU_ACTION goingAction;
+	public float slideSencibility = 0.15f;
 
 	//////////////////////////////////////////////////////////////
 	////////////////////// CONTROL VARIABLES /////////////////////
@@ -61,6 +66,9 @@ public class FinishMenuController : MonoBehaviour
 				if(waitTime >= 2.0f)
 				{
 					scoreText.score = CubilineScoreController.currentScore;
+					scoreText2.score = CubilineScoreController.bestScore;
+					newRecordText.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
+					if (CubilineScoreController.newRecord) newRecordText.GetComponent<EaseTextOpasity>().easeFace = EaseFloat.EASE_FACE.IN;
 				}
 			}
 
@@ -87,7 +95,7 @@ public class FinishMenuController : MonoBehaviour
 	void OnMouseDrag()
 	{
 		float axis = Input.GetAxis("Horizontal Mouse");
-		inRotation.y -= axis * 0.1f;
+		inRotation.y -= axis * slideSencibility;
 		actionRotation.y = targetRotation.y + (inRotation.y > 0 ? Mathf.Ceil(((int)inRotation.y / 45) / 2.0f) : Mathf.Floor(((int)inRotation.y / 45) / 2.0f)) * 90;
 		SetAction();
 		if (axis != 0)
@@ -131,22 +139,20 @@ public class FinishMenuController : MonoBehaviour
 	void SetAction()
 	{
 		float fixedY = Mathf.Repeat(actionRotation.y, 360.0f);
-		if (fixedY == 0.0f || fixedY == 360.0f)
+		if (fixedY == 0.0f || fixedY == 360.0f || fixedY == 180.0)
 		{
 			selectedAction = MENU_ACTION.SCORE;
+			currentModelAction = null;
 		}
 		else if (fixedY == 90.0f)
 		{
 			selectedAction = MENU_ACTION.MAIN_MENU;
+			currentModelAction = mainMenuModel;
 		}
 		else if (fixedY == 270.0f)
 		{
 			selectedAction = MENU_ACTION.RETRY;
-		}
-		else
-		{
-			selectedAction = MENU_ACTION.NONE;
-			currentModelAction = null;
+			currentModelAction = retryModel;
 		}
 	}
 }

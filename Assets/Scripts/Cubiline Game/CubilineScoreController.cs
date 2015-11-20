@@ -6,6 +6,7 @@ public class CubilineScoreController
 	//////////////////////////////////////////////////////////////
 	///////////////////////// PROPERTIES /////////////////////////
 	//////////////////////////////////////////////////////////////
+	static public bool newRecord { get { return _newRecord; } }
 	static public uint bestScore { get { return _bestScore; } }
 	static public uint currentScore
 	{
@@ -16,8 +17,13 @@ public class CubilineScoreController
 			FillScores();
 			if(_currentScore > _bestScore)
 			{
+				_newRecord = true;
 				_bestScore = _currentScore;
 				FillBestScores();
+			}
+			else
+			{
+				_newRecord = false;
 			}
 		}
 	}
@@ -30,6 +36,7 @@ public class CubilineScoreController
 	////////////////////// CONTROL VARIABLES /////////////////////
 	//////////////////////////////////////////////////////////////
 
+	static private bool _newRecord;
 	static private uint _bestScore;
 	static private uint _currentScore;
 	static private uint _totalLength;
