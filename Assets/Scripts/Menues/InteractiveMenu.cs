@@ -57,7 +57,7 @@ public class InteractiveMenu : MonoBehaviour
 		else if (goingAction == MENU_ACTION.PLAY)
 		{
 			if (focalTarget.transform.localPosition == focalTarget.outValues)
-				Application.LoadLevel(1);
+				Application.LoadLevel(3);
 		}
 	}
 
