@@ -145,6 +145,7 @@ public class CubilineMultyPlayerController : MonoBehaviour
 			arenaSize += 1;
 
 		CubilineScoreController.currentScore = 0;
+		CubilineScoreController.currentNumberOfPlayers = 2;
 
 		arenaController.Reset(arenaSize);
 		followCamera1.transform.localPosition = new Vector3(0.0f, 0.0f, -arenaSize * 2.0f);

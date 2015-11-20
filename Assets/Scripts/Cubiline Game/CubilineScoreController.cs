@@ -27,6 +27,8 @@ public class CubilineScoreController
 		}
 	}
 
+	static public uint currentNumberOfPlayers;
+
 	static public uint totalLength { get { return _totalLength; } }
 	public static ArrayList scoreDependencies = new ArrayList();
 	public static ArrayList bestScoreDependencies = new ArrayList();

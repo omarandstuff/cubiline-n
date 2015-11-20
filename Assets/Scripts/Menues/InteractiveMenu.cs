@@ -10,16 +10,18 @@ public class InteractiveMenu : MonoBehaviour
 	public EasePosition actionTitleBase;
 	public TextMesh actionTitle;
 	public GameObject playModel;
+	public GameObject coopModel;
 	public EasePosition focalTarget;
 
 	//////////////////////////////////////////////////////////////
 	//////////////////////// PARAMETERS //////////////////////////
 	//////////////////////////////////////////////////////////////
 
-	public enum MENU_ACTION { PLAY, NONE }
+	public enum MENU_ACTION { PLAY, COOP, NONE }
 
 	public MENU_ACTION selectedAction;
 	public MENU_ACTION goingAction;
+	public float slideSencibility = 0.15f;
 
 	//////////////////////////////////////////////////////////////
 	////////////////////// CONTROL VARIABLES /////////////////////
@@ -54,9 +56,11 @@ public class InteractiveMenu : MonoBehaviour
 			currentRotation = Vector3.SmoothDamp(currentRotation, targetRotation + inRotation, ref rotationVelocity, 0.15f);
 			transform.localRotation = Quaternion.Euler(currentRotation);
 		}
-		else if (goingAction == MENU_ACTION.PLAY)
+		else if (focalTarget.transform.localPosition == focalTarget.outValues)
 		{
-			if (focalTarget.transform.localPosition == focalTarget.outValues)
+			if (goingAction == MENU_ACTION.PLAY)
+				Application.LoadLevel(1);
+			else if (goingAction == MENU_ACTION.COOP)
 				Application.LoadLevel(3);
 		}
 	}
@@ -71,7 +75,7 @@ public class InteractiveMenu : MonoBehaviour
 	void OnMouseDrag()
 	{
 		float axis = Input.GetAxis("Horizontal Mouse");
-		inRotation.y -= axis * 0.1f;
+		inRotation.y -= axis * slideSencibility;
 		actionRotation.y = targetRotation.y + (inRotation.y > 0 ? Mathf.Ceil(((int)inRotation.y / 45) / 2.0f) : Mathf.Floor(((int)inRotation.y / 45) / 2.0f)) * 90;
 		SetAction();
 		if (axis != 0)
@@ -91,14 +95,11 @@ public class InteractiveMenu : MonoBehaviour
 	{
 		if (actionReady)
 		{
-			if (selectedAction == MENU_ACTION.PLAY)
-			{
-				cubilineTilte.easeFace = EaseVector3.EASE_FACE.OUT;
-				actionTitleBase.easeFace = EaseVector3.EASE_FACE.OUT;
-				focalTarget.easeFace = EaseVector3.EASE_FACE.OUT;
-				menuCamera.automaticDistance = false;
-				goingAction = MENU_ACTION.PLAY;
-			}
+			cubilineTilte.easeFace = EaseVector3.EASE_FACE.OUT;
+			actionTitleBase.easeFace = EaseVector3.EASE_FACE.OUT;
+			focalTarget.easeFace = EaseVector3.EASE_FACE.OUT;
+			menuCamera.automaticDistance = false;
+			goingAction = selectedAction;
 		}
 		else
 		{
@@ -118,6 +119,12 @@ public class InteractiveMenu : MonoBehaviour
 			selectedAction = MENU_ACTION.PLAY;
 			currentModelAction = playModel;
 			actionTitle.text = "Play";
+		}
+		else if (fixedY == 90.0f)
+		{
+			selectedAction = MENU_ACTION.COOP;
+			currentModelAction = coopModel;
+			actionTitle.text = "Coop";
 		}
 		else
 		{

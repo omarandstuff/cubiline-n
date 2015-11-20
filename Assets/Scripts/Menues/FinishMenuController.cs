@@ -81,7 +81,12 @@ public class FinishMenuController : MonoBehaviour
 		else if (goingAction == MENU_ACTION.RETRY)
 		{
 			if (focalTarget.transform.localPosition == focalTarget.outValues)
-				Application.LoadLevel(1);
+			{
+				if(CubilineScoreController.currentNumberOfPlayers == 1)
+					Application.LoadLevel(1);
+				else
+					Application.LoadLevel(3);
+			}
 		}
 	}
 
