@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
+using System.Collections;
 
 public class FinishMenuController : MonoBehaviour
 {
@@ -17,7 +17,6 @@ public class FinishMenuController : MonoBehaviour
 	//////////////////////////////////////////////////////////////
 	//////////////////////// PARAMETERS //////////////////////////
 	//////////////////////////////////////////////////////////////
-
 	public enum MENU_ACTION { SCORE, RETRY, MAIN_MENU, NONE }
 
 	public MENU_ACTION selectedAction;
@@ -41,7 +40,6 @@ public class FinishMenuController : MonoBehaviour
 	private bool actionReady;
 
 	/////////////////////////// SCORE ///////////////////////////
-	private float waitTime;
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// MONO BEHAVIOR /////////////////////////////////////////
@@ -51,38 +49,72 @@ public class FinishMenuController : MonoBehaviour
 	{
 		SetAction();
 		goingAction = MENU_ACTION.NONE;
+		StartCoroutine(ShowScores());
 	}
 
 	void Update()
 	{
 		if (goingAction == MENU_ACTION.NONE)
 		{
-			currentRotation = Vector3.SmoothDamp(currentRotation, targetRotation + inRotation, ref rotationVelocity, 0.15f);
-			transform.localRotation = Quaternion.Euler(currentRotation);
-
-			if(waitTime < 2.0f)
+			// Touch
+			if(Input.touchCount > 0)
 			{
-				waitTime += Time.deltaTime;
-				if(waitTime >= 2.0f)
+				Touch touch = Input.GetTouch(0);
+
+				if(touch.phase == TouchPhase.Began)
 				{
-					scoreText.score = CubilineScoreController.currentScore;
-					scoreText2.score = CubilineScoreController.bestScore;
-					newRecordText.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
-					if (CubilineScoreController.newRecord) newRecordText.GetComponent<EaseTextOpasity>().easeFace = EaseFloat.EASE_FACE.IN;
+					actionReady = true;
+					if (currentModelAction != null)
+						currentModelAction.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.OUT;
+				}
+				else if (touch.phase == TouchPhase.Moved)
+				{
+					float axis = touch.deltaPosition.x;
+					inRotation.y -= axis * slideSencibility;
+					actionRotation.y = targetRotation.y + (inRotation.y > 0 ? Mathf.Ceil(((int)inRotation.y / 45) / 2.0f) : Mathf.Floor(((int)inRotation.y / 45) / 2.0f)) * 90;
+					SetAction();
+					if (axis != 0)
+					{
+						actionReady = false;
+						if (currentModelAction != null) currentModelAction.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
+					}
+				}
+				else if(touch.phase == TouchPhase.Ended)
+				{
+					targetRotation.y += (inRotation.y > 0 ? Mathf.Ceil(((int)inRotation.y / 45) / 2.0f) : Mathf.Floor(((int)inRotation.y / 45) / 2.0f)) * 90;
+					inRotation.y = 0;
+
+					if (actionReady)
+					{
+						if (selectedAction == MENU_ACTION.MAIN_MENU)
+						{
+							focalTarget.easeFace = EaseVector3.EASE_FACE.OUT;
+							goingAction = MENU_ACTION.MAIN_MENU;
+						}
+						else if (selectedAction == MENU_ACTION.RETRY)
+						{
+							focalTarget.easeFace = EaseVector3.EASE_FACE.OUT;
+							goingAction = MENU_ACTION.RETRY;
+						}
+					}
+					else
+					{
+						if (currentModelAction != null) currentModelAction.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
+					}
 				}
 			}
 
+			currentRotation = Vector3.SmoothDamp(currentRotation, targetRotation + inRotation, ref rotationVelocity, 0.15f);
+			transform.localRotation = Quaternion.Euler(currentRotation);
+
 		}
-		else if (goingAction == MENU_ACTION.MAIN_MENU)
+		else if (focalTarget.transform.localPosition == focalTarget.outValues)
 		{
-			if (focalTarget.transform.localPosition == focalTarget.outValues)
+			if (goingAction == MENU_ACTION.MAIN_MENU)
 				Application.LoadLevel(0);
-		}
-		else if (goingAction == MENU_ACTION.RETRY)
-		{
-			if (focalTarget.transform.localPosition == focalTarget.outValues)
+			else if (goingAction == MENU_ACTION.RETRY)
 			{
-				if(CubilineScoreController.currentNumberOfPlayers == 1)
+				if (CubilineScoreController.currentNumberOfPlayers == 1)
 					Application.LoadLevel(1);
 				else
 					Application.LoadLevel(3);
@@ -90,51 +122,14 @@ public class FinishMenuController : MonoBehaviour
 		}
 	}
 
-	void OnMouseDown()
+	IEnumerator ShowScores()
 	{
-		actionReady = true;
-		if (currentModelAction != null)
-			currentModelAction.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.OUT;
-	}
+		yield return new WaitForSeconds(2.0f);
 
-	void OnMouseDrag()
-	{
-		float axis = Input.GetAxis("Horizontal Mouse");
-		inRotation.y -= axis * slideSencibility;
-		actionRotation.y = targetRotation.y + (inRotation.y > 0 ? Mathf.Ceil(((int)inRotation.y / 45) / 2.0f) : Mathf.Floor(((int)inRotation.y / 45) / 2.0f)) * 90;
-		SetAction();
-		if (axis != 0)
-		{
-			actionReady = false;
-			if (currentModelAction != null) currentModelAction.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
-		}
-	}
-
-	void OnMouseUp()
-	{
-		targetRotation.y += (inRotation.y > 0 ? Mathf.Ceil(((int)inRotation.y / 45) / 2.0f) : Mathf.Floor(((int)inRotation.y / 45) / 2.0f)) * 90;
-		inRotation.y = 0;
-	}
-
-	void OnMouseUpAsButton()
-	{
-		if (actionReady)
-		{
-			if (selectedAction == MENU_ACTION.MAIN_MENU)
-			{
-				focalTarget.easeFace = EaseVector3.EASE_FACE.OUT;
-				goingAction = MENU_ACTION.MAIN_MENU;
-			}
-			else if (selectedAction == MENU_ACTION.RETRY)
-			{
-				focalTarget.easeFace = EaseVector3.EASE_FACE.OUT;
-				goingAction = MENU_ACTION.RETRY;
-			}
-		}
-		else
-		{
-			if (currentModelAction != null) currentModelAction.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
-		}
+		scoreText.score = CubilineScoreController.currentScore;
+		scoreText2.score = CubilineScoreController.bestScore;
+		newRecordText.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
+		if (CubilineScoreController.newRecord) newRecordText.GetComponent<EaseTextOpasity>().easeFace = EaseFloat.EASE_FACE.IN;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////

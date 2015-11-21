@@ -41,6 +41,7 @@ public class CubilineMultyPlayerController : MonoBehaviour
 
 	void Start()
 	{
+		Screen.orientation = ScreenOrientation.Landscape;
 		Reset();
 	}
 
@@ -170,5 +171,7 @@ public class CubilineMultyPlayerController : MonoBehaviour
 		outTarget2.transform.position = followCamera2.transform.localPosition + (followCamera2.transform.localPosition - followCamera2.target.transform.localPosition).normalized * arenaSize;
 		followTarget2.target = outTarget2;
 		followTarget2.followSmoothTime = 0.8f;
+
+		Screen.orientation = ScreenOrientation.AutoRotation;
 	}
 }
