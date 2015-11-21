@@ -86,16 +86,8 @@ public class FinishMenuController : MonoBehaviour
 
 					if (actionReady)
 					{
-						if (selectedAction == MENU_ACTION.MAIN_MENU)
-						{
-							focalTarget.easeFace = EaseVector3.EASE_FACE.OUT;
-							goingAction = MENU_ACTION.MAIN_MENU;
-						}
-						else if (selectedAction == MENU_ACTION.RETRY)
-						{
-							focalTarget.easeFace = EaseVector3.EASE_FACE.OUT;
-							goingAction = MENU_ACTION.RETRY;
-						}
+						focalTarget.easeFace = EaseVector3.EASE_FACE.OUT;
+						goingAction = selectedAction;
 					}
 					else
 					{
@@ -132,6 +124,31 @@ public class FinishMenuController : MonoBehaviour
 		if (CubilineScoreController.newRecord) newRecordText.GetComponent<EaseTextOpasity>().easeFace = EaseFloat.EASE_FACE.IN;
 	}
 
+	void OnGUI()
+	{
+		Event e = Event.current;
+		if (e.type == EventType.keyDown)
+		{
+			if (e.keyCode == KeyCode.RightArrow)
+			{
+				targetRotation.y += 90;
+				actionRotation.y += 90;
+				SetAction();
+			}
+			else if (e.keyCode == KeyCode.LeftArrow)
+			{
+				targetRotation.y -= 90;
+				actionRotation.y -= 90;
+				SetAction();
+			}
+			else if (e.keyCode == KeyCode.Space)
+			{
+				if(selectedAction != MENU_ACTION.NONE) focalTarget.easeFace = EaseVector3.EASE_FACE.OUT;
+				goingAction = selectedAction;
+			}
+		}
+	}
+
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////// ACTION ////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -141,7 +158,7 @@ public class FinishMenuController : MonoBehaviour
 		float fixedY = Mathf.Repeat(actionRotation.y, 360.0f);
 		if (fixedY == 0.0f || fixedY == 360.0f || fixedY == 180.0)
 		{
-			selectedAction = MENU_ACTION.SCORE;
+			selectedAction = MENU_ACTION.NONE;
 			currentModelAction = null;
 		}
 		else if (fixedY == 90.0f)
