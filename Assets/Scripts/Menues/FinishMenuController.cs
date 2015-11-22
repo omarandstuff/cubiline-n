@@ -84,7 +84,7 @@ public class FinishMenuController : MonoBehaviour
 					targetRotation.y += (inRotation.y > 0 ? Mathf.Ceil(((int)inRotation.y / 45) / 2.0f) : Mathf.Floor(((int)inRotation.y / 45) / 2.0f)) * 90;
 					inRotation.y = 0;
 
-					if (actionReady)
+					if (actionReady && selectedAction != MENU_ACTION.NONE)
 					{
 						focalTarget.easeFace = EaseVector3.EASE_FACE.OUT;
 						goingAction = selectedAction;

@@ -34,13 +34,16 @@ public class CubilineMultyPlayerController : MonoBehaviour
 	private PauseMenuController pauseMenu;
 	private bool menuKey;
 
+	private Touch[] touchAtBegin = new Touch[10];
+	private Resolution lastResolution;
+
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// MONO BEHAVIOR /////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////
 
 	void Start()
 	{
-		Screen.orientation = ScreenOrientation.Landscape;
+		DoScreenOrientation();
 		Reset();
 	}
 
@@ -62,6 +65,9 @@ public class CubilineMultyPlayerController : MonoBehaviour
 			return;
 		}
 
+		DoScreenOrientation();
+
+		DoTouch();
 		player1.Go();
 		player2.Go();
 		arenaController.ManageArena();
@@ -104,10 +110,25 @@ public class CubilineMultyPlayerController : MonoBehaviour
 		Event e = Event.current;
 		if (e.type == EventType.KeyDown)
 		{
-			if (menuKey) return;
-			menuKey = true;
-			if (e.keyCode == KeyCode.Escape)
+			if (e.keyCode == KeyCode.A)
+				player1.AddTurn(CubilinePlayerController.TURN.LEFT);
+			else if (e.keyCode == KeyCode.D)
+				player1.AddTurn(CubilinePlayerController.TURN.RIGHT);
+			else if (e.keyCode == KeyCode.W)
+				player1.AddTurn(CubilinePlayerController.TURN.UP);
+			else if (e.keyCode == KeyCode.S)
+				player1.AddTurn(CubilinePlayerController.TURN.DOWN);
+			else if (e.keyCode == KeyCode.LeftArrow)
+				player2.AddTurn(CubilinePlayerController.TURN.LEFT);
+			else if (e.keyCode == KeyCode.RightArrow)
+				player2.AddTurn(CubilinePlayerController.TURN.RIGHT);
+			else if (e.keyCode == KeyCode.UpArrow)
+				player2.AddTurn(CubilinePlayerController.TURN.UP);
+			else if (e.keyCode == KeyCode.DownArrow)
+				player2.AddTurn(CubilinePlayerController.TURN.DOWN);
+			else if (e.keyCode == KeyCode.Escape && !menuKey) // Menu
 			{
+				menuKey = true;
 				if (pauseMenu != null)
 				{
 					player1.status = CubilinePlayerController.STATUS.PLAYING;
@@ -129,6 +150,75 @@ public class CubilineMultyPlayerController : MonoBehaviour
 		else if (e.type == EventType.keyUp)
 		{
 			menuKey = false;
+		}
+	}
+
+	void DoScreenOrientation()
+	{
+		Resolution resolution = Screen.currentResolution;
+		if (resolution.width == lastResolution.width) return;
+
+		if(resolution.width > resolution.height)
+		{
+			followCamera1.GetComponent<Camera>().rect = new Rect(0, 0, 0.5f, 1.0f);
+			followCamera2.GetComponent<Camera>().rect = new Rect(0.5f, 0, 0.5f, 1.0f);
+		}
+		else
+		{
+			followCamera1.GetComponent<Camera>().rect = new Rect(0, 0, 1.0f, 0.5f);
+			followCamera2.GetComponent<Camera>().rect = new Rect(0, 0.5f, 1.0f, 0.5f);
+		}
+
+		lastResolution = resolution;
+	}
+
+	void DoTouch()
+	{
+		if (SystemInfo.deviceType != DeviceType.Handheld) return;
+		for(int i = 0; i < Input.touchCount; i++)
+		{
+			Touch touch = Input.GetTouch(i);
+
+			if (touch.phase == TouchPhase.Began)
+			{
+				touchAtBegin[i] = touch;
+			}
+			else if (touch.phase == TouchPhase.Ended)
+			{
+				Vector2 delta = touch.position - touchAtBegin[i].position;
+
+				CubilinePlayerController player = player1;
+
+				if(lastResolution.width > lastResolution.height)
+				{
+					if (touchAtBegin[i].position.x < lastResolution.width / 2)
+						player = player1;
+					else
+						player = player2;
+				}
+				else
+				{
+					if (touchAtBegin[i].position.y < lastResolution.height / 2)
+						player = player1;
+					else
+						player = player2;
+				}
+
+				if (Mathf.Abs(delta.x) > Mathf.Abs(delta.y))
+				{
+					if (delta.x > 0)
+						player.AddTurn(CubilinePlayerController.TURN.RIGHT);
+					else
+						player.AddTurn(CubilinePlayerController.TURN.LEFT);
+				}
+				else
+				{
+					if (delta.y > 0)
+						player.AddTurn(CubilinePlayerController.TURN.UP);
+					else
+						player.AddTurn(CubilinePlayerController.TURN.DOWN);
+				}
+			}
 		}
 	}
 
@@ -170,7 +260,5 @@ public class CubilineMultyPlayerController : MonoBehaviour
 		outTarget2.transform.position = followCamera2.transform.localPosition + (followCamera2.transform.localPosition - followCamera2.target.transform.localPosition).normalized * arenaSize;
 		followTarget2.target = outTarget2;
 		followTarget2.followSmoothTime = 0.8f;
-
-		Screen.orientation = ScreenOrientation.AutoRotation;
 	}
 }

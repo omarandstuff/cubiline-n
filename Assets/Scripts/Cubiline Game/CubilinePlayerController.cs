@@ -19,13 +19,9 @@ public class CubilinePlayerController : MonoBehaviour
 
 	public enum PLACE { TOP, BOTTOM, RIGHT, LEFT, FRONT, BACK, NONE }
 	public enum TURN { UP, DOWN, RIGHT, LEFT, NONE }
-	public enum PLAYER { PLAYER1, PLAYER2, PLAYER3, PLAYER4 }
 	public enum STATUS { PLAYING, PAUSED, FINISH }
 
-	public PLAYER player = PLAYER.PLAYER1;
 	public STATUS status = STATUS.PLAYING;
-
-	public bool inputEnabled = true; // The Cube can muve but can or not resive input.
 
 	public PLACE headDirection = PLACE.RIGHT; // Directon of the head.
 	public PLACE headPlace = PLACE.FRONT; // Where the head is.
@@ -51,8 +47,7 @@ public class CubilinePlayerController : MonoBehaviour
 
 	//////////////////////// INPUT CONTROL //////////////////////
 
-	private TURN lastKey;
-	private Touch touchAtBegin;
+	private TURN lastTurn = TURN.NONE;
 
 	/////////////////////// BODY CONTROL ////////////////////////
 
@@ -81,8 +76,6 @@ public class CubilinePlayerController : MonoBehaviour
 	public void Go()
 	{
 		if (status != STATUS.PLAYING) return;
-		if (inputEnabled)
-			GetInput();
 
 		// Unit directiom vector base the head direction var.
 		directionVector = new Vector3(headDirection == PLACE.RIGHT ? 1.0f : (headDirection == PLACE.LEFT ? -1.0f : 0.0f), headDirection == PLACE.TOP ? 1.0f : (headDirection == PLACE.BOTTOM ? -1.0f : 0.0f), headDirection == PLACE.BACK ? 1.0f : (headDirection == PLACE.FRONT ? -1.0f : 0.0f));
@@ -207,57 +200,11 @@ public class CubilinePlayerController : MonoBehaviour
 	///////////////////////////////////////// INPUT CONTROL ////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////
 
-	void GetInput()
+	public void AddTurn(TURN turn)
 	{
-		TURN key = TURN.NONE;
+		if (lastTurn == turn) return;
 
-		if (Input.GetAxis("Vertical Player" + (int)(player + 1)) > 0)
-			key = TURN.UP;
-		else if (Input.GetAxis("Vertical Player" + (int)(player + 1)) < 0)
-			key = TURN.DOWN;
-		else if (Input.GetAxis("Horizontal Player" + (int)(player + 1)) > 0)
-			key = TURN.RIGHT;
-		else if (Input.GetAxis("Horizontal Player" + (int)(player + 1)) < 0)
-			key = TURN.LEFT;
-
-		if(Input.touchCount > 0)
-		{
-			Touch touch = Input.GetTouch(0);
-
-			if (touch.phase == TouchPhase.Began)
-			{
-				touchAtBegin = touch;
-			}
-			else if (touch.phase == TouchPhase.Ended)
-			{
-				Vector2 delta = touch.position - touchAtBegin.position;
-
-				if (Mathf.Abs(delta.x) > Mathf.Abs(delta.y))
-				{
-					if (delta.x > 0)
-						key = TURN.RIGHT;
-					else
-						key = TURN.LEFT;
-				}
-				else
-				{
-					if (delta.y > 0)
-						key = TURN.UP;
-					else
-						key = TURN.DOWN;
-				}
-			}
-		}
-
-
-		if (lastKey != key)
-			AddTurn(key);
-
-		lastKey = key;
-	}
-
-	void AddTurn(TURN turn)
-	{
+		lastTurn = turn;
 		turnsQueue.Enqueue(turn);
 	}
 
@@ -431,7 +378,7 @@ public class CubilinePlayerController : MonoBehaviour
 	}
 
 
-	private bool TurnUp()
+	bool TurnUp()
 	{
 		PLACE up = GetUpOfPlace(headPlace, headUp);
 		if (headDirection == up || headDirection == GetDownOfPlace(headPlace, headUp)) return false;
@@ -443,7 +390,7 @@ public class CubilinePlayerController : MonoBehaviour
 		return true;
 	}
 
-	private bool TurnDown()
+	bool TurnDown()
 	{
 		PLACE down = GetDownOfPlace(headPlace, headUp);
 		if (headDirection == down || headDirection == GetUpOfPlace(headPlace, headUp)) return false;
@@ -455,7 +402,7 @@ public class CubilinePlayerController : MonoBehaviour
 		return true;
 	}
 
-	private bool TurnRight()
+	bool TurnRight()
 	{
 		PLACE right = GetRightOfPlace(headPlace, headUp);
 		if (headDirection == right || headDirection == GetLeftOfPlace(headPlace, headUp)) return false;
@@ -467,7 +414,7 @@ public class CubilinePlayerController : MonoBehaviour
 		return true;
 	}
 
-	private bool TurnLeft()
+	bool TurnLeft()
 	{
 		PLACE left = GetLeftOfPlace(headPlace, headUp);
 		if (headDirection == left || headDirection == GetRightOfPlace(headPlace, headUp)) return false;

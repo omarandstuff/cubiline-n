@@ -30,6 +30,8 @@ public class CubilineSinglePlayer : MonoBehaviour
 	private PauseMenuController pauseMenu;
 	private bool menuKey;
 
+	private Touch touchAtBegin;
+
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// MONO BEHAVIOR /////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -57,6 +59,7 @@ public class CubilineSinglePlayer : MonoBehaviour
 			return;
 		}
 
+		DoTouch();
 		player.Go();
 		arenaController.ManageArena();
 
@@ -91,10 +94,18 @@ public class CubilineSinglePlayer : MonoBehaviour
 		Event e = Event.current;
 		if (e.type == EventType.KeyDown)
 		{
-			if (menuKey) return;
-			menuKey = true;
-			if (e.keyCode == KeyCode.Escape)
+			if (e.keyCode == KeyCode.A || e.keyCode == KeyCode.LeftArrow)
+				player.AddTurn(CubilinePlayerController.TURN.LEFT);
+			else if (e.keyCode == KeyCode.D || e.keyCode == KeyCode.RightArrow)
+				player.AddTurn(CubilinePlayerController.TURN.RIGHT);
+			else if (e.keyCode == KeyCode.W || e.keyCode == KeyCode.UpArrow)
+				player.AddTurn(CubilinePlayerController.TURN.UP);
+			else if (e.keyCode == KeyCode.S || e.keyCode == KeyCode.DownArrow)
+				player.AddTurn(CubilinePlayerController.TURN.DOWN);
+			else if (e.keyCode == KeyCode.Escape && !menuKey) // Menu
 			{
+				menuKey = true;
+
 				if (pauseMenu != null)
 				{
 					player.status = CubilinePlayerController.STATUS.PLAYING;
@@ -113,7 +124,41 @@ public class CubilineSinglePlayer : MonoBehaviour
 		}
 		else if (e.type == EventType.keyUp)
 		{
-			menuKey = false;
+			if (e.keyCode == KeyCode.Escape)
+				menuKey = false;
+		}
+	}
+
+	void DoTouch()
+	{
+		if (SystemInfo.deviceType != DeviceType.Handheld) return;
+		if (Input.touchCount > 0)
+		{
+			Touch touch = Input.GetTouch(0);
+
+			if (touch.phase == TouchPhase.Began)
+			{
+				touchAtBegin = touch;
+			}
+			else if (touch.phase == TouchPhase.Ended)
+			{
+				Vector2 delta = touch.position - touchAtBegin.position;
+
+				if (Mathf.Abs(delta.x) > Mathf.Abs(delta.y))
+				{
+					if (delta.x > 0)
+						player.AddTurn(CubilinePlayerController.TURN.RIGHT);
+					else
+						player.AddTurn(CubilinePlayerController.TURN.LEFT);
+				}
+				else
+				{
+					if (delta.y > 0)
+						player.AddTurn(CubilinePlayerController.TURN.UP);
+					else
+						player.AddTurn(CubilinePlayerController.TURN.DOWN);
+				}
+			}
 		}
 	}
 
