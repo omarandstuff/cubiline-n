@@ -17,6 +17,8 @@ public class CubilineMultyPlayerController : MonoBehaviour
 	public Transform outTarget1;
 	public Transform outTarget2;
 
+	public EaseImageOpasity division;
+
 	//////////////////////////////////////////////////////////////
 	///////////////////////// PARAMETERS /////////////////////////
 	//////////////////////////////////////////////////////////////
@@ -181,24 +183,24 @@ public class CubilineMultyPlayerController : MonoBehaviour
 
 			if (touch.phase == TouchPhase.Began)
 			{
-				touchAtBegin[i] = touch;
+				touchAtBegin[touch.fingerId] = touch;
 			}
 			else if (touch.phase == TouchPhase.Ended)
 			{
-				Vector2 delta = touch.position - touchAtBegin[i].position;
+				Vector2 delta = touch.position - touchAtBegin[touch.fingerId].position;
 
 				CubilinePlayerController player = player1;
 
 				if(lastResolution.width > lastResolution.height)
 				{
-					if (touchAtBegin[i].position.x < lastResolution.width / 2)
+					if (touchAtBegin[touch.fingerId].position.x < lastResolution.width / 2)
 						player = player1;
 					else
 						player = player2;
 				}
 				else
 				{
-					if (touchAtBegin[i].position.y < lastResolution.height / 2)
+					if (touchAtBegin[touch.fingerId].position.y < lastResolution.height / 2)
 						player = player1;
 					else
 						player = player2;
@@ -253,6 +255,8 @@ public class CubilineMultyPlayerController : MonoBehaviour
 
 	void GoOut()
 	{
+		division.easeFace = EaseFloat.EASE_FACE.OUT;
+
 		outTarget1.transform.position = followCamera1.transform.localPosition + (followCamera1.transform.localPosition - followCamera1.target.transform.localPosition).normalized * arenaSize;
 		followTarget1.target = outTarget1;
 		followTarget1.followSmoothTime = 0.8f;
