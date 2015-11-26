@@ -5,9 +5,9 @@ public class CubilineScoreController
 	//////////////////////////////////////////////////////////////
 	///////////////////////// PROPERTIES /////////////////////////
 	//////////////////////////////////////////////////////////////
-	static public bool newRecord { get { return _newRecord; } }
-	static public uint bestScore { get { return _bestScore; } }
-	static public uint currentScore
+	public static bool newRecord { get { return _newRecord; } }
+	public static uint bestScore { get { return _bestScore; } }
+	public static uint currentScore
 	{
 		get { return _currentScore; }
 		set
@@ -27,11 +27,12 @@ public class CubilineScoreController
 		}
 	}
 
-	static public uint currentNumberOfPlayers;
+	public static uint currentNumberOfPlayers;
 
-	static public uint totalLength { get { return _totalLength; } }
 	public static ArrayList scoreDependencies = new ArrayList();
 	public static ArrayList bestScoreDependencies = new ArrayList();
+
+	public static uint[] versusScores = new uint[4];
 
 	//////////////////////////////////////////////////////////////
 	////////////////////// CONTROL VARIABLES /////////////////////
@@ -40,7 +41,6 @@ public class CubilineScoreController
 	static private bool _newRecord;
 	static private uint _bestScore;
 	static private uint _currentScore;
-	static private uint _totalLength;
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// SCORE CONTROL /////////////////////////////////////////

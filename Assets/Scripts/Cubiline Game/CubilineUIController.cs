@@ -8,6 +8,10 @@ public class CubilineUIController : MonoBehaviour
 
 	public EaseScore scoreText;
 	public EaseScore bestScoreText;
+	public bool enableHorizontalDivision;
+	public EaseImageOpasity horizontalDivision;
+	public bool enableVerticalDivision;
+	public EaseImageOpasity verticalDivision;
 
 	//////////////////////////////////////////////////////////////
 	///////////////////////// PARAMETERS /////////////////////////
@@ -24,10 +28,15 @@ public class CubilineUIController : MonoBehaviour
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// MONO BEHAVIOR /////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////
+	void Start()
+	{
+		if (enableVerticalDivision) verticalDivision.easeFace = EaseFloat.EASE_FACE.IN;
+		if (enableHorizontalDivision) horizontalDivision.easeFace = EaseFloat.EASE_FACE.IN;
+	}
 
 	void Update ()
 	{
-		if (currentTime >= timeToApear) return;
+		if (currentTime > timeToApear) return;
 		currentTime += Time.deltaTime;
 		if (currentTime >= timeToApear)
 			ShowUI();
@@ -53,5 +62,7 @@ public class CubilineUIController : MonoBehaviour
 		bestScoreText.GetComponent<EaseTextOpasity>().easeFace = EaseTextOpasity.EASE_FACE.OUT;
 		CubilineScoreController.scoreDependencies.Remove(scoreText);
 		CubilineScoreController.bestScoreDependencies.Remove(bestScoreText);
+		if (enableVerticalDivision) verticalDivision.easeFace = EaseFloat.EASE_FACE.OUT;
+		if (enableHorizontalDivision) horizontalDivision.easeFace = EaseFloat.EASE_FACE.OUT;
 	}
 }
