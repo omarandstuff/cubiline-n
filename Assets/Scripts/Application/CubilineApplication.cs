@@ -1,82 +1,15 @@
 ﻿using UnityEngine;
-using System;
-using System.IO;
-using System.Security.Cryptography;
-using System.Xml.Serialization;
-
-
-[Serializable]
-public class UserScores
-{
-	public uint match;
-	public uint length;
-}
 
 public class CubilineApplication
 {
 	//////////////////////////////////////////////////////////////
-	///////////////////////// Singleton //////////////////////////
-	//////////////////////////////////////////////////////////////
-	private static CubilineApplication instance;
-
-	private CubilineApplication() { }
-
-	public static CubilineApplication Instance
-	{
-		get
-		{
-			if (instance == null)
-			{
-				instance = new CubilineApplication();
-			}
-			return instance;
-		}
-	}
-
-	//////////////////////////////////////////////////////////////
 	//////////////////////// PARAMETERS //////////////////////////
 	//////////////////////////////////////////////////////////////
-	public UserScores bestScores
-	{
-		get
-		{
-			return _bestScores;
-		}
-	}
+
+	public static uint lineSpeed = 4;
+	public static uint cubeSize = 15;
 
 	//////////////////////////////////////////////////////////////
 	//////////////////// CONTROL VARIABLES ///////////////////////
 	//////////////////////////////////////////////////////////////
-
-	private string encryptionKey = "chocorroles_marinela";
-	private string encryptionIV = "plativolos_marinela";
-	private UserScores _bestScores;
-
-
-	////////////////////////////////////////////////////////////////////////////////////////////////
-	///////////////////////////////////////// SAVE / LOAD //////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////////
-
-	public void SaveScores()
-	{
-	}
-
-	public void LoadScores()
-	{
-		if (!File.Exists(Application.persistentDataPath + "scores.dat")) return;
-	}
-
-	public bool submitGameScore(UserScores scores)
-	{
-		bool newRecord = false;
-		if(scores.match > _bestScores.match)
-		{
-			_bestScores.match = scores.match;
-			newRecord = true;
-		}
-
-		bestScores.length += scores.length;
-
-		return newRecord;
-	}
 }

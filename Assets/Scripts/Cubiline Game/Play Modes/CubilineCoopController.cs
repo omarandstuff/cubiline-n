@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
 
 public class CubilineCoopController : MonoBehaviour
 {
@@ -18,15 +17,6 @@ public class CubilineCoopController : MonoBehaviour
 	public Follow followTarget2;
 	public Transform outTarget1;
 	public Transform outTarget2;
-	public Slider speedSlider;
-	public Slider sizeSlider;
-
-	//////////////////////////////////////////////////////////////
-	///////////////////////// PARAMETERS /////////////////////////
-	//////////////////////////////////////////////////////////////
-
-	public uint arenaSize = 5;
-	public float speed = 5;
 
 	//////////////////////////////////////////////////////////////
 	////////////////////// CONTROL VARIABLES /////////////////////
@@ -57,7 +47,7 @@ public class CubilineCoopController : MonoBehaviour
 	{
 		if (status != STATUS.PLAYING)
 		{
-			if ((followTarget1.transform.position - outTarget1.position).magnitude < arenaSize)
+			if ((followTarget1.transform.position - outTarget1.position).magnitude < CubilineApplication.cubeSize)
 			{
 				if (status == STATUS.GIONG_OUT)
 				{
@@ -240,27 +230,21 @@ public class CubilineCoopController : MonoBehaviour
 
 	public void Reset()
 	{
-		// Keep size odd
-		if (arenaSize < 5)
-			arenaSize = 5;
-		if (arenaSize % 2 == 0)
-			arenaSize += 1;
-
 		CubilineScoreController.currentScore = 0;
 		CubilineScoreController.currentNumberOfPlayers = 2;
 
-		arenaController.Reset(arenaSize);
-		followCamera1.transform.localPosition = new Vector3(0.0f, 0.0f, -arenaSize * 2.0f);
-		followCamera1.transform.localPosition = new Vector3(0.0f, 0.0f, -arenaSize * 2.0f);
+		arenaController.Reset(CubilineApplication.cubeSize);
+		followCamera1.transform.localPosition = new Vector3(0.0f, 0.0f, -CubilineApplication.cubeSize * 2.0f);
+		followCamera1.transform.localPosition = new Vector3(0.0f, 0.0f, -CubilineApplication.cubeSize * 2.0f);
 
-		player1.Reset(arenaSize);
-		player1.speed = speed;
+		player1.Reset(CubilineApplication.cubeSize);
+		player1.speed = CubilineApplication.lineSpeed;
 		
-		player2.Reset(arenaSize);
-		player2.speed = speed;
+		player2.Reset(CubilineApplication.cubeSize);
+		player2.speed = CubilineApplication.lineSpeed;
 
-		followTarget1.transform.position = new Vector3(-arenaSize * 2, 0, -arenaSize / 2);
-		followTarget2.transform.position = new Vector3(-arenaSize * 2, 0, -arenaSize / 2);
+		followTarget1.transform.position = new Vector3(-CubilineApplication.cubeSize * 2, 0, -CubilineApplication.cubeSize / 2);
+		followTarget2.transform.position = new Vector3(-CubilineApplication.cubeSize * 2, 0, -CubilineApplication.cubeSize / 2);
 
 		DoScreenOrientation();
 		uiController.GetComponent<CubilineUIController>().timeToApear = 1.0f;
@@ -268,11 +252,11 @@ public class CubilineCoopController : MonoBehaviour
 
 	void GoOut()
 	{
-		outTarget1.transform.position = followCamera1.transform.localPosition + (followCamera1.transform.localPosition - followCamera1.target.transform.localPosition).normalized * arenaSize;
+		outTarget1.transform.position = followCamera1.transform.localPosition + (followCamera1.transform.localPosition - followCamera1.target.transform.localPosition).normalized * CubilineApplication.cubeSize;
 		followTarget1.target = outTarget1;
 		followTarget1.followSmoothTime = 0.8f;
 
-		outTarget2.transform.position = followCamera2.transform.localPosition + (followCamera2.transform.localPosition - followCamera2.target.transform.localPosition).normalized * arenaSize;
+		outTarget2.transform.position = followCamera2.transform.localPosition + (followCamera2.transform.localPosition - followCamera2.target.transform.localPosition).normalized * CubilineApplication.cubeSize;
 		followTarget2.target = outTarget2;
 		followTarget2.followSmoothTime = 0.8f;
 	}

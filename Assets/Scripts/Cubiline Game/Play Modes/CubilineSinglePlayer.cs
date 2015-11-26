@@ -14,13 +14,6 @@ public class CubilineSinglePlayer : MonoBehaviour
 	public Transform outTarget;
 
 	//////////////////////////////////////////////////////////////
-	///////////////////////// PARAMETERS /////////////////////////
-	//////////////////////////////////////////////////////////////
-
-	public uint arenaSize = 5;
-	public float speed = 5;
-
-	//////////////////////////////////////////////////////////////
 	////////////////////// CONTROL VARIABLES /////////////////////
 	//////////////////////////////////////////////////////////////
 
@@ -45,7 +38,7 @@ public class CubilineSinglePlayer : MonoBehaviour
 	{
 		if(status != STATUS.PLAYING)
 		{
-			if((followTarget.transform.position - outTarget.position).magnitude < arenaSize)
+			if((followTarget.transform.position - outTarget.position).magnitude < CubilineApplication.cubeSize)
 			{
 				if(status == STATUS.GIONG_OUT)
 				{
@@ -168,27 +161,21 @@ public class CubilineSinglePlayer : MonoBehaviour
 
 	public void Reset()
 	{
-		// Keep size odd
-		if (arenaSize < 5)
-			arenaSize = 5;
-		if (arenaSize % 2 == 0)
-			arenaSize += 1;
-
 		CubilineScoreController.currentScore = 0;
 		CubilineScoreController.currentNumberOfPlayers = 1;
 
-		arenaController.Reset(arenaSize);
-		followCamera.transform.localPosition = new Vector3(0.0f, 0.0f, -arenaSize * 2.0f);
+		arenaController.Reset(CubilineApplication.cubeSize);
+		followCamera.transform.localPosition = new Vector3(0.0f, 0.0f, -CubilineApplication.cubeSize * 2.0f);
 
-		player.Reset(arenaSize);
-		player.speed = speed;
+		player.Reset(CubilineApplication.cubeSize);
+		player.speed = CubilineApplication.lineSpeed;
 
-		followTarget.transform.position = new Vector3(-arenaSize * 2, 0, -arenaSize / 2);
+		followTarget.transform.position = new Vector3(-CubilineApplication.cubeSize * 2, 0, -CubilineApplication.cubeSize / 2);
 	}
 
 	void GoOut()
 	{
-		outTarget.transform.position = followCamera.transform.localPosition + (followCamera.transform.localPosition - followCamera.target.transform.localPosition).normalized * arenaSize;
+		outTarget.transform.position = followCamera.transform.localPosition + (followCamera.transform.localPosition - followCamera.target.transform.localPosition).normalized * CubilineApplication.cubeSize;
 		followTarget.target = outTarget;
 		followTarget.followSmoothTime = 0.8f;
 	}

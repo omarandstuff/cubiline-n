@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayMenuController : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class PlayMenuController : MonoBehaviour
 	public GameObject playModel;
 	public GameObject coopModel;
 	public EasePosition focalTarget;
+	public Slider speedSlider;
+	public Slider sizeSlider;
 
 	//////////////////////////////////////////////////////////////
 	//////////////////////// PARAMETERS //////////////////////////
@@ -45,6 +48,8 @@ public class PlayMenuController : MonoBehaviour
 	void Start()
 	{
 		SetAction();
+		sizeSlider.value = CubilineApplication.cubeSize;
+		speedSlider.value = CubilineApplication.lineSpeed;
 		goingAction = MENU_ACTION.NONE;
 	}
 
@@ -104,6 +109,9 @@ public class PlayMenuController : MonoBehaviour
 				Application.LoadLevel(1);
 			else if (goingAction == MENU_ACTION.COOP)
 				Application.LoadLevel(3);
+
+			CubilineApplication.lineSpeed = (uint)speedSlider.value;
+			CubilineApplication.cubeSize = (uint)sizeSlider.value;
 		}
 	}
 
@@ -161,5 +169,4 @@ public class PlayMenuController : MonoBehaviour
 			actionTitle.text = "VS";
 		}
 	}
-
 }
