@@ -5,13 +5,14 @@ public class MainMenuController : MonoBehaviour
 	//////////////////////////////////////////////////////////////
 	///////////////////////// COMPONENTS /////////////////////////
 	//////////////////////////////////////////////////////////////
-	public OrbitAndLook menuCamera;
+	public Transform cubeMenu;
 	public EasePosition cubilineTilte;
 	public EasePosition actionTitleBase;
 	public TextMesh actionTitle;
 	public GameObject playModel;
 	public GameObject coopModel;
 	public EasePosition focalTarget;
+	public OrbitAndLook menuCamera;
 
 	//////////////////////////////////////////////////////////////
 	//////////////////////// PARAMETERS //////////////////////////
@@ -34,6 +35,7 @@ public class MainMenuController : MonoBehaviour
 	private Vector3 targetRotation = Vector3.zero;
 	private Vector3 inRotation = Vector3.zero;
 	private Vector3 rotationVelocity = Vector3.zero;
+	private Vector2 lastMousePosition;
 
 	/////////////////////////// ACTION ///////////////////////////
 	private GameObject currentModelAction;
@@ -53,51 +55,8 @@ public class MainMenuController : MonoBehaviour
 	{
 		if (goingAction == MENU_ACTION.NONE)
 		{
-			// Touch
-			if (Input.touchCount > 0)
-			{
-				Touch touch = Input.GetTouch(0);
-
-				if (touch.phase == TouchPhase.Began)
-				{
-					actionReady = true;
-					if (currentModelAction != null)
-						currentModelAction.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.OUT;
-				}
-				else if (touch.phase == TouchPhase.Moved)
-				{
-					float axis = touch.deltaPosition.x;
-					inRotation.y -= axis * slideSencibility;
-					actionRotation.y = targetRotation.y + (inRotation.y > 0 ? Mathf.Ceil(((int)inRotation.y / 45) / 2.0f) : Mathf.Floor(((int)inRotation.y / 45) / 2.0f)) * 90;
-					SetAction();
-					if (axis != 0)
-					{
-						actionReady = false;
-						if (currentModelAction != null) currentModelAction.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
-					}
-				}
-				else if (touch.phase == TouchPhase.Ended)
-				{
-					targetRotation.y += (inRotation.y > 0 ? Mathf.Ceil(((int)inRotation.y / 45) / 2.0f) : Mathf.Floor(((int)inRotation.y / 45) / 2.0f)) * 90;
-					inRotation.y = 0;
-
-					if (actionReady)
-					{
-						cubilineTilte.easeFace = EaseVector3.EASE_FACE.OUT;
-						actionTitleBase.easeFace = EaseVector3.EASE_FACE.OUT;
-						focalTarget.easeFace = EaseVector3.EASE_FACE.OUT;
-						menuCamera.automaticDistance = false;
-						goingAction = selectedAction;
-					}
-					else
-					{
-						if (currentModelAction != null) currentModelAction.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
-					}
-				}
-			}
-
 			currentRotation = Vector3.SmoothDamp(currentRotation, targetRotation + inRotation, ref rotationVelocity, 0.15f);
-			transform.localRotation = Quaternion.Euler(currentRotation);
+			cubeMenu.localRotation = Quaternion.Euler(currentRotation);
 		}
 		else if (focalTarget.transform.localPosition == focalTarget.outValues)
 		{
@@ -133,6 +92,52 @@ public class MainMenuController : MonoBehaviour
 				menuCamera.automaticDistance = false;
 				goingAction = selectedAction;
 			}
+		}
+	}
+
+	void OnMouseDown()
+	{
+		lastMousePosition = Input.mousePosition;
+		actionReady = true;
+		if (currentModelAction != null)
+			currentModelAction.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.OUT;
+	}
+
+	void OnMouseDrag()
+	{
+
+		Vector2 currentMousePosition = Input.mousePosition;
+		float axis = (currentMousePosition - lastMousePosition).x;
+		lastMousePosition = currentMousePosition;
+		inRotation.y -= axis * slideSencibility;
+		actionRotation.y = targetRotation.y + (inRotation.y > 0 ? Mathf.Ceil(((int)inRotation.y / 45) / 2.0f) : Mathf.Floor(((int)inRotation.y / 45) / 2.0f)) * 90;
+		SetAction();
+		if (axis != 0)
+		{
+			actionReady = false;
+			if (currentModelAction != null) currentModelAction.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
+		}
+	}
+
+	void OnMouseUp()
+	{
+		targetRotation.y += (inRotation.y > 0 ? Mathf.Ceil(((int)inRotation.y / 45) / 2.0f) : Mathf.Floor(((int)inRotation.y / 45) / 2.0f)) * 90;
+		inRotation.y = 0;
+	}
+
+	void OnMouseUpAsButton()
+	{
+		if (actionReady)
+		{
+			cubilineTilte.easeFace = EaseVector3.EASE_FACE.OUT;
+			actionTitleBase.easeFace = EaseVector3.EASE_FACE.OUT;
+			focalTarget.easeFace = EaseVector3.EASE_FACE.OUT;
+			menuCamera.automaticDistance = false;
+			goingAction = selectedAction;
+		}
+		else
+		{
+			if (currentModelAction != null) currentModelAction.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
 		}
 	}
 
