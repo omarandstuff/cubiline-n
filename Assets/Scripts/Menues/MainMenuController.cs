@@ -7,7 +7,6 @@ public class MainMenuController : MonoBehaviour
 	//////////////////////////////////////////////////////////////
 	public Transform cubeMenu;
 	public EasePosition cubilineTilte;
-	public EasePosition actionTitleBase;
 	public TextMesh actionTitle;
 	public GameObject playModel;
 	public GameObject coopModel;
@@ -87,7 +86,7 @@ public class MainMenuController : MonoBehaviour
 			else if(e.keyCode == KeyCode.Space)
 			{
 				cubilineTilte.easeFace = EaseVector3.EASE_FACE.OUT;
-				actionTitleBase.easeFace = EaseVector3.EASE_FACE.OUT;
+				actionTitle.GetComponent<EasePosition>().easeFace = EaseVector3.EASE_FACE.OUT;
 				focalTarget.easeFace = EaseVector3.EASE_FACE.OUT;
 				menuCamera.automaticDistance = false;
 				goingAction = selectedAction;
@@ -105,10 +104,17 @@ public class MainMenuController : MonoBehaviour
 
 	void OnMouseDrag()
 	{
-
-		Vector2 currentMousePosition = Input.mousePosition;
-		float axis = (currentMousePosition - lastMousePosition).x;
-		lastMousePosition = currentMousePosition;
+		float axis = 0;
+		if (Input.touchCount > 0)
+		{
+			axis = Input.GetTouch(0).deltaPosition.x;
+		}
+		else
+		{
+			Vector2 currentMousePosition = Input.mousePosition;
+			axis = (currentMousePosition - lastMousePosition).x;
+			lastMousePosition = currentMousePosition;
+		}
 		inRotation.y -= axis * slideSencibility;
 		actionRotation.y = targetRotation.y + (inRotation.y > 0 ? Mathf.Ceil(((int)inRotation.y / 45) / 2.0f) : Mathf.Floor(((int)inRotation.y / 45) / 2.0f)) * 90;
 		SetAction();
@@ -130,7 +136,7 @@ public class MainMenuController : MonoBehaviour
 		if (actionReady)
 		{
 			cubilineTilte.easeFace = EaseVector3.EASE_FACE.OUT;
-			actionTitleBase.easeFace = EaseVector3.EASE_FACE.OUT;
+			actionTitle.GetComponent<EasePosition>().easeFace = EaseVector3.EASE_FACE.OUT;
 			focalTarget.easeFace = EaseVector3.EASE_FACE.OUT;
 			menuCamera.automaticDistance = false;
 			goingAction = selectedAction;
