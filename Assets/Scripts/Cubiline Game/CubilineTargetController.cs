@@ -61,11 +61,15 @@ public class CubilineTargetController : MonoBehaviour
 
 	public void ManageTargets()
 	{
-		while (commonTargets.Count != commonTargetCount && slotController.freeSlots > 0)
+		while (commonTargets.Count < commonTargetCount && slotController.freeSlots > 0)
 			spawnCommon();
 
 		while (commonTargets.Count > commonTargetCount)
-			DismissCommon(commonTargets.Count - 1);
+		{
+			Dictionary<int, TargetInf>.Enumerator enumer = commonTargets.GetEnumerator();
+			enumer.MoveNext();
+			DismissCommon(enumer.Current.Value.slotIndex);
+		}
 
 		for (int i = 0; i < specialTargets.Length; i++)
 		{
@@ -92,6 +96,7 @@ public class CubilineTargetController : MonoBehaviour
 
 	public void DismissCommon(int index)
 	{
+		if (!commonTargets.ContainsKey(index)) return;
 		TakeOutTarget(commonTargets[index]);
 		commonTargets.Remove(index);
 	}
