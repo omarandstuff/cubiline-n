@@ -144,7 +144,6 @@ public class MenuController : MonoBehaviour
 
 	void JoyStickInput()
 	{
-		Debug.Log(Input.GetAxis("Horizontal"));
 		int joyInput = Input.GetAxis("Horizontal") > 0.5f ? 1 : (Input.GetAxis("Horizontal") < -0.5f ? -1 : 0);
 		if(joyInput != lastJoyStick)
 		{
@@ -161,7 +160,6 @@ public class MenuController : MonoBehaviour
 			SetAction();
 			lastJoyStick = joyInput;
 		}
-
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
