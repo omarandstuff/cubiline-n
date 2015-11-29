@@ -1,37 +1,43 @@
 ﻿using UnityEngine;
-using UnityEngine.UI;
+using System.Collections;
 
-public class PlayMenuController : MonoBehaviour
+public class MenuController : MonoBehaviour
 {
 	//////////////////////////////////////////////////////////////
 	///////////////////////// COMPONENTS /////////////////////////
 	//////////////////////////////////////////////////////////////
 	public Transform cubeMenu;
-	public OrbitAndLook menuCamera;
-	public EasePosition setUpMenu;
-	public TextMesh actionTitle;
-	public GameObject playModel;
-	public GameObject coopModel;
-	public EasePosition focalTarget;
-	public Slider speedSlider;
-	public Slider sizeSlider;
+	public Camera menuCamera;
+	public GameObject frontActionCoutentPrefab;
+	public GameObject BackActionCoutentPrefab;
+	public GameObject RightActionCoutentPrefab;
+	public GameObject LeftActionCoutentPrefab;
 
 	//////////////////////////////////////////////////////////////
 	//////////////////////// PARAMETERS //////////////////////////
 	//////////////////////////////////////////////////////////////
 
-	public enum MENU_ACTION { PLAY, COOP, VS, ONLINE, NONE }
-
-	public MENU_ACTION selectedAction;
-	public MENU_ACTION goingAction;
-	public float slideSencibility = 0.15f;
+	public enum MENU_ACTION { NONE_ACTION, FRONT_ACTION, RIGHT_ACTION, LEFT_ACTION, BACK_ACTION }
+	private MENU_ACTION selectedAction;
+	private MENU_ACTION goingAction;
+	public float slideSencibility = 1.0f;
+	public float cubeRotationSmoothTime = 0.15f;
 
 	//////////////////////////////////////////////////////////////
 	////////////////////// CONTROL VARIABLES /////////////////////
 	//////////////////////////////////////////////////////////////
 
+	//////////////////////// SIDE CONTENTS ///////////////////////
+
+	private GameObject frontActionCountent;
+	private GameObject BackActionCountent;
+	private GameObject RighttActionCountent;
+	private GameObject LeftActionCountent;
+
 	//////////////////////// CUBE ROTATION ///////////////////////
 
+	private int lastJoyStick;
+	
 	private Vector2 actionRotation = Vector3.zero;
 	private Vector3 currentRotation = Vector3.zero;
 	private Vector3 targetRotation = Vector3.zero;
@@ -49,32 +55,18 @@ public class PlayMenuController : MonoBehaviour
 
 	void Start()
 	{
-		SetAction();
-		sizeSlider.value = CubilineApplication.cubeSize;
-		speedSlider.value = CubilineApplication.lineSpeed;
-		goingAction = MENU_ACTION.NONE;
+		SetupMenu();
 	}
 
 	void Update()
 	{
-		if (goingAction == MENU_ACTION.NONE)
-		{
-			currentRotation = Vector3.SmoothDamp(currentRotation, targetRotation + inRotation, ref rotationVelocity, 0.15f);
-			cubeMenu.localRotation = Quaternion.Euler(currentRotation);
-		}
-		else if (focalTarget.transform.localPosition == focalTarget.outValues)
-		{
-			if (goingAction == MENU_ACTION.PLAY)
-				Application.LoadLevel(1);
-			else if (goingAction == MENU_ACTION.COOP)
-				Application.LoadLevel(3);
-			else if (goingAction == MENU_ACTION.ONLINE)
-				Application.LoadLevel(5);
-			else if (goingAction == MENU_ACTION.VS)
-				Application.LoadLevel(6);
+		// Check joystick input.
+		JoyStickInput();
 
-			CubilineApplication.lineSpeed = (uint)speedSlider.value;
-			CubilineApplication.cubeSize = (uint)sizeSlider.value;
+		if (goingAction == MENU_ACTION.NONE_ACTION) // Rotate cube while not action called.
+		{
+			currentRotation = Vector3.SmoothDamp(currentRotation, targetRotation + inRotation, ref rotationVelocity, cubeRotationSmoothTime);
+			cubeMenu.localRotation = Quaternion.Euler(currentRotation);
 		}
 	}
 
@@ -95,12 +87,8 @@ public class PlayMenuController : MonoBehaviour
 				actionRotation.y -= 90;
 				SetAction();
 			}
-			else if(e.keyCode == KeyCode.Space)
+			else if (e.keyCode == KeyCode.Space)
 			{
-				setUpMenu.easeFace = EaseVector3.EASE_FACE.OUT;
-				actionTitle.GetComponent<EasePosition>().easeFace = EaseVector3.EASE_FACE.OUT;
-				focalTarget.easeFace = EaseVector3.EASE_FACE.OUT;
-				menuCamera.automaticDistance = false;
 				goingAction = selectedAction;
 			}
 		}
@@ -110,8 +98,7 @@ public class PlayMenuController : MonoBehaviour
 	{
 		lastMousePosition = Input.mousePosition;
 		actionReady = true;
-		if (currentModelAction != null)
-			currentModelAction.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.OUT;
+		if (currentModelAction != null) currentModelAction.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.OUT;
 	}
 
 	void OnMouseDrag()
@@ -127,7 +114,7 @@ public class PlayMenuController : MonoBehaviour
 			axis = (currentMousePosition - lastMousePosition).x;
 			lastMousePosition = currentMousePosition;
 		}
-		inRotation.y -= axis * slideSencibility;
+		inRotation.y -= ((90.0f * axis) / menuCamera.pixelWidth) * slideSencibility;
 		actionRotation.y = targetRotation.y + (inRotation.y > 0 ? Mathf.Ceil(((int)inRotation.y / 45) / 2.0f) : Mathf.Floor(((int)inRotation.y / 45) / 2.0f)) * 90;
 		SetAction();
 		if (axis != 0)
@@ -147,10 +134,6 @@ public class PlayMenuController : MonoBehaviour
 	{
 		if (actionReady)
 		{
-			setUpMenu.easeFace = EaseVector3.EASE_FACE.OUT;
-			actionTitle.GetComponent<EasePosition>().easeFace = EaseVector3.EASE_FACE.OUT;
-			focalTarget.easeFace = EaseVector3.EASE_FACE.OUT;
-			menuCamera.automaticDistance = false;
 			goingAction = selectedAction;
 		}
 		else
@@ -158,6 +141,43 @@ public class PlayMenuController : MonoBehaviour
 			if (currentModelAction != null) currentModelAction.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
 		}
 	}
+
+	void JoyStickInput()
+	{
+		Debug.Log(Input.GetAxis("Horizontal"));
+		int joyInput = Input.GetAxis("Horizontal") > 0.5f ? 1 : (Input.GetAxis("Horizontal") < -0.5f ? -1 : 0);
+		if(joyInput != lastJoyStick)
+		{
+			if (joyInput > 0)
+			{
+				targetRotation.y += 90;
+				actionRotation.y += 90;
+			}
+			else if (joyInput < 0)
+			{
+				targetRotation.y -= 90;
+				actionRotation.y -= 90;
+			}
+			SetAction();
+			lastJoyStick = joyInput;
+		}
+
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////// SETUP ////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////
+
+	void SetupMenu()
+	{
+		if(frontActionCoutentPrefab != null)
+		{
+			frontActionCountent = Instantiate(frontActionCoutentPrefab, Vector3.back * 5, Quaternion.Euler(new Vector3(0.0f, 180.0f, 0.0f))) as GameObject;
+			frontActionCountent.transform.parent = cubeMenu;
+		}
+	}
+
+
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////// ACTION ////////////////////////////////////////////
@@ -168,27 +188,19 @@ public class PlayMenuController : MonoBehaviour
 		float fixedY = Mathf.Repeat(actionRotation.y, 360.0f);
 		if (fixedY == 0.0f || fixedY == 360.0f)
 		{
-			selectedAction = MENU_ACTION.PLAY;
-			currentModelAction = playModel;
-			actionTitle.text = "Single Player";
+			selectedAction = MENU_ACTION.FRONT_ACTION;
 		}
 		else if (fixedY == 90.0f)
 		{
-			selectedAction = MENU_ACTION.COOP;
-			currentModelAction = coopModel;
-			actionTitle.text = "Coop";
-		}
-		else if (fixedY == 270.0f)
-		{
-			selectedAction = MENU_ACTION.VS;
-			currentModelAction = null;
-			actionTitle.text = "VS";
+			selectedAction = MENU_ACTION.RIGHT_ACTION;
 		}
 		else if (fixedY == 180.0f)
 		{
-			selectedAction = MENU_ACTION.ONLINE;
-			currentModelAction = null;
-			actionTitle.text = "On Line";
+			selectedAction = MENU_ACTION.BACK_ACTION;
+		}
+		else
+		{
+			selectedAction = MENU_ACTION.LEFT_ACTION;
 		}
 	}
 }

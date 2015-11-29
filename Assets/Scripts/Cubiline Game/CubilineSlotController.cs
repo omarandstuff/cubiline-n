@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 public class CubilineSlotController : MonoBehaviour
 {
-	public GameObject colliderBase;
+	//public GameObject colliderBase;
 	public uint slotsTaken;
 	public uint freeSlots;
 
@@ -175,7 +175,7 @@ public class CubilineSlotController : MonoBehaviour
 		if (slot.enabled)
 		{
 			slot.enabled = false;
-			slot.collision = (GameObject)Instantiate(colliderBase, lastUsedPosition, Quaternion.identity);
+			//slot.collision = (GameObject)Instantiate(colliderBase, lastUsedPosition, Quaternion.identity);
 			slots[slotIndex] = slot;
 			slotsTaken++;
 			freeSlots--;
@@ -190,7 +190,7 @@ public class CubilineSlotController : MonoBehaviour
 		Slot slot = slots[index];
 
 		slot.enabled = false;
-		slot.collision = (GameObject)Instantiate(colliderBase, slot.position, Quaternion.identity);
+		//slot.collision = (GameObject)Instantiate(colliderBase, slot.position, Quaternion.identity);
 		slots[index] = slot;
 		slotsTaken++;
 		freeSlots--;
@@ -202,8 +202,8 @@ public class CubilineSlotController : MonoBehaviour
 		{
 			Slot slot = slots[index];
 			slot.enabled = true;
-			Destroy(slot.collision);
-			slot.collision = null;
+			//Destroy(slot.collision);
+			//slot.collision = null;
 			slots[index] = slot;
 			slotsTaken--;
 			freeSlots++;

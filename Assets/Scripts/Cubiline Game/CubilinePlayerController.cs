@@ -17,6 +17,8 @@ public class CubilinePlayerController : MonoBehaviour
 	//////////////////// CUBILINE PARAMETERS /////////////////////
 	//////////////////////////////////////////////////////////////
 
+	public bool test;
+
 	public enum PLACE { TOP, BOTTOM, RIGHT, LEFT, FRONT, BACK, NONE }
 	public enum TURN { UP, DOWN, RIGHT, LEFT, NONE }
 	public enum STATUS { PLAYING, PAUSED, FINISH }
@@ -72,6 +74,23 @@ public class CubilinePlayerController : MonoBehaviour
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// MONO BEHAVIOR /////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////
+
+	public void Start()
+	{
+		if(test)
+		{
+			GameObject.Find("Follow Camera").GetComponent<OrbitAndLook>().targetArea = GameObject.Find("Cube").transform;
+			Reset(11);
+		}
+	}
+
+	public void Update()
+	{
+		if(test)
+		{
+			Go();
+		}
+	}
 
 	public void Go()
 	{
@@ -273,14 +292,14 @@ public class CubilinePlayerController : MonoBehaviour
 		{
 			for (int i = 0; i < units; i++)
 			{
-				usedSlots.Enqueue(slotController.TakeSlot(headPlace, headDirection, ref lastSlotUsed));
+				//usedSlots.Enqueue(slotController.TakeSlot(headPlace, headDirection, ref lastSlotUsed));
 			}
 		}
 
 		if(usedSlots.Count > bodyLength)
 		{
-			while (usedSlots.Count != bodyLength)
-				slotController.FreeSlot(usedSlots.Dequeue());
+			//while (usedSlots.Count != bodyLength)
+				//slotController.FreeSlot(usedSlots.Dequeue());
 		}
 	}
 
