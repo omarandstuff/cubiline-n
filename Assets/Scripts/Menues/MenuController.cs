@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using UnityEngine.UI;
 
 public class MenuController : MonoBehaviour
 {
@@ -8,6 +8,7 @@ public class MenuController : MonoBehaviour
 	//////////////////////////////////////////////////////////////
 	public Transform cubeMenu;
 	public Camera menuCamera;
+	public Text ActionText;
 	public GameObject frontActionCoutentPrefab;
 	public GameObject BackActionCoutentPrefab;
 	public GameObject RightActionCoutentPrefab;
@@ -22,6 +23,11 @@ public class MenuController : MonoBehaviour
 	private MENU_ACTION goingAction;
 	public float slideSencibility = 1.0f;
 	public float cubeRotationSmoothTime = 0.15f;
+
+	public string frontActionText;
+	public string backActionText;
+	public string rightActionText;
+	public string leftActionText;
 
 	//////////////////////////////////////////////////////////////
 	////////////////////// CONTROL VARIABLES /////////////////////
@@ -173,6 +179,21 @@ public class MenuController : MonoBehaviour
 			frontActionCountent = Instantiate(frontActionCoutentPrefab, Vector3.back * 5, Quaternion.Euler(new Vector3(0.0f, 180.0f, 0.0f))) as GameObject;
 			frontActionCountent.transform.parent = cubeMenu;
 		}
+		else if (BackActionCoutentPrefab != null)
+		{
+			BackActionCountent = Instantiate(BackActionCoutentPrefab, Vector3.forward * 5, Quaternion.identity) as GameObject;
+			BackActionCountent.transform.parent = cubeMenu;
+		}
+		else if (RighttActionCountent != null)
+		{
+			RighttActionCountent = Instantiate(RightActionCoutentPrefab, Vector3.right * 5, Quaternion.Euler(new Vector3(0.0f, 90.0f, 0.0f))) as GameObject;
+			RighttActionCountent.transform.parent = cubeMenu;
+		}
+		else if (LeftActionCoutentPrefab != null)
+		{
+			LeftActionCountent = Instantiate(LeftActionCoutentPrefab, Vector3.left * 5, Quaternion.Euler(new Vector3(0.0f, 270.0f, 0.0f))) as GameObject;
+			LeftActionCountent.transform.parent = cubeMenu;
+		}
 	}
 
 
@@ -187,18 +208,22 @@ public class MenuController : MonoBehaviour
 		if (fixedY == 0.0f || fixedY == 360.0f)
 		{
 			selectedAction = MENU_ACTION.FRONT_ACTION;
+			ActionText.text = frontActionText;
 		}
 		else if (fixedY == 90.0f)
 		{
 			selectedAction = MENU_ACTION.RIGHT_ACTION;
+			ActionText.text = rightActionText;
 		}
 		else if (fixedY == 180.0f)
 		{
 			selectedAction = MENU_ACTION.BACK_ACTION;
+			ActionText.text = backActionText;
 		}
 		else
 		{
 			selectedAction = MENU_ACTION.LEFT_ACTION;
+			ActionText.text = leftActionText;
 		}
 	}
 }
