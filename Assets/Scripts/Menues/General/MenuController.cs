@@ -104,7 +104,7 @@ public class MenuController : MonoBehaviour
 	{
 		lastMousePosition = Input.mousePosition;
 		actionReady = true;
-		if (currentModelAction != null) currentModelAction.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.OUT;
+		if (currentModelAction != null && currentModelAction.GetComponent<EaseScale>() != null) currentModelAction.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.OUT;
 	}
 
 	void OnMouseDrag()
@@ -126,7 +126,7 @@ public class MenuController : MonoBehaviour
 		if (axis != 0)
 		{
 			actionReady = false;
-			if (currentModelAction != null) currentModelAction.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
+			if (currentModelAction != null && currentModelAction.GetComponent<EaseScale>() != null) currentModelAction.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
 		}
 	}
 
@@ -144,7 +144,7 @@ public class MenuController : MonoBehaviour
 		}
 		else
 		{
-			if (currentModelAction != null) currentModelAction.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
+			if (currentModelAction != null && currentModelAction.GetComponent<EaseScale>() != null) currentModelAction.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
 		}
 	}
 
@@ -176,22 +176,22 @@ public class MenuController : MonoBehaviour
 	{
 		if(frontActionCoutentPrefab != null)
 		{
-			frontActionCountent = Instantiate(frontActionCoutentPrefab, Vector3.back * 5, Quaternion.Euler(new Vector3(0.0f, 180.0f, 0.0f))) as GameObject;
+			frontActionCountent = Instantiate(frontActionCoutentPrefab, Vector3.back * 5.01f, Quaternion.Euler(new Vector3(0.0f, 180.0f, 0.0f))) as GameObject;
 			frontActionCountent.transform.parent = cubeMenu;
 		}
-		else if (BackActionCoutentPrefab != null)
+		if (BackActionCoutentPrefab != null)
 		{
-			BackActionCountent = Instantiate(BackActionCoutentPrefab, Vector3.forward * 5, Quaternion.identity) as GameObject;
+			BackActionCountent = Instantiate(BackActionCoutentPrefab, Vector3.forward * 5.01f, Quaternion.identity) as GameObject;
 			BackActionCountent.transform.parent = cubeMenu;
 		}
-		else if (RighttActionCountent != null)
+		if (RighttActionCountent != null)
 		{
-			RighttActionCountent = Instantiate(RightActionCoutentPrefab, Vector3.right * 5, Quaternion.Euler(new Vector3(0.0f, 90.0f, 0.0f))) as GameObject;
+			RighttActionCountent = Instantiate(RightActionCoutentPrefab, Vector3.right * 5.01f, Quaternion.Euler(new Vector3(0.0f, 90.0f, 0.0f))) as GameObject;
 			RighttActionCountent.transform.parent = cubeMenu;
 		}
-		else if (LeftActionCoutentPrefab != null)
+		if (LeftActionCoutentPrefab != null)
 		{
-			LeftActionCountent = Instantiate(LeftActionCoutentPrefab, Vector3.left * 5, Quaternion.Euler(new Vector3(0.0f, 270.0f, 0.0f))) as GameObject;
+			LeftActionCountent = Instantiate(LeftActionCoutentPrefab, Vector3.left * 5.01f, Quaternion.Euler(new Vector3(0.0f, 270.0f, 0.0f))) as GameObject;
 			LeftActionCountent.transform.parent = cubeMenu;
 		}
 	}
@@ -209,21 +209,42 @@ public class MenuController : MonoBehaviour
 		{
 			selectedAction = MENU_ACTION.FRONT_ACTION;
 			ActionText.text = frontActionText;
+			if(frontActionCountent != null && frontActionCountent != currentModelAction)
+			{
+				currentModelAction = frontActionCountent;
+				if (currentModelAction.GetComponent<ActionContentController>() != null) currentModelAction.GetComponent<ActionContentController>().Viewing();
+			}
+			
 		}
 		else if (fixedY == 90.0f)
 		{
 			selectedAction = MENU_ACTION.RIGHT_ACTION;
 			ActionText.text = rightActionText;
+			if (RighttActionCountent != null && RighttActionCountent != currentModelAction)
+			{
+				currentModelAction = RighttActionCountent;
+				if(currentModelAction.GetComponent<ActionContentController>() != null) currentModelAction.GetComponent<ActionContentController>().Viewing();
+			}
 		}
 		else if (fixedY == 180.0f)
 		{
 			selectedAction = MENU_ACTION.BACK_ACTION;
 			ActionText.text = backActionText;
+			if (BackActionCountent != null && BackActionCountent != currentModelAction)
+			{
+				currentModelAction = BackActionCountent;
+				if (currentModelAction.GetComponent<ActionContentController>() != null) currentModelAction.GetComponent<ActionContentController>().Viewing();
+			}
 		}
 		else
 		{
 			selectedAction = MENU_ACTION.LEFT_ACTION;
 			ActionText.text = leftActionText;
+			if (LeftActionCountent != null && LeftActionCountent != currentModelAction)
+			{
+				currentModelAction = LeftActionCountent;
+				if (currentModelAction.GetComponent<ActionContentController>() != null) currentModelAction.GetComponent<ActionContentController>().Viewing();
+			}
 		}
 	}
 }
