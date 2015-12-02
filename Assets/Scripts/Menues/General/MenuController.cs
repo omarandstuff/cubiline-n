@@ -9,10 +9,10 @@ public class MenuController : MonoBehaviour
 	public Transform cubeMenu;
 	public Camera menuCamera;
 	public Text ActionText;
-	public GameObject frontActionCoutentPrefab;
-	public GameObject BackActionCoutentPrefab;
-	public GameObject RightActionCoutentPrefab;
-	public GameObject LeftActionCoutentPrefab;
+	public GameObject frontActionContentPrefab;
+	public GameObject BackActionContentPrefab;
+	public GameObject RightActionContentPrefab;
+	public GameObject LeftActionContentPrefab;
 
 	//////////////////////////////////////////////////////////////
 	//////////////////////// PARAMETERS //////////////////////////
@@ -174,24 +174,24 @@ public class MenuController : MonoBehaviour
 
 	void SetupMenu()
 	{
-		if(frontActionCoutentPrefab != null)
+		if(frontActionContentPrefab != null)
 		{
-			frontActionCountent = Instantiate(frontActionCoutentPrefab, Vector3.back * 5.01f, Quaternion.Euler(new Vector3(0.0f, 180.0f, 0.0f))) as GameObject;
+			frontActionCountent = Instantiate(frontActionContentPrefab, Vector3.back * 5.01f, Quaternion.Euler(new Vector3(0.0f, 180.0f, 0.0f))) as GameObject;
 			frontActionCountent.transform.parent = cubeMenu;
 		}
-		if (BackActionCoutentPrefab != null)
+		if (BackActionContentPrefab != null)
 		{
-			BackActionCountent = Instantiate(BackActionCoutentPrefab, Vector3.forward * 5.01f, Quaternion.identity) as GameObject;
+			BackActionCountent = Instantiate(BackActionContentPrefab, Vector3.forward * 5.01f, Quaternion.identity) as GameObject;
 			BackActionCountent.transform.parent = cubeMenu;
 		}
 		if (RighttActionCountent != null)
 		{
-			RighttActionCountent = Instantiate(RightActionCoutentPrefab, Vector3.right * 5.01f, Quaternion.Euler(new Vector3(0.0f, 90.0f, 0.0f))) as GameObject;
+			RighttActionCountent = Instantiate(RightActionContentPrefab, Vector3.right * 5.01f, Quaternion.Euler(new Vector3(0.0f, 90.0f, 0.0f))) as GameObject;
 			RighttActionCountent.transform.parent = cubeMenu;
 		}
-		if (LeftActionCoutentPrefab != null)
+		if (LeftActionContentPrefab != null)
 		{
-			LeftActionCountent = Instantiate(LeftActionCoutentPrefab, Vector3.left * 5.01f, Quaternion.Euler(new Vector3(0.0f, 270.0f, 0.0f))) as GameObject;
+			LeftActionCountent = Instantiate(LeftActionContentPrefab, Vector3.left * 5.01f, Quaternion.Euler(new Vector3(0.0f, 270.0f, 0.0f))) as GameObject;
 			LeftActionCountent.transform.parent = cubeMenu;
 		}
 	}
@@ -207,43 +207,46 @@ public class MenuController : MonoBehaviour
 		float fixedY = Mathf.Repeat(actionRotation.y, 360.0f);
 		if (fixedY == 0.0f || fixedY == 360.0f)
 		{
-			selectedAction = MENU_ACTION.FRONT_ACTION;
-			ActionText.text = frontActionText;
-			if(frontActionCountent != null && frontActionCountent != currentModelAction)
+			if(frontActionCountent != currentModelAction)
 			{
+				selectedAction = MENU_ACTION.FRONT_ACTION;
+				ActionText.text = frontActionText;
+				if (currentModelAction != null && currentModelAction.GetComponent<ActionContentController>() != null) currentModelAction.GetComponent<ActionContentController>().Leave();
 				currentModelAction = frontActionCountent;
-				if (currentModelAction.GetComponent<ActionContentController>() != null) currentModelAction.GetComponent<ActionContentController>().Viewing();
+				if (currentModelAction != null && currentModelAction.GetComponent<ActionContentController>() != null) currentModelAction.GetComponent<ActionContentController>().Enter();
 			}
-			
 		}
 		else if (fixedY == 90.0f)
 		{
-			selectedAction = MENU_ACTION.RIGHT_ACTION;
-			ActionText.text = rightActionText;
-			if (RighttActionCountent != null && RighttActionCountent != currentModelAction)
+			if (RighttActionCountent != currentModelAction)
 			{
+				selectedAction = MENU_ACTION.RIGHT_ACTION;
+				ActionText.text = rightActionText;
+				if (currentModelAction != null && currentModelAction.GetComponent<ActionContentController>() != null) currentModelAction.GetComponent<ActionContentController>().Leave();
 				currentModelAction = RighttActionCountent;
-				if(currentModelAction.GetComponent<ActionContentController>() != null) currentModelAction.GetComponent<ActionContentController>().Viewing();
+				if (currentModelAction != null && currentModelAction.GetComponent<ActionContentController>() != null) currentModelAction.GetComponent<ActionContentController>().Enter();
 			}
 		}
 		else if (fixedY == 180.0f)
 		{
-			selectedAction = MENU_ACTION.BACK_ACTION;
-			ActionText.text = backActionText;
-			if (BackActionCountent != null && BackActionCountent != currentModelAction)
+			if (BackActionCountent != currentModelAction)
 			{
+				selectedAction = MENU_ACTION.BACK_ACTION;
+				ActionText.text = backActionText;
+				if (currentModelAction != null && currentModelAction.GetComponent<ActionContentController>() != null) currentModelAction.GetComponent<ActionContentController>().Leave();
 				currentModelAction = BackActionCountent;
-				if (currentModelAction.GetComponent<ActionContentController>() != null) currentModelAction.GetComponent<ActionContentController>().Viewing();
+				if (currentModelAction != null && currentModelAction.GetComponent<ActionContentController>() != null) currentModelAction.GetComponent<ActionContentController>().Enter();
 			}
 		}
 		else
 		{
-			selectedAction = MENU_ACTION.LEFT_ACTION;
-			ActionText.text = leftActionText;
-			if (LeftActionCountent != null && LeftActionCountent != currentModelAction)
+			if (LeftActionCountent != currentModelAction)
 			{
+				selectedAction = MENU_ACTION.LEFT_ACTION;
+				ActionText.text = leftActionText;
+				if (currentModelAction != null && currentModelAction.GetComponent<ActionContentController>() != null) currentModelAction.GetComponent<ActionContentController>().Leave();
 				currentModelAction = LeftActionCountent;
-				if (currentModelAction.GetComponent<ActionContentController>() != null) currentModelAction.GetComponent<ActionContentController>().Viewing();
+				if (currentModelAction != null && currentModelAction.GetComponent<ActionContentController>() != null) currentModelAction.GetComponent<ActionContentController>().Enter();
 			}
 		}
 	}

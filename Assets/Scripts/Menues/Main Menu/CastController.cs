@@ -9,6 +9,7 @@ public class CastController : MonoBehaviour
 	public float waitTime;
 	public float castSpeed = 1.0f;
 	public float bottomPosition;
+	public bool interacting;
 
 	//////////////////////////////////////////////////////////////
 	////////////////////// CONTROL VARIABLES /////////////////////
@@ -50,7 +51,7 @@ public class CastController : MonoBehaviour
 		}
 		else
 		{
-			if (Input.GetMouseButton(0)) return;
+			if (Input.GetMouseButton(0) && interacting) return;
 			
 			GetComponent<RectTransform>().localPosition = position += Vector3.up * Time.deltaTime * castSpeed;
 			if (position.y >= bottomPosition)

@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using UnityEngine.UI;
 
 public class SmallCastActionController : SmallActionController
 {
@@ -7,6 +6,7 @@ public class SmallCastActionController : SmallActionController
 	///////////////////////// COMPONENTS /////////////////////////
 	//////////////////////////////////////////////////////////////
 
+	public ScrollRect scrollView;
 	public CastController castController;
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -18,12 +18,24 @@ public class SmallCastActionController : SmallActionController
 		castController.Reset();
 	}
 
-	public override void GoAction()
+	public override void Select()
+	{
+		castController.interacting = true;
+		scrollView.enabled = true;
+	}
+
+	public override void Unselect()
+	{
+		castController.interacting = false;
+		scrollView.enabled = false;
+	}
+
+	public override void Enter()
 	{
 		castController.enabled = true;
 	}
 
-	public override void OutAction()
+	public override void Leave()
 	{
 		castController.Reset();
 		castController.enabled = false;

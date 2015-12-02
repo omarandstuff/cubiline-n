@@ -3,15 +3,19 @@ using System.Collections;
 
 public class SmallActionController : MonoBehaviour
 {
-	public virtual void GoAction()
+	public virtual void Select()
 	{
 	}
 
-	public virtual void OutAction()
+	public virtual void Enter()
 	{
 	}
 
-	public virtual void GoOut()
+	public virtual void Leave()
+	{
+	}
+
+	public virtual void Unselect()
 	{
 	}
 }

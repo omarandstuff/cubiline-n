@@ -31,22 +31,32 @@ public class ActionContentController : MonoBehaviour
 	void Awake()
 	{
 		smallContent = Instantiate(smallContentPrefab) as GameObject;
-		smallContent.transform.parent = transform;
+		smallContent.transform.SetParent(transform);
 		smallContent.transform.localPosition = Vector3.zero;
 	}
 
-	public void Viewing()
+	public void Enter()
 	{
-		smallContent.GetComponent<SmallActionController>().GoAction();
+		smallContent.GetComponent<SmallActionController>().Enter();
 	}
 
-	public void GoAction()
+	public void Leave()
+	{
+		smallContent.GetComponent<SmallActionController>().Leave();
+	}
+
+	public void Select()
 	{
 		if(contentType == CONTENT_TYPE.BIG_CONTENT)
 		{
 			bigContent = Instantiate(bigContentPrefab);
-			smallContent.GetComponent<SmallActionController>().GoOut();
+			smallContent.GetComponent<SmallActionController>().Select();
 			Destroy(smallContent, 1.0f);
 		}
+	}
+
+	public void Unselect()
+	{
+		smallContent.GetComponent<SmallActionController>().Unselect();
 	}
 }
