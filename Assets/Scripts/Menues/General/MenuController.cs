@@ -9,6 +9,7 @@ public class MenuController : MonoBehaviour
 	public Transform cubeMenu;
 	public Camera menuCamera;
 	public Text ActionText;
+	public EasePosition focalTarget;
 	public GameObject frontActionContentPrefab;
 	public GameObject BackActionContentPrefab;
 	public GameObject RightActionContentPrefab;
@@ -18,9 +19,10 @@ public class MenuController : MonoBehaviour
 	//////////////////////// PARAMETERS //////////////////////////
 	//////////////////////////////////////////////////////////////
 
-	public enum MENU_ACTION { NONE_ACTION, FRONT_ACTION, RIGHT_ACTION, LEFT_ACTION, BACK_ACTION }
-	private MENU_ACTION selectedAction;
-	private MENU_ACTION goingAction;
+	public float bigPanoramaDistance = 2.0f;
+	public float smallPanoramaDistance = 1.0f;
+	public enum STATUS { SELECTING, IN_ACTION }
+	public STATUS status = STATUS.SELECTING;
 	public float slideSencibility = 1.0f;
 	public float cubeRotationSmoothTime = 0.15f;
 
@@ -54,6 +56,7 @@ public class MenuController : MonoBehaviour
 	/////////////////////////// ACTION ///////////////////////////
 	private GameObject currentModelAction;
 	private bool actionReady;
+	private bool outGoing;
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// MONO BEHAVIOR /////////////////////////////////////////
@@ -68,16 +71,21 @@ public class MenuController : MonoBehaviour
 	{
 		// Check joystick input.
 		JoyStickInput();
-
-		if (goingAction == MENU_ACTION.NONE_ACTION) // Rotate cube while not action called.
+		if (!outGoing) // Rotate cube while not action called.
 		{
 			currentRotation = Vector3.SmoothDamp(currentRotation, targetRotation + inRotation, ref rotationVelocity, cubeRotationSmoothTime);
 			cubeMenu.localRotation = Quaternion.Euler(currentRotation);
+		}
+		else if (focalTarget.transform.localPosition == focalTarget.outValues)
+		{
+			Application.LoadLevel(currentModelAction.GetComponent<ActionContentController>().SceneName);
 		}
 	}
 
 	void OnGUI()
 	{
+		if (status != STATUS.SELECTING && !outGoing) return;
+
 		Event e = Event.current;
 		if (e.type == EventType.keyDown)
 		{
@@ -95,7 +103,7 @@ public class MenuController : MonoBehaviour
 			}
 			else if (e.keyCode == KeyCode.Space)
 			{
-				goingAction = selectedAction;
+				SelectAction();
 			}
 		}
 	}
@@ -139,17 +147,15 @@ public class MenuController : MonoBehaviour
 	void OnMouseUpAsButton()
 	{
 		if (actionReady)
-		{
-			goingAction = selectedAction;
-		}
-		else
-		{
-			if (currentModelAction != null && currentModelAction.GetComponent<EaseScale>() != null) currentModelAction.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
-		}
+			SelectAction();
+		else if (currentModelAction != null && currentModelAction.GetComponent<EaseScale>() != null)
+			currentModelAction.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
 	}
 
 	void JoyStickInput()
 	{
+		if (status != STATUS.SELECTING && !outGoing) return;
+
 		int joyInput = Input.GetAxis("Horizontal") > 0.5f ? 1 : (Input.GetAxis("Horizontal") < -0.5f ? -1 : 0);
 		if(joyInput != lastJoyStick)
 		{
@@ -184,7 +190,7 @@ public class MenuController : MonoBehaviour
 			BackActionCountent = Instantiate(BackActionContentPrefab, Vector3.forward * 5.01f, Quaternion.identity) as GameObject;
 			BackActionCountent.transform.parent = cubeMenu;
 		}
-		if (RighttActionCountent != null)
+		if (RightActionContentPrefab != null)
 		{
 			RighttActionCountent = Instantiate(RightActionContentPrefab, Vector3.right * 5.01f, Quaternion.Euler(new Vector3(0.0f, 90.0f, 0.0f))) as GameObject;
 			RighttActionCountent.transform.parent = cubeMenu;
@@ -194,59 +200,84 @@ public class MenuController : MonoBehaviour
 			LeftActionCountent = Instantiate(LeftActionContentPrefab, Vector3.left * 5.01f, Quaternion.Euler(new Vector3(0.0f, 270.0f, 0.0f))) as GameObject;
 			LeftActionCountent.transform.parent = cubeMenu;
 		}
+		SetAction();
+		menuCamera.GetComponent<OrbitAndLook>().automaticDistanceOffset = bigPanoramaDistance;
 	}
-
-
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////// ACTION ////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////
+
+	void SelectAction()
+	{
+		if(currentModelAction != null)
+		{
+			ActionContentController action = currentModelAction.GetComponent<ActionContentController>();
+			if (action.contentType == ActionContentController.CONTENT_TYPE.SMALL_CONTENT)
+			{
+				menuCamera.GetComponent<OrbitAndLook>().automaticDistanceOffset = smallPanoramaDistance;
+				action.Select();
+				GetComponent<Collider>().enabled = false;
+			}
+			else if (action.contentType == ActionContentController.CONTENT_TYPE.TO_SCENE)
+			{
+	
+				focalTarget.easeFace = EaseVector3.EASE_FACE.OUT;
+				menuCamera.GetComponent<OrbitAndLook>().automaticDistance = false;
+				outGoing = true;
+				GetComponent<Collider>().enabled = false;
+			}
+		}
+	}
+
+	void BackFromAction()
+	{
+		menuCamera.GetComponent<OrbitAndLook>().automaticDistanceOffset = bigPanoramaDistance;
+		currentModelAction.GetComponent<ActionContentController>().Unselect();
+		GetComponent<Collider>().enabled = false;
+	}
 
 	void SetAction()
 	{
 		float fixedY = Mathf.Repeat(actionRotation.y, 360.0f);
 		if (fixedY == 0.0f || fixedY == 360.0f)
 		{
-			if(frontActionCountent != currentModelAction)
+			ActionText.text = frontActionText;
+			if (frontActionCountent != currentModelAction)
 			{
-				selectedAction = MENU_ACTION.FRONT_ACTION;
-				ActionText.text = frontActionText;
-				if (currentModelAction != null && currentModelAction.GetComponent<ActionContentController>() != null) currentModelAction.GetComponent<ActionContentController>().Leave();
+				if (currentModelAction != null) currentModelAction.GetComponent<ActionContentController>().Leave();
 				currentModelAction = frontActionCountent;
-				if (currentModelAction != null && currentModelAction.GetComponent<ActionContentController>() != null) currentModelAction.GetComponent<ActionContentController>().Enter();
+				if (currentModelAction != null) currentModelAction.GetComponent<ActionContentController>().Enter();
 			}
 		}
 		else if (fixedY == 90.0f)
 		{
+			ActionText.text = rightActionText;
 			if (RighttActionCountent != currentModelAction)
 			{
-				selectedAction = MENU_ACTION.RIGHT_ACTION;
-				ActionText.text = rightActionText;
-				if (currentModelAction != null && currentModelAction.GetComponent<ActionContentController>() != null) currentModelAction.GetComponent<ActionContentController>().Leave();
+				if (currentModelAction != null) currentModelAction.GetComponent<ActionContentController>().Leave();
 				currentModelAction = RighttActionCountent;
-				if (currentModelAction != null && currentModelAction.GetComponent<ActionContentController>() != null) currentModelAction.GetComponent<ActionContentController>().Enter();
+				if (currentModelAction != null) currentModelAction.GetComponent<ActionContentController>().Enter();
 			}
 		}
 		else if (fixedY == 180.0f)
 		{
+			ActionText.text = backActionText;
 			if (BackActionCountent != currentModelAction)
 			{
-				selectedAction = MENU_ACTION.BACK_ACTION;
-				ActionText.text = backActionText;
-				if (currentModelAction != null && currentModelAction.GetComponent<ActionContentController>() != null) currentModelAction.GetComponent<ActionContentController>().Leave();
+				if (currentModelAction != null) currentModelAction.GetComponent<ActionContentController>().Leave();
 				currentModelAction = BackActionCountent;
-				if (currentModelAction != null && currentModelAction.GetComponent<ActionContentController>() != null) currentModelAction.GetComponent<ActionContentController>().Enter();
+				if (currentModelAction != null) currentModelAction.GetComponent<ActionContentController>().Enter();
 			}
 		}
 		else
 		{
+			ActionText.text = leftActionText;
 			if (LeftActionCountent != currentModelAction)
 			{
-				selectedAction = MENU_ACTION.LEFT_ACTION;
-				ActionText.text = leftActionText;
-				if (currentModelAction != null && currentModelAction.GetComponent<ActionContentController>() != null) currentModelAction.GetComponent<ActionContentController>().Leave();
+				if (currentModelAction != null) currentModelAction.GetComponent<ActionContentController>().Leave();
 				currentModelAction = LeftActionCountent;
-				if (currentModelAction != null && currentModelAction.GetComponent<ActionContentController>() != null) currentModelAction.GetComponent<ActionContentController>().Enter();
+				if (currentModelAction != null) currentModelAction.GetComponent<ActionContentController>().Enter();
 			}
 		}
 	}

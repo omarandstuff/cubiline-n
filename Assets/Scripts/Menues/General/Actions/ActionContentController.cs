@@ -30,33 +30,37 @@ public class ActionContentController : MonoBehaviour
 
 	void Awake()
 	{
-		smallContent = Instantiate(smallContentPrefab) as GameObject;
-		smallContent.transform.SetParent(transform);
-		smallContent.transform.localPosition = Vector3.zero;
+		if (smallContentPrefab != null)
+		{
+			smallContent = Instantiate(smallContentPrefab) as GameObject;
+			smallContent.transform.SetParent(transform);
+			smallContent.transform.localPosition = Vector3.zero;
+		}
 	}
 
 	public void Enter()
 	{
-		smallContent.GetComponent<SmallActionController>().Enter();
+		if(smallContent != null) smallContent.GetComponent<SmallActionController>().Enter();
 	}
 
 	public void Leave()
 	{
-		smallContent.GetComponent<SmallActionController>().Leave();
+		if (smallContent != null) smallContent.GetComponent<SmallActionController>().Leave();
 	}
 
 	public void Select()
 	{
-		if(contentType == CONTENT_TYPE.BIG_CONTENT)
+		if (smallContent != null) smallContent.GetComponent<SmallActionController>().Select();
+		if (contentType == CONTENT_TYPE.BIG_CONTENT)
 		{
 			bigContent = Instantiate(bigContentPrefab);
-			smallContent.GetComponent<SmallActionController>().Select();
 			Destroy(smallContent, 1.0f);
 		}
+
 	}
 
 	public void Unselect()
 	{
-		smallContent.GetComponent<SmallActionController>().Unselect();
+		if (smallContent != null) smallContent.GetComponent<SmallActionController>().Unselect();
 	}
 }
