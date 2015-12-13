@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class MenuController : MonoBehaviour
 {
@@ -10,42 +11,38 @@ public class MenuController : MonoBehaviour
 	public Camera menuCamera;
 	public Text ActionText;
 	public EasePosition focalTarget;
-	public GameObject frontActionContentPrefab;
-	public GameObject BackActionContentPrefab;
-	public GameObject RightActionContentPrefab;
-	public GameObject LeftActionContentPrefab;
+	public GameObject backButtonPrefab;
+	[System.Serializable]public struct Sides { public string frontActionText; public GameObject frontActionContentPrefab; public string backActionText; public GameObject backActionContentPrefab; public string rightActionText; public GameObject rightActionContentPrefab; public string leftActionText; public GameObject leftActionContentPrefab; }
+	public Sides[] sides;
 
 	//////////////////////////////////////////////////////////////
 	//////////////////////// PARAMETERS //////////////////////////
 	//////////////////////////////////////////////////////////////
-
 	public float bigPanoramaDistance = 2.0f;
 	public float smallPanoramaDistance = 1.0f;
 	public enum STATUS { SELECTING, IN_ACTION }
 	public STATUS status = STATUS.SELECTING;
 	public float slideSencibility = 1.0f;
 	public float cubeRotationSmoothTime = 0.15f;
-
-	public string frontActionText;
-	public string backActionText;
-	public string rightActionText;
-	public string leftActionText;
+	public string backScene;
 
 	//////////////////////////////////////////////////////////////
 	////////////////////// CONTROL VARIABLES /////////////////////
 	//////////////////////////////////////////////////////////////
 
 	//////////////////////// SIDE CONTENTS ///////////////////////
-
 	private GameObject frontActionCountent;
-	private GameObject BackActionCountent;
-	private GameObject RighttActionCountent;
-	private GameObject LeftActionCountent;
+	private GameObject backActionCountent;
+	private GameObject righttActionCountent;
+	private GameObject leftActionCountent;
+	private string frontActionText;
+	private string backActionText;
+	private string rightActionText;
+	private string leftActionText;
 
 	//////////////////////// CUBE ROTATION ///////////////////////
-
 	private int lastJoyStick;
-	
+
 	private Vector2 actionRotation = Vector3.zero;
 	private Vector3 currentRotation = Vector3.zero;
 	private Vector3 targetRotation = Vector3.zero;
@@ -57,6 +54,9 @@ public class MenuController : MonoBehaviour
 	private GameObject currentModelAction;
 	private bool actionReady;
 	private bool outGoing;
+	private Sides currentSides;
+	private GameObject backButton;
+	private Stack<int> backStack = new Stack<int>();
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// MONO BEHAVIOR /////////////////////////////////////////
@@ -78,7 +78,10 @@ public class MenuController : MonoBehaviour
 		}
 		else if (focalTarget.transform.localPosition == focalTarget.outValues)
 		{
-			Application.LoadLevel(currentModelAction.GetComponent<ActionContentController>().SceneName);
+			if(currentModelAction != null)
+				Application.LoadLevel(currentModelAction.GetComponent<ActionContentController>().SceneName);
+			else
+				Application.LoadLevel(backScene);
 		}
 	}
 
@@ -157,7 +160,7 @@ public class MenuController : MonoBehaviour
 		if (status != STATUS.SELECTING && !outGoing) return;
 
 		int joyInput = Input.GetAxis("Horizontal") > 0.5f ? 1 : (Input.GetAxis("Horizontal") < -0.5f ? -1 : 0);
-		if(joyInput != lastJoyStick)
+		if (joyInput != lastJoyStick)
 		{
 			if (joyInput > 0)
 			{
@@ -178,30 +181,55 @@ public class MenuController : MonoBehaviour
 	//////////////////////////////////////////// SETUP ////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////
 
-	void SetupMenu()
+	void LoadSides(int index)
 	{
-		if(frontActionContentPrefab != null)
+		if (index >= sides.Length) return;
+		frontActionText = "None";
+		backActionText = "None";
+		rightActionText = "None";
+		leftActionText = "None";
+		if (frontActionCountent != null) Destroy(frontActionCountent);
+		if (backActionCountent != null) Destroy(backActionCountent);
+		if (righttActionCountent != null) Destroy(righttActionCountent);
+		if (leftActionCountent != null) Destroy(leftActionCountent);
+		if (sides[index].frontActionContentPrefab != null)
 		{
-			frontActionCountent = Instantiate(frontActionContentPrefab, Vector3.back * 5.01f, Quaternion.Euler(new Vector3(0.0f, 180.0f, 0.0f))) as GameObject;
+			frontActionCountent = Instantiate(sides[index].frontActionContentPrefab, Vector3.back * 5.01f, Quaternion.Euler(new Vector3(0.0f, 180.0f, 0.0f))) as GameObject;
 			frontActionCountent.transform.parent = cubeMenu;
+			frontActionText = sides[index].frontActionText;
 		}
-		if (BackActionContentPrefab != null)
+		if (sides[index].backActionContentPrefab != null)
 		{
-			BackActionCountent = Instantiate(BackActionContentPrefab, Vector3.forward * 5.01f, Quaternion.identity) as GameObject;
-			BackActionCountent.transform.parent = cubeMenu;
+			backActionCountent = Instantiate(sides[index].backActionContentPrefab, Vector3.forward * 5.01f, Quaternion.identity) as GameObject;
+			backActionCountent.transform.parent = cubeMenu;
+			backActionText = sides[index].backActionText;
 		}
-		if (RightActionContentPrefab != null)
+		if (sides[index].rightActionContentPrefab != null)
 		{
-			RighttActionCountent = Instantiate(RightActionContentPrefab, Vector3.right * 5.01f, Quaternion.Euler(new Vector3(0.0f, 90.0f, 0.0f))) as GameObject;
-			RighttActionCountent.transform.parent = cubeMenu;
+			righttActionCountent = Instantiate(sides[index].rightActionContentPrefab, Vector3.right * 5.01f, Quaternion.Euler(new Vector3(0.0f, 90.0f, 0.0f))) as GameObject;
+			righttActionCountent.transform.parent = cubeMenu;
+			rightActionText = sides[index].rightActionText;
 		}
-		if (LeftActionContentPrefab != null)
+		if (sides[index].leftActionContentPrefab != null)
 		{
-			LeftActionCountent = Instantiate(LeftActionContentPrefab, Vector3.left * 5.01f, Quaternion.Euler(new Vector3(0.0f, 270.0f, 0.0f))) as GameObject;
-			LeftActionCountent.transform.parent = cubeMenu;
+			leftActionCountent = Instantiate(sides[index].leftActionContentPrefab, Vector3.left * 5.01f, Quaternion.Euler(new Vector3(0.0f, 270.0f, 0.0f))) as GameObject;
+			leftActionCountent.transform.parent = cubeMenu;
+			leftActionText = sides[index].leftActionText;
 		}
 		SetAction();
+	}
+
+	void SetupMenu()
+	{
+		LoadSides(0);
 		menuCamera.GetComponent<OrbitAndLook>().automaticDistanceOffset = bigPanoramaDistance;
+		if (backButtonPrefab != null)
+		{
+			backButton = Instantiate(backButtonPrefab);
+			backButton.GetComponent<BackButtonDelegate>().parentMenu = this;
+			backStack.Push(0);
+		}
+
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -210,7 +238,7 @@ public class MenuController : MonoBehaviour
 
 	void SelectAction()
 	{
-		if(currentModelAction != null)
+		if (currentModelAction != null)
 		{
 			ActionContentController action = currentModelAction.GetComponent<ActionContentController>();
 			if (action.contentType == ActionContentController.CONTENT_TYPE.SMALL_CONTENT)
@@ -221,11 +249,17 @@ public class MenuController : MonoBehaviour
 			}
 			else if (action.contentType == ActionContentController.CONTENT_TYPE.TO_SCENE)
 			{
-	
+
 				focalTarget.easeFace = EaseVector3.EASE_FACE.OUT;
 				menuCamera.GetComponent<OrbitAndLook>().automaticDistance = false;
 				outGoing = true;
 				GetComponent<Collider>().enabled = false;
+			}
+			else if (action.contentType == ActionContentController.CONTENT_TYPE.LOAD_SIDE)
+			{
+				focalTarget.GetComponent<QuickCircle>().DoCircle();
+				LoadSides(action.sideIndex);
+				backStack.Push(action.sideIndex);
 			}
 		}
 	}
@@ -253,32 +287,50 @@ public class MenuController : MonoBehaviour
 		else if (fixedY == 90.0f)
 		{
 			ActionText.text = rightActionText;
-			if (RighttActionCountent != currentModelAction)
+			if (righttActionCountent != currentModelAction)
 			{
 				if (currentModelAction != null) currentModelAction.GetComponent<ActionContentController>().Leave();
-				currentModelAction = RighttActionCountent;
+				currentModelAction = righttActionCountent;
 				if (currentModelAction != null) currentModelAction.GetComponent<ActionContentController>().Enter();
 			}
 		}
 		else if (fixedY == 180.0f)
 		{
 			ActionText.text = backActionText;
-			if (BackActionCountent != currentModelAction)
+			if (backActionCountent != currentModelAction)
 			{
 				if (currentModelAction != null) currentModelAction.GetComponent<ActionContentController>().Leave();
-				currentModelAction = BackActionCountent;
+				currentModelAction = backActionCountent;
 				if (currentModelAction != null) currentModelAction.GetComponent<ActionContentController>().Enter();
 			}
 		}
 		else
 		{
 			ActionText.text = leftActionText;
-			if (LeftActionCountent != currentModelAction)
+			if (leftActionCountent != currentModelAction)
 			{
 				if (currentModelAction != null) currentModelAction.GetComponent<ActionContentController>().Leave();
-				currentModelAction = LeftActionCountent;
+				currentModelAction = leftActionCountent;
 				if (currentModelAction != null) currentModelAction.GetComponent<ActionContentController>().Enter();
 			}
+		}
+	}
+
+	public void Back()
+	{
+		backStack.Pop();
+		if(backStack.Count != 0)
+		{
+			LoadSides(backStack.Peek());
+			focalTarget.GetComponent<QuickCircle>().DoCircle();
+		}
+		else
+		{
+			focalTarget.easeFace = EaseVector3.EASE_FACE.OUT;
+			menuCamera.GetComponent<OrbitAndLook>().automaticDistance = false;
+			outGoing = true;
+			GetComponent<Collider>().enabled = false;
+			currentModelAction = null;
 		}
 	}
 }

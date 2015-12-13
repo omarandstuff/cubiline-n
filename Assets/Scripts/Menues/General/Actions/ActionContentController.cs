@@ -13,9 +13,10 @@ public class ActionContentController : MonoBehaviour
 	//////////////////////// PARAMETERS //////////////////////////
 	//////////////////////////////////////////////////////////////
 
-	public enum CONTENT_TYPE { TO_SCENE, SMALL_CONTENT, BIG_CONTENT};
+	public enum CONTENT_TYPE { TO_SCENE, LOAD_SIDE, SMALL_CONTENT, BIG_CONTENT};
 	public CONTENT_TYPE contentType;
 	public string SceneName;
+	public int sideIndex;
 
 	//////////////////////////////////////////////////////////////
 	////////////////////// CONTROL VARIABLES /////////////////////
@@ -56,7 +57,6 @@ public class ActionContentController : MonoBehaviour
 			bigContent = Instantiate(bigContentPrefab);
 			Destroy(smallContent, 1.0f);
 		}
-
 	}
 
 	public void Unselect()

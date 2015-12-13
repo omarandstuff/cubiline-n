@@ -292,14 +292,14 @@ public class CubilinePlayerController : MonoBehaviour
 		{
 			for (int i = 0; i < units; i++)
 			{
-				//usedSlots.Enqueue(slotController.TakeSlot(headPlace, headDirection, ref lastSlotUsed));
+				usedSlots.Enqueue(slotController.TakeSlot(headPlace, headDirection, ref lastSlotUsed));
 			}
 		}
 
 		if(usedSlots.Count > bodyLength)
 		{
-			//while (usedSlots.Count != bodyLength)
-				//slotController.FreeSlot(usedSlots.Dequeue());
+			while (usedSlots.Count != bodyLength)
+				slotController.FreeSlot(usedSlots.Dequeue());
 		}
 	}
 
