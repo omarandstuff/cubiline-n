@@ -262,7 +262,7 @@ public class MenuController : MonoBehaviour
 				cubeMenu.localRotation = Quaternion.identity;
 				targetRotation = Vector3.zero;
 				actionRotation = Vector3.zero;
-				currentRotation = new Vector3(0.0f, -90.0f, 0.0f);
+				currentRotation = new Vector3(-90.0f, 0.0f, 0.0f);
 				LoadSides(action.sideIndex);
 				SetAction();
 			}
@@ -328,7 +328,7 @@ public class MenuController : MonoBehaviour
 		{
 			targetRotation = backStack.Peek().rotation;
 			actionRotation = targetRotation;
-			currentRotation = targetRotation + new Vector3(0.0f, 90.0f, 0.0f);
+			currentRotation = targetRotation + new Vector3(90.0f, 0.0f, 0.0f);
 			cubeMenu.localRotation = Quaternion.identity;
 			LoadSides(backStack.Peek().sideIndex);
 			SetAction();

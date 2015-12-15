@@ -10,7 +10,8 @@ public class CubilinePlayerController : MonoBehaviour
 	public CubilineSlotController slotController;
 	public CubilineTargetController targetController;
 	public Follow ghost;
-	public GameObject head;
+	public Transform smoothHead;
+	public Transform head;
 	public CubilineBody baseBody;
 
 	//////////////////////////////////////////////////////////////
@@ -30,6 +31,7 @@ public class CubilinePlayerController : MonoBehaviour
 	public PLACE headUp = PLACE.TOP; // Direction to where the screen is up.
 
 	public float speed = 4.0f; // Units per second.
+	public bool hardMove;
 
 	//////////////////////////////////////////////////////////////
 	////////////////////// CONTROL VARIABLES /////////////////////
@@ -100,7 +102,54 @@ public class CubilinePlayerController : MonoBehaviour
 		directionVector = new Vector3(headDirection == PLACE.RIGHT ? 1.0f : (headDirection == PLACE.LEFT ? -1.0f : 0.0f), headDirection == PLACE.TOP ? 1.0f : (headDirection == PLACE.BOTTOM ? -1.0f : 0.0f), headDirection == PLACE.BACK ? 1.0f : (headDirection == PLACE.FRONT ? -1.0f : 0.0f));
 
 		// Move the head one step.
-		head.transform.localPosition += directionVector * speed * Time.deltaTime;
+		smoothHead.localPosition += directionVector * speed * Time.deltaTime;
+
+		if(hardMove) // Keep the looking of move every unit.
+		{
+			Vector3 fixedHeadPosition = smoothHead.localPosition;
+			if (headDirection == PLACE.FRONT)
+			{
+				fixedHeadPosition.z -= arenaLogicalLimit;
+				fixedHeadPosition.z = (int)fixedHeadPosition.z - 1;
+				fixedHeadPosition.z += arenaLogicalLimit;
+			}
+			else if (headDirection == PLACE.BACK)
+			{
+				fixedHeadPosition.z += arenaLogicalLimit;
+				fixedHeadPosition.z = (int)fixedHeadPosition.z + 1;
+				fixedHeadPosition.z -= arenaLogicalLimit;
+			}
+			else if (headDirection == PLACE.RIGHT)
+			{
+				fixedHeadPosition.x += arenaLogicalLimit;
+				fixedHeadPosition.x = (int)fixedHeadPosition.x + 1;
+				fixedHeadPosition.x -= arenaLogicalLimit;
+			}
+			else if (headDirection == PLACE.LEFT)
+			{
+				fixedHeadPosition.x -= arenaLogicalLimit;
+				fixedHeadPosition.x = (int)fixedHeadPosition.x - 1;
+				fixedHeadPosition.x += arenaLogicalLimit;
+			}
+			else if (headDirection == PLACE.TOP)
+			{
+				fixedHeadPosition.y += arenaLogicalLimit;
+				fixedHeadPosition.y = (int)fixedHeadPosition.y + 1;
+				fixedHeadPosition.y -= arenaLogicalLimit;
+			}
+			else if (headDirection == PLACE.BOTTOM)
+			{
+				fixedHeadPosition.y -= arenaLogicalLimit;
+				fixedHeadPosition.y = (int)fixedHeadPosition.y - 1;
+				fixedHeadPosition.y += arenaLogicalLimit;
+			}
+			head.localPosition = fixedHeadPosition;
+		}
+		else
+		{
+			head.localPosition = smoothHead.localPosition;
+		}
+		
 
 		// Control what zone is the head on.
 		ControlPlaceChange();
@@ -117,7 +166,7 @@ public class CubilinePlayerController : MonoBehaviour
 		toNew = false;
 
 		// This is step is the last known head's position.
-		lastHeadPosition = head.transform.localPosition;
+		lastHeadPosition = head.localPosition;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -156,8 +205,9 @@ public class CubilinePlayerController : MonoBehaviour
 		noPalce = false;
 
 		// Locate the head at the initial position.
-		head.transform.localPosition = initialPosition;
-		lastHeadPosition = head.transform.localPosition;
+		smoothHead.localPosition = initialPosition;
+		head.localPosition = initialPosition;
+		lastHeadPosition = head.localPosition;
 
 		// First body part with size of 2 units.
 		AddBody(2.0f);
@@ -285,7 +335,7 @@ public class CubilinePlayerController : MonoBehaviour
 
 	void ControlSlots()
 	{
-		Vector3 headPosition = head.transform.localPosition;
+		Vector3 headPosition = head.localPosition;
 		int units = (int)(lastSlotUsed - headPosition).magnitude;
 
 		if (units > 0)
@@ -348,7 +398,7 @@ public class CubilinePlayerController : MonoBehaviour
 	{
 		bool doTurn = false;
 
-		Vector3 playerPostion = head.transform.localPosition;
+		Vector3 playerPostion = smoothHead.localPosition;
 		if (headDirection == PLACE.FRONT)
 		{
 			if (playerPostion.z <= toTurnPosition.z)
@@ -382,7 +432,8 @@ public class CubilinePlayerController : MonoBehaviour
 
 		if (doTurn)
 		{
-			head.transform.localPosition = toTurnPosition;
+			smoothHead.localPosition = toTurnPosition;
+			head.localPosition = toTurnPosition;
 
 			ControlBody();
 			ControlSlots();
@@ -447,7 +498,7 @@ public class CubilinePlayerController : MonoBehaviour
 
 	void setTurn()
 	{
-		toTurnPosition = head.transform.localPosition;
+		toTurnPosition = smoothHead.localPosition;
 
 		if (headDirection == PLACE.FRONT)
 		{
@@ -489,7 +540,7 @@ public class CubilinePlayerController : MonoBehaviour
 
 	void ControlPlaceChange()
 	{
-		Vector3 headPosition = head.transform.localPosition;
+		Vector3 headPosition = smoothHead.localPosition;
 
 		// headDirection and stuff.
 		if (headPlace == PLACE.FRONT)
@@ -511,7 +562,8 @@ public class CubilinePlayerController : MonoBehaviour
 				headPosition.x = arenaLogicalLimit;
 
 				// Apply boundaries.
-				head.transform.localPosition = headPosition;
+				smoothHead.localPosition = headPosition;
+				head.localPosition = headPosition;
 
 				// Control body stats
 				ControlBody();
@@ -540,7 +592,8 @@ public class CubilinePlayerController : MonoBehaviour
 				headPosition.x = -arenaLogicalLimit;
 
 				// Apply boundaries.
-				head.transform.localPosition = headPosition;
+				smoothHead.localPosition = headPosition;
+				head.localPosition = headPosition;
 
 				// Control body stats
 				ControlBody();
@@ -569,7 +622,8 @@ public class CubilinePlayerController : MonoBehaviour
 				headPosition.y = arenaLogicalLimit;
 
 				// Apply boundaries.
-				head.transform.localPosition = headPosition;
+				smoothHead.localPosition = headPosition;
+				head.localPosition = headPosition;
 
 				// Control body stats
 				ControlBody();
@@ -598,7 +652,8 @@ public class CubilinePlayerController : MonoBehaviour
 				headPosition.y = -arenaLogicalLimit;
 
 				// Apply boundaries.
-				head.transform.localPosition = headPosition;
+				smoothHead.localPosition = headPosition;
+				head.localPosition = headPosition;
 
 				// Control body stats
 				ControlBody();
@@ -635,7 +690,8 @@ public class CubilinePlayerController : MonoBehaviour
 				headPosition.x = arenaLogicalLimit;
 
 				// Apply boundaries.
-				head.transform.localPosition = headPosition;
+				smoothHead.localPosition = headPosition;
+				head.localPosition = headPosition;
 
 				// Control body stats
 				ControlBody();
@@ -664,7 +720,8 @@ public class CubilinePlayerController : MonoBehaviour
 				headPosition.x = -arenaLogicalLimit;
 
 				// Apply boundaries.
-				head.transform.localPosition = headPosition;
+				smoothHead.localPosition = headPosition;
+				head.localPosition = headPosition;
 
 				// Control body stats
 				ControlBody();
@@ -693,7 +750,8 @@ public class CubilinePlayerController : MonoBehaviour
 				headPosition.y = arenaLogicalLimit;
 
 				// Apply boundaries.
-				head.transform.localPosition = headPosition;
+				smoothHead.localPosition = headPosition;
+				head.localPosition = headPosition;
 
 				// Control body stats
 				ControlBody();
@@ -722,7 +780,8 @@ public class CubilinePlayerController : MonoBehaviour
 				headPosition.y = -arenaLogicalLimit;
 
 				// Apply boundaries.
-				head.transform.localPosition = headPosition;
+				smoothHead.localPosition = headPosition;
+				head.localPosition = headPosition;
 
 				// Control body stats
 				ControlBody();
@@ -759,7 +818,8 @@ public class CubilinePlayerController : MonoBehaviour
 				headPosition.z = -arenaLogicalLimit;
 
 				// Apply boundaries.
-				head.transform.localPosition = headPosition;
+				smoothHead.localPosition = headPosition;
+				head.localPosition = headPosition;
 
 				// Control body stats
 				ControlBody();
@@ -788,7 +848,8 @@ public class CubilinePlayerController : MonoBehaviour
 				headPosition.z = arenaLogicalLimit;
 
 				// Apply boundaries.
-				head.transform.localPosition = headPosition;
+				smoothHead.localPosition = headPosition;
+				head.localPosition = headPosition;
 
 				// Control body stats
 				ControlBody();
@@ -817,7 +878,8 @@ public class CubilinePlayerController : MonoBehaviour
 				headPosition.y = arenaLogicalLimit;
 
 				// Apply boundaries.
-				head.transform.localPosition = headPosition;
+				smoothHead.localPosition = headPosition;
+				head.localPosition = headPosition;
 
 				// Control body stats
 				ControlBody();
@@ -846,7 +908,8 @@ public class CubilinePlayerController : MonoBehaviour
 				headPosition.y = -arenaLogicalLimit;
 
 				// Apply boundaries.
-				head.transform.localPosition = headPosition;
+				smoothHead.localPosition = headPosition;
+				head.localPosition = headPosition;
 
 				// Control body stats
 				ControlBody();
@@ -883,7 +946,8 @@ public class CubilinePlayerController : MonoBehaviour
 				headPosition.z = -arenaLogicalLimit;
 
 				// Apply boundaries.
-				head.transform.localPosition = headPosition;
+				smoothHead.localPosition = headPosition;
+				head.localPosition = headPosition;
 
 				// Control body stats
 				ControlBody();
@@ -912,7 +976,8 @@ public class CubilinePlayerController : MonoBehaviour
 				headPosition.z = arenaLogicalLimit;
 
 				// Apply boundaries.
-				head.transform.localPosition = headPosition;
+				smoothHead.localPosition = headPosition;
+				head.localPosition = headPosition;
 
 				// Control body stats
 				ControlBody();
@@ -941,7 +1006,8 @@ public class CubilinePlayerController : MonoBehaviour
 				headPosition.y = arenaLogicalLimit;
 
 				// Apply boundaries.
-				head.transform.localPosition = headPosition;
+				smoothHead.localPosition = headPosition;
+				head.localPosition = headPosition;
 
 				// Control body stats
 				ControlBody();
@@ -970,7 +1036,8 @@ public class CubilinePlayerController : MonoBehaviour
 				headPosition.y = -arenaLogicalLimit;
 
 				// Apply boundaries.
-				head.transform.localPosition = headPosition;
+				smoothHead.localPosition = headPosition;
+				head.localPosition = headPosition;
 
 				// Control body stats
 				ControlBody();
@@ -1007,7 +1074,8 @@ public class CubilinePlayerController : MonoBehaviour
 				headPosition.z = -arenaLogicalLimit;
 
 				// Apply boundaries.
-				head.transform.localPosition = headPosition;
+				smoothHead.localPosition = headPosition;
+				head.localPosition = headPosition;
 
 				// Control body stats
 				ControlBody();
@@ -1036,7 +1104,8 @@ public class CubilinePlayerController : MonoBehaviour
 				headPosition.z = arenaLogicalLimit;
 
 				// Apply boundaries.
-				head.transform.localPosition = headPosition;
+				smoothHead.localPosition = headPosition;
+				head.localPosition = headPosition;
 
 				// Control body stats
 				ControlBody();
@@ -1065,7 +1134,8 @@ public class CubilinePlayerController : MonoBehaviour
 				headPosition.x = arenaLogicalLimit;
 
 				// Apply boundaries.
-				head.transform.localPosition = headPosition;
+				smoothHead.localPosition = headPosition;
+				head.localPosition = headPosition;
 
 				// Control body stats
 				ControlBody();
@@ -1094,7 +1164,8 @@ public class CubilinePlayerController : MonoBehaviour
 				headPosition.x = -arenaLogicalLimit;
 
 				// Apply boundaries.
-				head.transform.localPosition = headPosition;
+				smoothHead.localPosition = headPosition;
+				head.localPosition = headPosition;
 
 				// Control body stats
 				ControlBody();
@@ -1131,7 +1202,8 @@ public class CubilinePlayerController : MonoBehaviour
 				headPosition.z = -arenaLogicalLimit;
 
 				// Apply boundaries.
-				head.transform.localPosition = headPosition;
+				smoothHead.localPosition = headPosition;
+				head.localPosition = headPosition;
 
 				// Control body stats
 				ControlBody();
@@ -1160,7 +1232,8 @@ public class CubilinePlayerController : MonoBehaviour
 				headPosition.z = arenaLogicalLimit;
 
 				// Apply boundaries.
-				head.transform.localPosition = headPosition;
+				smoothHead.localPosition = headPosition;
+				head.localPosition = headPosition;
 
 				// Control body stats
 				ControlBody();
@@ -1189,7 +1262,8 @@ public class CubilinePlayerController : MonoBehaviour
 				headPosition.x = arenaLogicalLimit;
 
 				// Apply boundaries.
-				head.transform.localPosition = headPosition;
+				smoothHead.localPosition = headPosition;
+				head.localPosition = headPosition;
 
 				// Control body stats
 				ControlBody();
@@ -1218,7 +1292,8 @@ public class CubilinePlayerController : MonoBehaviour
 				headPosition.x = -arenaLogicalLimit;
 
 				// Apply boundaries.
-				head.transform.localPosition = headPosition;
+				smoothHead.localPosition = headPosition;
+				head.localPosition = headPosition;
 
 				// Control body stats
 				ControlBody();
@@ -1431,14 +1506,14 @@ public class CubilinePlayerController : MonoBehaviour
 	{
 		CubilineBody newBody = Instantiate(baseBody);
 		newBody.transform.parent = transform;
-		newBody.initialize(headPlace, headDirection, head.transform.localPosition, size);
+		newBody.initialize(headPlace, headDirection, head.localPosition, size);
 		bodyQueue.Enqueue(newBody);
 		lastBody = newBody;
 	}
 
 	void ControlBody()
 	{
-		float delta = (lastHeadPosition - head.transform.localPosition).magnitude;
+		float delta = (lastHeadPosition - head.localPosition).magnitude;
 
 		lastBody.Grow(delta);
 
