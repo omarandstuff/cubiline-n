@@ -56,7 +56,8 @@ public class MenuController : MonoBehaviour
 	private bool outGoing;
 	private Sides currentSides;
 	private GameObject backButton;
-	private Stack<int> backStack = new Stack<int>();
+	private Stack<BackState> backStack = new Stack<BackState>();
+	private struct BackState { public int sideIndex; public Vector3 rotation; public BackState(int side_index, Vector3 _rotation) { sideIndex = side_index; rotation = _rotation; } }
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// MONO BEHAVIOR /////////////////////////////////////////
@@ -227,7 +228,7 @@ public class MenuController : MonoBehaviour
 		{
 			backButton = Instantiate(backButtonPrefab);
 			backButton.GetComponent<BackButtonDelegate>().parentMenu = this;
-			backStack.Push(0);
+			backStack.Push(new BackState(0, Vector3.zero));
 		}
 
 	}
@@ -257,9 +258,13 @@ public class MenuController : MonoBehaviour
 			}
 			else if (action.contentType == ActionContentController.CONTENT_TYPE.LOAD_SIDE)
 			{
-				focalTarget.GetComponent<QuickCircle>().DoCircle();
+				backStack.Push(new BackState(action.sideIndex, targetRotation));
+				cubeMenu.localRotation = Quaternion.identity;
+				targetRotation = Vector3.zero;
+				actionRotation = Vector3.zero;
+				currentRotation = new Vector3(0.0f, -90.0f, 0.0f);
 				LoadSides(action.sideIndex);
-				backStack.Push(action.sideIndex);
+				SetAction();
 			}
 		}
 	}
@@ -321,8 +326,12 @@ public class MenuController : MonoBehaviour
 		backStack.Pop();
 		if(backStack.Count != 0)
 		{
-			LoadSides(backStack.Peek());
-			focalTarget.GetComponent<QuickCircle>().DoCircle();
+			targetRotation = backStack.Peek().rotation;
+			actionRotation = targetRotation;
+			currentRotation = targetRotation + new Vector3(0.0f, 90.0f, 0.0f);
+			cubeMenu.localRotation = Quaternion.identity;
+			LoadSides(backStack.Peek().sideIndex);
+			SetAction();
 		}
 		else
 		{
