@@ -1,6 +1,6 @@
 ﻿using UnityEngine.UI;
 
-public class SmallCastActionController : SmallActionController
+public class CastActionController : ActionContentController
 {
 	//////////////////////////////////////////////////////////////
 	///////////////////////// COMPONENTS /////////////////////////
@@ -34,7 +34,7 @@ public class SmallCastActionController : SmallActionController
 		scrollView.enabled = false;
 		buttonBack.easeFace = EaseFloat.EASE_FACE.OUT;
 		buttonText.easeFace = EaseFloat.EASE_FACE.OUT;
-		parentAction.Unselect();
+		base.Unselect();
 	}
 
 	public override void Enter()

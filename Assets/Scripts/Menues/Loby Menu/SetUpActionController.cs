@@ -1,7 +1,6 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine.UI;
 
-public class SmallSetUpActionController : SmallActionController
+public class SetUpActionController : ActionContentController
 {
 	//////////////////////////////////////////////////////////////
 	///////////////////////// COMPONENTS /////////////////////////
@@ -48,8 +47,7 @@ public class SmallSetUpActionController : SmallActionController
 			ei.easeFace = EaseFloat.EASE_FACE.OUT;
 		foreach (EaseTextOpasity et in emergentTexts)
 			et.easeFace = EaseFloat.EASE_FACE.OUT;
-
-		parentAction.Unselect();
+		base.Unselect();
 	}
 
 	public override void Enter()

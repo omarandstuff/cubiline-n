@@ -196,25 +196,29 @@ public class MenuController : MonoBehaviour
 		if (sides[index].frontActionContentPrefab != null)
 		{
 			frontActionCountent = Instantiate(sides[index].frontActionContentPrefab, Vector3.back * 5.01f, Quaternion.Euler(new Vector3(0.0f, 180.0f, 0.0f))) as GameObject;
-			frontActionCountent.transform.parent = cubeMenu;
+			frontActionCountent.transform.SetParent(cubeMenu);
+			frontActionCountent.GetComponent<ActionContentController>().parentMenu = this;
 			frontActionText = sides[index].frontActionText;
 		}
 		if (sides[index].backActionContentPrefab != null)
 		{
 			backActionCountent = Instantiate(sides[index].backActionContentPrefab, Vector3.forward * 5.01f, Quaternion.identity) as GameObject;
-			backActionCountent.transform.parent = cubeMenu;
+			backActionCountent.transform.SetParent(cubeMenu);
+			backActionCountent.GetComponent<ActionContentController>().parentMenu = this;
 			backActionText = sides[index].backActionText;
 		}
 		if (sides[index].rightActionContentPrefab != null)
 		{
 			righttActionCountent = Instantiate(sides[index].rightActionContentPrefab, Vector3.right * 5.01f, Quaternion.Euler(new Vector3(0.0f, 90.0f, 0.0f))) as GameObject;
-			righttActionCountent.transform.parent = cubeMenu;
+			righttActionCountent.transform.SetParent(cubeMenu);
+			righttActionCountent.GetComponent<ActionContentController>().parentMenu = this;
 			rightActionText = sides[index].rightActionText;
 		}
 		if (sides[index].leftActionContentPrefab != null)
 		{
 			leftActionCountent = Instantiate(sides[index].leftActionContentPrefab, Vector3.left * 5.01f, Quaternion.Euler(new Vector3(0.0f, 270.0f, 0.0f))) as GameObject;
-			leftActionCountent.transform.parent = cubeMenu;
+			leftActionCountent.transform.SetParent(cubeMenu);
+			leftActionCountent.GetComponent<ActionContentController>().parentMenu = this;
 			leftActionText = sides[index].leftActionText;
 		}
 		SetAction();
@@ -242,11 +246,10 @@ public class MenuController : MonoBehaviour
 		if (currentModelAction != null)
 		{
 			ActionContentController action = currentModelAction.GetComponent<ActionContentController>();
-			if (action.contentType == ActionContentController.CONTENT_TYPE.SMALL_CONTENT)
+			if (action.contentType == ActionContentController.CONTENT_TYPE.CONTENT)
 			{
 				menuCamera.GetComponent<OrbitAndLook>().automaticDistanceOffset = smallPanoramaDistance;
 				action.Select();
-				action.parentMenu = this;
 				if(backButton != null)
 				{
 					backButton.transform.GetChild(0).GetComponent<EaseImageOpasity>().easeFace = EaseFloat.EASE_FACE.OUT;
