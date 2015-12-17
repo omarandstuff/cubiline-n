@@ -10,6 +10,13 @@ public class CubilineApplication
 	public static uint cubeSize = 15;
 	public static bool hardMove = false;
 
+	public static uint multiplayerLineSpeed;
+	public static uint multiplayerCubeSize = 15;
+	public static bool multiplayerHardMove = false;
+
+	public static uint numberOfPlayers = 1;
+	public static string nextScene;
+
 	//////////////////////////////////////////////////////////////
 	//////////////////// CONTROL VARIABLES ///////////////////////
 	//////////////////////////////////////////////////////////////

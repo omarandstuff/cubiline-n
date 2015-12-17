@@ -169,6 +169,7 @@ public class CubilineArcade : MonoBehaviour
 
 		player.Reset(CubilineApplication.cubeSize);
 		player.speed = CubilineApplication.lineSpeed;
+		player.hardMove = CubilineApplication.hardMove;
 
 		followTarget.transform.position = new Vector3(-CubilineApplication.cubeSize * 2, 0, -CubilineApplication.cubeSize / 2);
 	}

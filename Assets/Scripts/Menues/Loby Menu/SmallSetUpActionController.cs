@@ -6,6 +6,9 @@ public class SmallSetUpActionController : SmallActionController
 	//////////////////////////////////////////////////////////////
 	///////////////////////// COMPONENTS /////////////////////////
 	//////////////////////////////////////////////////////////////
+	public Slider sizeSlider;
+	public Slider speedSlider;
+	public Toggle hardToggle;
 	public EaseTextOpasity[] emergentTexts;
 	public EaseImageOpasity[] emergentImages;
 
@@ -15,6 +18,18 @@ public class SmallSetUpActionController : SmallActionController
 
 	void Start()
 	{
+		if(CubilineApplication.numberOfPlayers > 1)
+		{
+			sizeSlider.value = CubilineApplication.multiplayerCubeSize;
+			speedSlider.value = CubilineApplication.multiplayerLineSpeed;
+			hardToggle.isOn = CubilineApplication.multiplayerHardMove;
+		}
+		else
+		{
+			sizeSlider.value = CubilineApplication.cubeSize;
+			speedSlider.value = CubilineApplication.lineSpeed;
+			hardToggle.isOn = CubilineApplication.hardMove;
+		}
 	}
 
 	public override void Select()
@@ -50,10 +65,34 @@ public class SmallSetUpActionController : SmallActionController
 	public void OkAction()
 	{
 		Unselect();
+		if (CubilineApplication.numberOfPlayers > 1)
+		{
+			CubilineApplication.multiplayerCubeSize = (uint)sizeSlider.value;
+			CubilineApplication.multiplayerLineSpeed = (uint)speedSlider.value;
+			CubilineApplication.multiplayerHardMove = hardToggle.isOn;
+		}
+		else
+		{
+			CubilineApplication.cubeSize = (uint)sizeSlider.value;
+			CubilineApplication.lineSpeed = (uint)speedSlider.value;
+			CubilineApplication.hardMove = hardToggle.isOn;
+		}
 	}
 
 	public void CancelAction()
 	{
 		Unselect();
+		if (CubilineApplication.numberOfPlayers > 1)
+		{
+			sizeSlider.value = CubilineApplication.multiplayerCubeSize;
+			speedSlider.value = CubilineApplication.multiplayerLineSpeed;
+			hardToggle.isOn = CubilineApplication.multiplayerHardMove;
+		}
+		else
+		{
+			sizeSlider.value = CubilineApplication.cubeSize;
+			speedSlider.value = CubilineApplication.lineSpeed;
+			hardToggle.isOn = CubilineApplication.hardMove;
+		}
 	}
 }
