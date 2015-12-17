@@ -15,7 +15,6 @@ public class CubilineApplication
 	public static bool multiplayerHardMove = false;
 
 	public static uint numberOfPlayers = 1;
-	public static string nextScene;
 
 	//////////////////////////////////////////////////////////////
 	//////////////////// CONTROL VARIABLES ///////////////////////

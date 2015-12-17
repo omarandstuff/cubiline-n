@@ -32,7 +32,7 @@ public class ActionContentController : MonoBehaviour
 
 	public virtual void Select()
 	{
-
+		MenuController.nextScene = SceneName;
 	}
 
 	public virtual void Unselect()
