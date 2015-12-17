@@ -40,8 +40,19 @@ public class MiniDemoPlayerController : MonoBehaviour
 
 	}
 
-	public bool hard;
+	public bool hard
+	{
+		get
+		{
+			return _hard;
+		}
+		set
+		{
+			_hard = value;
+		}
+	}
 
+	private bool _hard;
 	private float _speed = 5;
 	private float _size = 10;
 
@@ -55,15 +66,10 @@ public class MiniDemoPlayerController : MonoBehaviour
 	private float fixedPos1;
 	private float fixedPos2;
 
-	private RectTransform current;
-	private RectTransform secondary;
-
 	void Start ()
 	{
 		actualPos1 = -1.5f;
 		actualPos2 = 3;
-		current = line1;
-		secondary = line2;
 		line1.localPosition = new Vector3(actualPos1, 0.0f, 0.0f);
 		line2.localPosition = new Vector3(actualPos2, 0.0f, 0.0f);
 		Calculate();
@@ -72,11 +78,18 @@ public class MiniDemoPlayerController : MonoBehaviour
 	void Update ()
 	{
 		actualPos1 += Time.deltaTime * actualSpeed;
-		actualPos2 += Time.deltaTime * actualSpeed;
 
-		if(hard)
+		float delta = actualPos1 - (_size / 2.0f - 1.5f);
+
+		if (delta >= 0)
+			actualPos1 = -size / 2.0f - 1.5f + delta;
+
+		actualPos2 = actualPos1 + _size;
+
+		if (hard)
 		{
-
+			fixedPos1 = Mathf.Floor(actualPos1);
+			fixedPos2 = Mathf.Floor(actualPos2);
 		}
 		else
 		{
@@ -84,15 +97,16 @@ public class MiniDemoPlayerController : MonoBehaviour
 			fixedPos2 = actualPos2;
 		}
 
-		current.localPosition = new Vector3(fixedPos1, 0.0f, 0.0f);
-		secondary.localPosition = new Vector3(fixedPos2, 0.0f, 0.0f);
+		line1.localPosition = new Vector3(fixedPos1 * 3.0f / _size, 0.0f, 0.0f);
+		line2.localPosition = new Vector3(fixedPos2 * 3.0f / _size, 0.0f, 0.0f);
 	}
 
 	private void Calculate()
 	{
-		actualSpeed = ((_size / _speed) * 6.0f) / _size;
+		actualSpeed = speed;
 		float unit = 6.0f / _size;
 		float fixedWidth = unit * 1.5f;
 		line1.localScale = new Vector3(fixedWidth, unit, 0.0f);
+		line2.localScale = new Vector3(fixedWidth, unit, 0.0f);
 	}
 }
