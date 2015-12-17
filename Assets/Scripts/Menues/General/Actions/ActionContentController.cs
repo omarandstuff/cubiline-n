@@ -36,6 +36,8 @@ public class ActionContentController : MonoBehaviour
 			smallContent = Instantiate(smallContentPrefab) as GameObject;
 			smallContent.transform.SetParent(transform);
 			smallContent.transform.localPosition = Vector3.zero;
+			smallContent.transform.localRotation = transform.localRotation;
+			smallContent.GetComponent<SmallActionController>().parentAction = this;
 		}
 	}
 
@@ -61,6 +63,6 @@ public class ActionContentController : MonoBehaviour
 
 	public void Unselect()
 	{
-		if (smallContent != null) smallContent.GetComponent<SmallActionController>().Unselect();
+		parentMenu.BackFromAction();
 	}
 }

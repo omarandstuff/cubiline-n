@@ -8,6 +8,8 @@ public class SmallCastActionController : SmallActionController
 
 	public ScrollRect scrollView;
 	public CastController castController;
+	public EaseImageOpasity buttonBack;
+	public EaseTextOpasity buttonText;
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// MONO BEHAVIOR /////////////////////////////////////////
@@ -22,12 +24,17 @@ public class SmallCastActionController : SmallActionController
 	{
 		castController.interacting = true;
 		scrollView.enabled = true;
+		buttonBack.easeFace = EaseFloat.EASE_FACE.IN;
+		buttonText.easeFace = EaseFloat.EASE_FACE.IN;
 	}
 
 	public override void Unselect()
 	{
 		castController.interacting = false;
 		scrollView.enabled = false;
+		buttonBack.easeFace = EaseFloat.EASE_FACE.OUT;
+		buttonText.easeFace = EaseFloat.EASE_FACE.OUT;
+		parentAction.Unselect();
 	}
 
 	public override void Enter()

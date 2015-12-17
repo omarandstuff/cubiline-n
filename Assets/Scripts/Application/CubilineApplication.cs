@@ -8,6 +8,7 @@ public class CubilineApplication
 
 	public static uint lineSpeed = 4;
 	public static uint cubeSize = 15;
+	public static bool hardMove = false;
 
 	//////////////////////////////////////////////////////////////
 	//////////////////// CONTROL VARIABLES ///////////////////////

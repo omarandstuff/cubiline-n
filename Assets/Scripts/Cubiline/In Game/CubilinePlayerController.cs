@@ -335,6 +335,7 @@ public class CubilinePlayerController : MonoBehaviour
 
 	void ControlSlots()
 	{
+		if (slotController == null) return;
 		Vector3 headPosition = head.localPosition;
 		int units = (int)(lastSlotUsed - headPosition).magnitude;
 

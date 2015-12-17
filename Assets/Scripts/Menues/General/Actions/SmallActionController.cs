@@ -3,6 +3,8 @@ using System.Collections;
 
 public class SmallActionController : MonoBehaviour
 {
+	public ActionContentController parentAction;
+
 	public virtual void Select()
 	{
 	}

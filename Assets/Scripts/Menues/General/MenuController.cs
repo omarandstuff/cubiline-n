@@ -246,6 +246,14 @@ public class MenuController : MonoBehaviour
 			{
 				menuCamera.GetComponent<OrbitAndLook>().automaticDistanceOffset = smallPanoramaDistance;
 				action.Select();
+				action.parentMenu = this;
+				if(backButton != null)
+				{
+					backButton.transform.GetChild(0).GetComponent<EaseImageOpasity>().easeFace = EaseFloat.EASE_FACE.OUT;
+					backButton.transform.GetChild(1).GetComponent<EaseTextOpasity>().easeFace = EaseFloat.EASE_FACE.OUT;
+					backButton.GetComponent<Collider>().enabled = false;
+				}
+				ActionText.GetComponent<EaseTextOpasity>().easeFace = EaseFloat.EASE_FACE.OUT;
 				GetComponent<Collider>().enabled = false;
 			}
 			else if (action.contentType == ActionContentController.CONTENT_TYPE.TO_SCENE)
@@ -269,11 +277,17 @@ public class MenuController : MonoBehaviour
 		}
 	}
 
-	void BackFromAction()
+	public void BackFromAction()
 	{
 		menuCamera.GetComponent<OrbitAndLook>().automaticDistanceOffset = bigPanoramaDistance;
-		currentModelAction.GetComponent<ActionContentController>().Unselect();
-		GetComponent<Collider>().enabled = false;
+		GetComponent<Collider>().enabled = true;
+		if (backButton != null)
+		{
+			backButton.transform.GetChild(0).GetComponent<EaseImageOpasity>().easeFace = EaseFloat.EASE_FACE.IN;
+			backButton.transform.GetChild(1).GetComponent<EaseTextOpasity>().easeFace = EaseFloat.EASE_FACE.IN;
+			backButton.GetComponent<Collider>().enabled = true;
+		}
+		ActionText.GetComponent<EaseTextOpasity>().easeFace = EaseFloat.EASE_FACE.IN;
 	}
 
 	void SetAction()
