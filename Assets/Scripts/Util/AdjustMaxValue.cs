@@ -12,7 +12,7 @@ public class AdjustMaxValue : MonoBehaviour
 
 	public void Changemax()
 	{
-		GetComponent<Slider>().maxValue = reference.value;
+		GetComponent<Slider>().maxValue = (int)reference.value / 2;
 	}
 	
 }

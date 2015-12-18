@@ -27,7 +27,7 @@ public class CubilineArenaController : MonoBehaviour
 
 	public void ManageArena()
 	{
-		if(status == CubilinePlayerController.STATUS.PLAYING)
+		if(status == CubilinePlayerController.STATUS.PLAYING && targetController != null)
 			targetController.ManageTargets();
 	}
 
@@ -38,10 +38,10 @@ public class CubilineArenaController : MonoBehaviour
 	public void Reset(float arenaSize)
 	{
 		slotController = GetComponent<CubilineSlotController>();
-		slotController.Reset(arenaSize);
+		if(slotController != null) slotController.Reset(arenaSize);
 
 		targetController = GetComponent<CubilineTargetController>();
-		targetController.Reset(arenaSize);
+		if(targetController != null)targetController.Reset(arenaSize);
 
 		// Set size of arena
 		arenaCube.outValues = new Vector3(arenaSize / 2.0f, arenaSize / 2.0f, arenaSize / 2.0f);

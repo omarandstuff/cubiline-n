@@ -62,7 +62,7 @@ public class MenuController : MonoBehaviour
 	private GameObject currentModelAction; // In teh selected side, this model is the active action.
 	private bool actionReady; // When trying to activate an action don't move the cube any more or the action will be not ready.
 	private bool outGoing; // The menu is outing.
-	private Sides currentSides; // From the sides component whish sides will be loaded. 
+	private int currentSideIndex; // From the sides component whish sides will be loaded. 
 	private GameObject backButton; // If it is the case the back button.
 	private Stack<BackState> backStack = new Stack<BackState>(); // When backing sides, needs to pop the last loaded and reload the one that was before it.
 	private struct BackState { public int sideIndex; public Vector3 rotation; public BackState(int side_index, Vector3 _rotation) { sideIndex = side_index; rotation = _rotation; } } // The state of the last sides loaded befor load new ones (rotation nad so on).
@@ -113,6 +113,13 @@ public class MenuController : MonoBehaviour
 				targetRotation.y -= 90;
 				actionRotation.y -= 90;
 				SetAction();
+			}
+			else if(e.keyCode == KeyCode.Escape)
+			{
+				if(backButton != null)
+				{
+					Back();
+				}
 			}
 			else if (e.keyCode == KeyCode.Space) // Like the click or touch but with the keyboard :).
 			{
@@ -334,7 +341,10 @@ public class MenuController : MonoBehaviour
 			else if (action.contentType == ActionContentController.CONTENT_TYPE.LOAD_SIDE) // Load new sides (mora actions) in this bare menu.
 			{
 				// Before loading keep the state of these sides.
-				backStack.Push(new BackState(action.sideIndex, targetRotation));
+				backStack.Push(new BackState(currentSideIndex, targetRotation));
+
+				// This new sides index.
+				currentSideIndex = action.sideIndex;
 
 				// Reset the rotations
 				cubeMenu.localRotation = Quaternion.identity;
@@ -438,6 +448,9 @@ public class MenuController : MonoBehaviour
 
 			// Simulate the cube comes form the bottom side.
 			currentRotation = targetRotation + new Vector3(90.0f, 0.0f, 0.0f);
+
+			// This side index.
+			currentSideIndex = backState.sideIndex;
 
 			// Rotate the Phisical cube.
 			cubeMenu.localRotation = Quaternion.identity;

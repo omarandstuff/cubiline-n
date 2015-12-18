@@ -291,8 +291,15 @@ public class CubilinePlayerController : MonoBehaviour
 			else
 				UnGrow(-target.toGrow);
 
-			targetController.DismissCommon(target.index);
-
+			if(targetController == null)
+			{
+				Destroy(target.gameObject, 1.0f);
+				target.GetComponent<CubilineTarget>().targetScale = Vector3.zero;
+			}
+			else
+			{
+				targetController.DismissCommon(target.index);
+			}
 			CubilineScoreController.currentScore += (uint)target.score;
 		}
 		if (other.tag == "Special Target")
@@ -311,7 +318,6 @@ public class CubilinePlayerController : MonoBehaviour
 		{
 			status = STATUS.FINISH;
 		}
-
 	}
 
 	public void Grow(int units)
