@@ -381,7 +381,7 @@ public class MenuController : MonoBehaviour
 		}
 
 		// And visualize the text behind the cube again.
-		ActionText.GetComponent<EaseTextOpasity>().easeFace = EaseFloat.EASE_FACE.IN;
+		if (ActionText != null) ActionText.GetComponent<EaseTextOpasity>().easeFace = EaseFloat.EASE_FACE.IN;
 	}
 
 	void SetAction()
@@ -391,7 +391,7 @@ public class MenuController : MonoBehaviour
 		if (fixedY == 0.0f || fixedY == 360.0f) //  Front side
 		{
 			// Load the text for this side.
-			ActionText.text = frontActionText;
+			if(ActionText != null) ActionText.text = frontActionText;
 
 			// Just send teh enter and leave calls if the side really changed.
 			if (frontActionCountent != currentModelAction)
@@ -403,7 +403,7 @@ public class MenuController : MonoBehaviour
 		}
 		else if (fixedY == 90.0f) // Right side.
 		{
-			ActionText.text = rightActionText;
+			if (ActionText != null) ActionText.text = rightActionText;
 			if (righttActionCountent != currentModelAction)
 			{
 				if (currentModelAction != null) currentModelAction.GetComponent<ActionContentController>().Leave();
@@ -413,7 +413,7 @@ public class MenuController : MonoBehaviour
 		}
 		else if (fixedY == 180.0f) // Back side.
 		{
-			ActionText.text = backActionText;
+			if (ActionText != null) ActionText.text = backActionText;
 			if (backActionCountent != currentModelAction)
 			{
 				if (currentModelAction != null) currentModelAction.GetComponent<ActionContentController>().Leave();
@@ -423,7 +423,7 @@ public class MenuController : MonoBehaviour
 		}
 		else // And left side.
 		{
-			ActionText.text = leftActionText;
+			if (ActionText != null) ActionText.text = leftActionText;
 			if (leftActionCountent != currentModelAction)
 			{
 				if (currentModelAction != null) currentModelAction.GetComponent<ActionContentController>().Leave();

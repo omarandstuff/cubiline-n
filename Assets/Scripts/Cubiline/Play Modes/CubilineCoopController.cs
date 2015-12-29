@@ -51,11 +51,11 @@ public class CubilineCoopController : MonoBehaviour
 			{
 				if (status == STATUS.GIONG_OUT)
 				{
-					Application.LoadLevel(0);
+					Application.LoadLevel("main_menu_scene");
 				}
 				else if (status == STATUS.SHOW_SCORE)
 				{
-					Application.LoadLevel(2);
+					Application.LoadLevel("show_score_scene");
 				}
 			}
 			return;
@@ -114,6 +114,8 @@ public class CubilineCoopController : MonoBehaviour
 				player1.AddTurn(CubilinePlayerController.TURN.UP);
 			else if (e.keyCode == KeyCode.S)
 				player1.AddTurn(CubilinePlayerController.TURN.DOWN);
+			else if (e.keyCode == KeyCode.Space)
+				player1.speed = CubilineApplication.lineSpeed * 2.0f;
 			else if (e.keyCode == KeyCode.LeftArrow)
 				player2.AddTurn(CubilinePlayerController.TURN.LEFT);
 			else if (e.keyCode == KeyCode.RightArrow)
@@ -122,6 +124,8 @@ public class CubilineCoopController : MonoBehaviour
 				player2.AddTurn(CubilinePlayerController.TURN.UP);
 			else if (e.keyCode == KeyCode.DownArrow)
 				player2.AddTurn(CubilinePlayerController.TURN.DOWN);
+			else if (e.keyCode == KeyCode.RightControl)
+				player2.speed = CubilineApplication.lineSpeed * 2.0f;
 			else if (e.keyCode == KeyCode.Escape && !menuKey) // Menu
 			{
 				menuKey = true;
@@ -145,6 +149,10 @@ public class CubilineCoopController : MonoBehaviour
 		}
 		else if (e.type == EventType.keyUp)
 		{
+			if (e.keyCode == KeyCode.Space)
+				player1.speed = CubilineApplication.lineSpeed;
+			else if (e.keyCode == KeyCode.RightControl)
+				player2.speed = CubilineApplication.lineSpeed;
 			menuKey = false;
 		}
 	}
