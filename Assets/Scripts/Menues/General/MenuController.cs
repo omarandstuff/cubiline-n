@@ -316,7 +316,7 @@ public class MenuController : MonoBehaviour
 				}
 
 				// Desable the text behind the cube too.
-				ActionText.GetComponent<EaseTextOpasity>().easeFace = EaseFloat.EASE_FACE.OUT;
+				if(ActionText != null)ActionText.GetComponent<EaseTextOpasity>().easeFace = EaseFloat.EASE_FACE.OUT;
 				
 				// And do not recive calls form the collider.
 				GetComponent<Collider>().enabled = false;

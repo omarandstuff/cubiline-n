@@ -11,7 +11,7 @@ public class ActionContentController : MonoBehaviour
 	//////////////////////// PARAMETERS //////////////////////////
 	//////////////////////////////////////////////////////////////
 
-	public enum CONTENT_TYPE { TO_SCENE, LOAD_SIDE, CONTENT};
+	public enum CONTENT_TYPE { TO_SCENE, LOAD_SIDE, CONTENT, NONE};
 	public CONTENT_TYPE contentType;
 	public string SceneName;
 	public int sideIndex;

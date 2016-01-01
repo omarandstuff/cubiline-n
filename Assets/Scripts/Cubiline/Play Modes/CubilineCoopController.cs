@@ -17,12 +17,13 @@ public class CubilineCoopController : MonoBehaviour
 	public Follow followTarget2;
 	public Transform outTarget1;
 	public Transform outTarget2;
+	public GameObject controlsUI;
 
 	//////////////////////////////////////////////////////////////
 	////////////////////// CONTROL VARIABLES /////////////////////
 	//////////////////////////////////////////////////////////////
 
-	private enum STATUS { PLAYING, GIONG_OUT, SHOW_SCORE }
+	private enum STATUS { PLAYING, GIONG_OUT, SHOW_SCORE, WAITING }
 	private STATUS status;
 
 	private PauseMenuController pauseMenu;
@@ -33,18 +34,22 @@ public class CubilineCoopController : MonoBehaviour
 
 	private GameObject uiController;
 
+	private GameObject currentControlsUI;
+	private int controlsDismissed;
+
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// MONO BEHAVIOR /////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////
 
 	void Start()
 	{
-		DoScreenOrientation();
+		status = STATUS.WAITING;
 		Reset();
 	}
 
 	void Update()
 	{
+		if (status == STATUS.WAITING) return;
 		if (status != STATUS.PLAYING)
 		{
 			if ((followTarget1.transform.position - outTarget1.position).magnitude < CubilineApplication.cubeSize)
@@ -103,29 +108,60 @@ public class CubilineCoopController : MonoBehaviour
 
 	void OnGUI()
 	{
+		if (status == STATUS.WAITING) return;
 		Event e = Event.current;
 		if (e.type == EventType.KeyDown)
 		{
 			if (e.keyCode == KeyCode.A)
+			{
 				player1.AddTurn(CubilinePlayerController.TURN.LEFT);
+				DismissControlsUI(1);
+			}
 			else if (e.keyCode == KeyCode.D)
+			{
 				player1.AddTurn(CubilinePlayerController.TURN.RIGHT);
+				DismissControlsUI(1);
+			}
 			else if (e.keyCode == KeyCode.W)
+			{
 				player1.AddTurn(CubilinePlayerController.TURN.UP);
+				DismissControlsUI(1);
+			}
 			else if (e.keyCode == KeyCode.S)
+			{
 				player1.AddTurn(CubilinePlayerController.TURN.DOWN);
+				DismissControlsUI(1);
+			}
 			else if (e.keyCode == KeyCode.Space)
+			{
 				player1.speed = CubilineApplication.lineSpeed * 2.0f;
+				DismissControlsUI(1);
+			}
 			else if (e.keyCode == KeyCode.LeftArrow)
+			{
 				player2.AddTurn(CubilinePlayerController.TURN.LEFT);
+				DismissControlsUI(0);
+			}
 			else if (e.keyCode == KeyCode.RightArrow)
+			{
 				player2.AddTurn(CubilinePlayerController.TURN.RIGHT);
+				DismissControlsUI(0);
+			}
 			else if (e.keyCode == KeyCode.UpArrow)
+			{
 				player2.AddTurn(CubilinePlayerController.TURN.UP);
+				DismissControlsUI(0);
+			}
 			else if (e.keyCode == KeyCode.DownArrow)
+			{
 				player2.AddTurn(CubilinePlayerController.TURN.DOWN);
+				DismissControlsUI(0);
+			}
 			else if (e.keyCode == KeyCode.RightControl)
+			{
 				player2.speed = CubilineApplication.lineSpeed * 2.0f;
+				DismissControlsUI(0);
+			}
 			else if (e.keyCode == KeyCode.Escape && !menuKey) // Menu
 			{
 				menuKey = true;
@@ -251,11 +287,11 @@ public class CubilineCoopController : MonoBehaviour
 		player2.Reset(CubilineApplication.cubeSize);
 		player2.speed = CubilineApplication.lineSpeed;
 
+		player1.hardMove = CubilineApplication.hardMove;
+		player2.hardMove = CubilineApplication.hardMove;
+
 		followTarget1.transform.position = new Vector3(-CubilineApplication.cubeSize * 2, 0, -CubilineApplication.cubeSize / 2);
 		followTarget2.transform.position = new Vector3(-CubilineApplication.cubeSize * 2, 0, -CubilineApplication.cubeSize / 2);
-
-		DoScreenOrientation();
-		uiController.GetComponent<CubilineUIController>().timeToApear = 1.0f;
 	}
 
 	void GoOut()
@@ -267,5 +303,33 @@ public class CubilineCoopController : MonoBehaviour
 		outTarget2.transform.position = followCamera2.transform.localPosition + (followCamera2.transform.localPosition - followCamera2.target.transform.localPosition).normalized * CubilineApplication.cubeSize;
 		followTarget2.target = outTarget2;
 		followTarget2.followSmoothTime = 0.8f;
+	}
+
+	public void Play()
+	{
+		DoScreenOrientation();
+		uiController.GetComponent<CubilineUIController>().timeToApear = 1.5f;
+		status = STATUS.PLAYING;
+		currentControlsUI = Instantiate(controlsUI);
+	}
+
+	void DismissControlsUI(int index)
+	{
+		if(currentControlsUI != null)
+		{
+			GameObject chinld = currentControlsUI.transform.GetChild(index).gameObject;
+			if (chinld.GetComponent<EaseScale>().easeFace == EaseVector3.EASE_FACE.IN)
+			{
+				chinld.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.OUT;
+				chinld.GetComponent<EaseImageOpasity>().easeFace = EaseFloat.EASE_FACE.OUT;
+				controlsDismissed++;
+			}
+
+			if (controlsDismissed == 2)
+			{
+				Destroy(currentControlsUI, 1.0f);
+				currentControlsUI = null;
+			}
+		}
 	}
 }
