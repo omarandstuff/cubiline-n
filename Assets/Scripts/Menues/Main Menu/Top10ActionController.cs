@@ -75,7 +75,7 @@ public class Top10ActionController : ActionContentController
 			XmlNodeList xnList = xml.SelectNodes("/demo-scores/demo-score");
 			for (int i = 0; i < xnList.Count; i++)
 			{
-				names[i].text = (i + 1).ToString() + ". " + xnList[i]["players"].InnerText;
+				names[i].text = xnList[i]["players"].InnerText;
 				scores[i].text = xnList[i]["score"].InnerText;
 			}
 		}
