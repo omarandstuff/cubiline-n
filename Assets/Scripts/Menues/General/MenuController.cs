@@ -14,12 +14,13 @@ public class MenuController : MonoBehaviour
 	public GameObject backButtonPrefab; // Optionaly can present a button to enable the player to back in scene and sides.
 	[System.Serializable]public struct Sides { public string frontActionText; public GameObject frontActionContentPrefab; public string backActionText; public GameObject backActionContentPrefab; public string rightActionText; public GameObject rightActionContentPrefab; public string leftActionText; public GameObject leftActionContentPrefab; }
 	public Sides[] sides; // Prefas of every side of the menu in every stage.
-	/*
-	|          /-- Side[1] --- Side[2]
-	| Side[0]----- Side[3]
-	|          \-- Side[4] --- Side[5]
-	|
-	*/
+						  /*
+						  |          /-- Side[1] --- Side[2]
+						  | Side[0]----- Side[3]
+						  |          \-- Side[4] --- Side[5]
+						  |
+						  */
+	public PlayerUIController menuUI;
 
 	//////////////////////////////////////////////////////////////
 	//////////////////////// PARAMETERS //////////////////////////
@@ -320,6 +321,9 @@ public class MenuController : MonoBehaviour
 				
 				// And do not recive calls form the collider.
 				GetComponent<Collider>().enabled = false;
+
+				// Menu
+				menuUI.GoOut();
 			}
 			else if (action.contentType == ActionContentController.CONTENT_TYPE.TO_SCENE) // Have to go now.
 			{
@@ -334,6 +338,9 @@ public class MenuController : MonoBehaviour
 
 				// We are now outing.
 				outGoing = true;
+
+				// Menu
+				menuUI.GoOut();
 
 				// Not more collider calls.
 				GetComponent<Collider>().enabled = false;
@@ -372,6 +379,9 @@ public class MenuController : MonoBehaviour
 
 		// The collider can send calls now.
 		GetComponent<Collider>().enabled = true;
+
+		// menu
+		menuUI.GoIn();
 
 		if (backButton != null) // Enable the back button if it is the case.
 		{
