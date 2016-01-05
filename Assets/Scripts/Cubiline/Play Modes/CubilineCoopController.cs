@@ -157,7 +157,7 @@ public class CubilineCoopController : MonoBehaviour
 				player2.AddTurn(CubilinePlayerController.TURN.DOWN);
 				DismissControlsUI(0);
 			}
-			else if (e.keyCode == KeyCode.RightControl)
+			else if (e.keyCode == KeyCode.P)
 			{
 				player2.speed = CubilineApplication.lineSpeed * 2.0f;
 				DismissControlsUI(0);
@@ -187,7 +187,7 @@ public class CubilineCoopController : MonoBehaviour
 		{
 			if (e.keyCode == KeyCode.Space)
 				player1.speed = CubilineApplication.lineSpeed;
-			else if (e.keyCode == KeyCode.RightControl)
+			else if (e.keyCode == KeyCode.P)
 				player2.speed = CubilineApplication.lineSpeed;
 			menuKey = false;
 		}
@@ -303,6 +303,9 @@ public class CubilineCoopController : MonoBehaviour
 		outTarget2.transform.position = followCamera2.transform.localPosition + (followCamera2.transform.localPosition - followCamera2.target.transform.localPosition).normalized * CubilineApplication.cubeSize;
 		followTarget2.target = outTarget2;
 		followTarget2.followSmoothTime = 0.8f;
+
+		DismissControlsUI(0);
+		DismissControlsUI(1);
 	}
 
 	public void Play()
