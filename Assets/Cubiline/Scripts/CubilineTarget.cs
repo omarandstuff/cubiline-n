@@ -7,6 +7,8 @@ public class CubilineTarget : MonoBehaviour
 	///////////////////////// COMPONENTS /////////////////////////
 	//////////////////////////////////////////////////////////////
 
+	public GameObject particlePrefab;
+
 	//////////////////////////////////////////////////////////////
 	///////////////////////// PARAMETERS /////////////////////////
 	//////////////////////////////////////////////////////////////
@@ -14,8 +16,7 @@ public class CubilineTarget : MonoBehaviour
 	public int index;
 	public int toGrow = 1;
 	public int score = 1;
-	public Vector3 rotationSpeeds;
-	public Vector3 targetScale = new Vector3(0.8f, 0.8f, 0.8f);
+	public Vector3 targetScale;
 	public float scaleTime = 0.3f;
 
 	//////////////////////////////////////////////////////////////
@@ -37,7 +38,12 @@ public class CubilineTarget : MonoBehaviour
 	void FixedUpdate()
 	{
 		if (transform.localScale != targetScale) transform.localScale = Vector3.SmoothDamp(transform.localScale, targetScale, ref scaleVelocity, scaleTime);
-		rotation += (rotationSpeeds * Time.deltaTime);
 		transform.localRotation = Quaternion.Euler(rotation);
+	}
+
+	void OnTriggerEnter(Collider other)
+	{
+		if (other.tag == "Player")
+			Destroy(Instantiate(particlePrefab, transform.position, Quaternion.identity), 20.0f);
 	}
 }

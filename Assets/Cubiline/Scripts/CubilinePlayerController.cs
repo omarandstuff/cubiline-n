@@ -13,6 +13,7 @@ public class CubilinePlayerController : MonoBehaviour
 	public Transform smoothHead;
 	public Transform head;
 	public CubilineBody baseBody;
+	public Transform HUDobject;
 
 	//////////////////////////////////////////////////////////////
 	//////////////////// CUBILINE PARAMETERS /////////////////////

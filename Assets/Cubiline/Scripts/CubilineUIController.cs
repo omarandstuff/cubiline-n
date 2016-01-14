@@ -7,7 +7,6 @@ public class CubilineUIController : MonoBehaviour
 	//////////////////////////////////////////////////////////////
 
 	public EaseScore scoreText;
-	public EaseScore bestScoreText;
 	public bool enableHorizontalDivision;
 	public EaseImageOpasity horizontalDivision;
 	public bool enableVerticalDivision;
@@ -46,22 +45,15 @@ public class CubilineUIController : MonoBehaviour
 	{
 		scoreText.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
 		scoreText.GetComponent<EaseTextOpasity>().easeFace = EaseTextOpasity.EASE_FACE.IN;
-		bestScoreText.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
-		bestScoreText.GetComponent<EaseTextOpasity>().easeFace = EaseTextOpasity.EASE_FACE.IN;
 		scoreText.score = CubilineScoreController.currentArcadeScore;
 		CubilineScoreController.arcadeScoreDependencies.Add(scoreText);
-		bestScoreText.score = CubilineScoreController.bestArcadeScore;
-		CubilineScoreController.bestArcadeScoreDependencies.Add(bestScoreText);
 	}
 
 	public void GoOut ()
 	{
 		scoreText.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.OUT;
 		scoreText.GetComponent<EaseTextOpasity>().easeFace = EaseTextOpasity.EASE_FACE.OUT;
-		bestScoreText.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.OUT;
-		bestScoreText.GetComponent<EaseTextOpasity>().easeFace = EaseTextOpasity.EASE_FACE.OUT;
 		CubilineScoreController.arcadeScoreDependencies.Remove(scoreText);
-		CubilineScoreController.bestArcadeScoreDependencies.Remove(bestScoreText);
 		if (enableVerticalDivision) verticalDivision.easeFace = EaseFloat.EASE_FACE.OUT;
 		if (enableHorizontalDivision) horizontalDivision.easeFace = EaseFloat.EASE_FACE.OUT;
 	}

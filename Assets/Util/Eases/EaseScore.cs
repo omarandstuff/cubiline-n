@@ -38,6 +38,6 @@ public class EaseScore : MonoBehaviour
 	void FixedUpdate()
 	{
 		currentScore = Mathf.SmoothDamp(currentScore, targetScore, ref velocity, scoreSmoothTime);
-		GetComponent<Text>().text = ((int)currentScore).ToString();
+		GetComponent<Text>().text = ((int)currentScore).ToString("D" + 2);
 	}
 }
