@@ -24,12 +24,15 @@ public class CubilineArcade : MonoBehaviour
 	private bool menuKey;
 
 	private Touch touchAtBegin;
+
+	private float timeOfGame;
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// MONO BEHAVIOR /////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////
 
 	void Start()
 	{
+		timeOfGame = Time.time;
 		Reset();
 	}
 
@@ -78,6 +81,11 @@ public class CubilineArcade : MonoBehaviour
 		{
 			status = STATUS.SHOW_SCORE;
 			uiController.GoOut();
+
+			// Player game inf
+			CubilinePlayerData.arcadeGamesPlayed++;
+			CubilinePlayerData.arcadeTimePlayed += Time.time - timeOfGame;
+
 			CubilinePlayerData.Save();
 			GoOut();
 		}

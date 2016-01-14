@@ -291,9 +291,14 @@ public class CubilinePlayerController : MonoBehaviour
 		{
 			CubilineTarget target = other.GetComponent<CubilineTarget>();
 			if (target.toGrow >= 0)
+			{
 				Grow(target.toGrow);
+				if (playerKind == PLAYER_KIND.ARCADE)
+					CubilinePlayerData.totalArcadeLength += (uint)target.toGrow;
+			}
 			else
 				UnGrow(-target.toGrow);
+
 
 			if(targetController == null)
 			{
@@ -311,7 +316,11 @@ public class CubilinePlayerController : MonoBehaviour
 		{
 			CubilineTarget target = other.GetComponent<CubilineTarget>();
 			if (target.toGrow >= 0)
+			{
 				Grow(target.toGrow);
+				if (playerKind == PLAYER_KIND.ARCADE)
+					CubilinePlayerData.totalArcadeLength += (uint)target.toGrow;
+			}
 			else
 				UnGrow(-target.toGrow);
 

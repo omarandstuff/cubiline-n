@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 
 public class CubilineScoreController
 {
@@ -14,12 +15,20 @@ public class CubilineScoreController
 		{
 			_currentArcadeScore = value;
 			FillArcadeScores();
-			if(_currentArcadeScore > _bestArcadeScore)
+
+			// Player last game score.
+			CubilinePlayerData.lastArcadeScore = _currentArcadeScore;
+			CubilinePlayerData.lastArcadeScoreDateTime = DateTime.Now;
+
+			if (_currentArcadeScore > _bestArcadeScore)
 			{
 				_newArcadeRecord = true;
 				_bestArcadeScore = _currentArcadeScore;
 				FillBestArcadeScores();
+
+				// PLayer Best score
 				CubilinePlayerData.bestArcadeScore = _bestArcadeScore;
+				CubilinePlayerData.bestArcadeScoreDateTime = DateTime.Now;
 			}
 			else
 			{
