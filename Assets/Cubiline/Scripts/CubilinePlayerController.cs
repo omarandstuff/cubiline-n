@@ -33,6 +33,10 @@ public class CubilinePlayerController : MonoBehaviour
 	public float speed = 4.0f; // Units per second.
 	public bool hardMove;
 
+	public enum PLAYER_KIND { ARCADE, ARCADE_COOP, VS}
+	public PLAYER_KIND playerKind;
+	public uint playerNumber;
+
 	//////////////////////////////////////////////////////////////
 	////////////////////// CONTROL VARIABLES /////////////////////
 	//////////////////////////////////////////////////////////////
@@ -300,7 +304,8 @@ public class CubilinePlayerController : MonoBehaviour
 			{
 				targetController.DismissCommon(target.index);
 			}
-			CubilineScoreController.currentArcadeScore += (uint)target.score;
+			if(playerKind == PLAYER_KIND.ARCADE)
+				CubilineScoreController.currentArcadeScore += (uint)target.score;
 		}
 		if (other.tag == "Special Target")
 		{
@@ -312,7 +317,8 @@ public class CubilinePlayerController : MonoBehaviour
 
 			targetController.DismissSpecial(target.index);
 
-			CubilineScoreController.currentArcadeScore += (uint)target.score;
+			if (playerKind == PLAYER_KIND.ARCADE)
+				CubilineScoreController.currentArcadeScore += (uint)target.score;
 		}
 		if (other.tag == "Finish")
 		{

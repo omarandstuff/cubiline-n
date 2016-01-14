@@ -19,6 +19,7 @@ public class CubilineScoreController
 				_newArcadeRecord = true;
 				_bestArcadeScore = _currentArcadeScore;
 				FillBestArcadeScores();
+				CubilinePlayerData.bestArcadeScore = _bestArcadeScore;
 			}
 			else
 			{

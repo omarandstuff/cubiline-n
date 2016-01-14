@@ -41,11 +41,11 @@ public class CubilineArcade : MonoBehaviour
 			{
 				if(status == STATUS.GIONG_OUT)
 				{
-					Application.LoadLevel(0);
+					Application.LoadLevel("main_menu_scene");
 				}
 				else if (status == STATUS.SHOW_SCORE)
 				{
-					Application.LoadLevel(2);
+					Application.LoadLevel("show_score_scene");
 				}
 			}
 			return;
@@ -69,6 +69,7 @@ public class CubilineArcade : MonoBehaviour
 			{
 				status = STATUS.GIONG_OUT;
 				uiController.GoOut();
+				CubilinePlayerData.Save();
 				GoOut();
 			}
 		}
@@ -77,6 +78,7 @@ public class CubilineArcade : MonoBehaviour
 		{
 			status = STATUS.SHOW_SCORE;
 			uiController.GoOut();
+			CubilinePlayerData.Save();
 			GoOut();
 		}
 	}
