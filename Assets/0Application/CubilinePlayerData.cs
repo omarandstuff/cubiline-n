@@ -71,8 +71,7 @@ public class CubilinePlayerData
 		bestArcadeScoreDateTime = pd.bestScoreDateTime;
 		lastArcadeScoreDateTime = pd.lastScoreDateTime;
 
-		CubilineScoreController.currentArcadeScore = bestArcadeScore;
-		CubilineScoreController.currentArcadeScore = 0;
+		CubilineScoreController.bestArcadeScore = bestArcadeScore;
 	}
 
 }

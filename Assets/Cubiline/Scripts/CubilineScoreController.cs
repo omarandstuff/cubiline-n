@@ -7,7 +7,7 @@ public class CubilineScoreController
 	///////////////////////// PROPERTIES /////////////////////////
 	//////////////////////////////////////////////////////////////
 	public static bool newArcadeRecord { get { return _newArcadeRecord; } }
-	public static uint bestArcadeScore { get { return _bestArcadeScore; } }
+	public static uint bestArcadeScore { get { return _bestArcadeScore; } set { _bestArcadeScore = value; } }
 	public static uint currentArcadeScore
 	{
 		get { return _currentArcadeScore; }
