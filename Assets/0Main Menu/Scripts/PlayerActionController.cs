@@ -43,13 +43,7 @@ public class PlayerActionController : ActionContentController
 		int minutes = seconds / 60;
 		seconds -= minutes * 60;
 
-		if (hours > 0)
-			arcadeTimePlayed.text = hours.ToString() + (hours == 1 ? " Hour" : " Hours" + (minutes > 0 ? " And " + minutes.ToString() + (minutes == 1 ? " Minute" : " Minutes") : ""));
-		else if (minutes > 0)
-			arcadeTimePlayed.text = minutes.ToString() + (minutes == 1 ? " Minute" : " Minutes" + (seconds > 0 ? " And " + seconds.ToString() + (seconds == 1 ? " Second" : " Seconds") : ""));
-		else
-			arcadeTimePlayed.text = seconds.ToString() + (seconds == 1 ? " Second" : " Seconds");
-
+		arcadeTimePlayed.text = hours.ToString("D" + 2) + ":" + minutes.ToString("D" + 2) + ":" + seconds.ToString("D" + 2);
 		arcadeTotalLength.text = CubilinePlayerData.totalArcadeLength.ToString() + "m";
 
 	}
