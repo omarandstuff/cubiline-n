@@ -32,7 +32,12 @@ public class CubilineArcade : MonoBehaviour
 
 	void Start()
 	{
+		// Used for register de time the palyer has playing.
 		timeOfGame = Time.time;
+
+		// Audio directive.
+		CubilineMusicPlayer.inMenu = false;
+
 		Reset();
 	}
 

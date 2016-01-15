@@ -34,6 +34,8 @@ public class MenuController : MonoBehaviour
 
 	public static string nextScene; // This attrubute will be accesed for the actions controllers to tell the current menu wish scene is next when outing.
 
+	public bool inMenuMusic = true;
+
 	//////////////////////////////////////////////////////////////
 	////////////////////// CONTROL VARIABLES /////////////////////
 	//////////////////////////////////////////////////////////////
@@ -75,6 +77,9 @@ public class MenuController : MonoBehaviour
 	{
 		// First things to do.
 		SetupMenu();
+
+		// Audio directive
+		CubilineMusicPlayer.inMenu = inMenuMusic;
 	}
 
 	void Update()
