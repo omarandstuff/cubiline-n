@@ -28,6 +28,8 @@ public class CubilineTargetController : MonoBehaviour
 	private Dictionary<int, TargetInf> commonTargets = new Dictionary<int, TargetInf>(); // List of common tagets in the arena.
 	private TargetInf[] specialTargetInfs;
 
+	private float bigCurrentTime;
+
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////// SETUP ////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -58,6 +60,19 @@ public class CubilineTargetController : MonoBehaviour
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////// TARGETS ///////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////
+
+	private void Update()
+	{
+		if (bigCurrentTime > 0)
+		{
+			bigCurrentTime -= Time.deltaTime;
+			if(bigCurrentTime <= 0.0f)
+			{
+				commonTargetCount = 6;
+				bigCurrentTime = 0.0f;
+			}
+		}
+	}
 
 	public void ManageTargets()
 	{
@@ -150,6 +165,14 @@ public class CubilineTargetController : MonoBehaviour
 	{
 		if (target.inGameObject != null)
 		{
+			if(target.inGameObject.GetComponent<CubilineTarget>().activated)
+			{
+				if (target.inGameObject.GetComponent<CubilineTarget>().targetTag == "Big Target")
+				{
+					commonTargetCount = 100;
+					bigCurrentTime = 10f;
+				}
+			}
 			Destroy(target.inGameObject, 1.0f);
 			target.inGameObject.GetComponent<CubilineTarget>().targetScale = Vector3.zero;
 			slotController.FreeSlot(target.slotIndex);

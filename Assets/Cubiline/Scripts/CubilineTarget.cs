@@ -13,6 +13,8 @@ public class CubilineTarget : MonoBehaviour
 	///////////////////////// PARAMETERS /////////////////////////
 	//////////////////////////////////////////////////////////////
 
+	public string targetTag;
+	public bool activated = false;
 	public int index;
 	public int toGrow = 1;
 	public int score = 1;
@@ -23,7 +25,6 @@ public class CubilineTarget : MonoBehaviour
 	////////////////////// CONTROL VARIABLES /////////////////////
 	//////////////////////////////////////////////////////////////
 
-	private Vector3 rotation;
 	private Vector3 scaleVelocity = Vector3.zero;
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -38,12 +39,18 @@ public class CubilineTarget : MonoBehaviour
 	void FixedUpdate()
 	{
 		if (transform.localScale != targetScale) transform.localScale = Vector3.SmoothDamp(transform.localScale, targetScale, ref scaleVelocity, scaleTime);
-		transform.localRotation = Quaternion.Euler(rotation);
 	}
 
 	void OnTriggerEnter(Collider other)
 	{
 		if (other.tag == "Player")
-			Destroy(Instantiate(particlePrefab, transform.position, Quaternion.identity), 20.0f);
+		{
+			activated = true;
+			Destroy(Instantiate(particlePrefab, transform.position, Quaternion.identity), 8.0f);
+			foreach (Collider c in GetComponents<Collider>())
+				c.enabled = false;
+			GetComponent<MeshRenderer>().enabled = false;
+			GetComponent<AudioSource>().Play();
+		}
 	}
 }
