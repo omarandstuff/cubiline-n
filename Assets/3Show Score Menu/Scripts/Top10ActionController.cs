@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
-using System.Xml;
+using System.Xml.Linq;
 
 public class Top10ActionController : ActionContentController
 {
@@ -58,7 +58,7 @@ public class Top10ActionController : ActionContentController
 	IEnumerator LoadScores()
 	{
 		// Create a download object.
-		WWW download = new WWW("http://www.cubiline.com/scores");
+		WWW download = new WWW("http://cubiline.com/scores");
 
 		// Wait until the download is done
 		yield return download;
@@ -66,17 +66,18 @@ public class Top10ActionController : ActionContentController
 		if (!string.IsNullOrEmpty(download.error))
 		{
 			print("Error Geting Scores: " + download.error);
+			names[0].text = download.error;
 		}
 		else
 		{
-			XmlDocument xml = new XmlDocument();
-			xml.LoadXml(download.text);
+			XDocument xdoc = XDocument.Parse(download.text);
+			var rootCategory = xdoc.Root;
 
-			XmlNodeList xnList = xml.SelectNodes("/demo-scores/demo-score");
-			for (int i = 0; i < xnList.Count; i++)
+			int i = 0;
+			foreach (XElement score in rootCategory.Elements())
 			{
-				names[i].text = xnList[i]["players"].InnerText;
-				scores[i].text = xnList[i]["score"].InnerText;
+				names[i].text = (string)score.Element("players");
+				scores[i++].text = (string)score.Element("score");
 			}
 		}
 	}
