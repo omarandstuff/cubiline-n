@@ -7,7 +7,6 @@ public class CubilineMusicPlayer : MonoBehaviour
 	///////////////////////// COMPONENTS /////////////////////////
 	//////////////////////////////////////////////////////////////
 
-	public GameObject visualSongPrefab;
 	public Song[] songs;
 
 	[System.Serializable]
@@ -87,18 +86,5 @@ public class CubilineMusicPlayer : MonoBehaviour
 	{
 		GetComponent<AudioSource>().clip = songs[index].songFile;
 		GetComponent<AudioSource>().Play();
-		StartCoroutine(ShowVisualSong(index));
-	}
-
-	IEnumerator ShowVisualSong(uint index)
-	{
-		yield return new WaitForSeconds(3.0f);
-		GameObject vo = Instantiate(visualSongPrefab);
-		vo.GetComponent<CubilineVisualMusic>().nameText.text = songs[index].name;
-		vo.GetComponent<CubilineVisualMusic>().artistText.text = songs[index].artist;
-		vo.GetComponent<CubilineVisualMusic>().albumText.text = songs[index].album;
-		vo.transform.SetParent(transform);
-		vo.GetComponent<RectTransform>().offsetMax = Vector2.zero;
-		vo.GetComponent<RectTransform>().offsetMin = Vector2.zero;
 	}
 }
