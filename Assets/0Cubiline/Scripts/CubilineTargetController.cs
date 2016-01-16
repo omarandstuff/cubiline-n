@@ -23,12 +23,14 @@ public class CubilineTargetController : MonoBehaviour
 
 	[System.Serializable]
 	public struct SpecialTarget { public GameObject specialTargetBase; public float minimumWaitingTime; public float maximumWaitingTime; public float inShowTime; }
-	private struct TargetInf { public bool waiting; public float selectedRandomTime, currentTime, showTime; public GameObject inGameObject; public int slotIndex; }
+	private struct TargetInf { public bool waiting; public float selectedRandomTime, currentTime, showTime; public GameObject inGameObject; public int slotIndex; public CubilinePlayerController.PLACE place; }
 
 	private Dictionary<int, TargetInf> commonTargets = new Dictionary<int, TargetInf>(); // List of common tagets in the arena.
 	private TargetInf[] specialTargetInfs;
 
 	private float bigCurrentTime;
+	private float magnetCurrentTime;
+	private Transform magnetTarget;
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////// SETUP ////////////////////////////////////////////
@@ -61,21 +63,18 @@ public class CubilineTargetController : MonoBehaviour
 	//////////////////////////////////////////// TARGETS ///////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////
 
-	private void Update()
+	public void ManageTargets()
 	{
 		if (bigCurrentTime > 0)
 		{
 			bigCurrentTime -= Time.deltaTime;
-			if(bigCurrentTime <= 0.0f)
+			if (bigCurrentTime <= 0.0f)
 			{
 				commonTargetCount = 6;
 				bigCurrentTime = 0.0f;
 			}
 		}
-	}
 
-	public void ManageTargets()
-	{
 		while (commonTargets.Count < commonTargetCount && slotController.freeSlots > 0)
 			spawnCommon();
 
@@ -137,6 +136,7 @@ public class CubilineTargetController : MonoBehaviour
 		newTarget.slotIndex = slot.index;
 		newTarget.inGameObject = (GameObject)Instantiate(commonTargetBase, slot.position, Quaternion.identity);
 		newTarget.inGameObject.GetComponent<CubilineTarget>().index = slot.index;
+		newTarget.place = slot.place;
 
 		newTarget.inGameObject.transform.parent = transform;
 
@@ -157,6 +157,7 @@ public class CubilineTargetController : MonoBehaviour
 
 		specialTargetInfs[index].slotIndex = slot.index;
 		specialTargetInfs[index].inGameObject = (GameObject)Instantiate(specialTargets[index].specialTargetBase, slot.position, Quaternion.identity);
+		specialTargetInfs[index].place = slot.place;
 
 		specialTargetInfs[index].inGameObject.transform.parent = transform;
 	}
@@ -169,8 +170,31 @@ public class CubilineTargetController : MonoBehaviour
 			{
 				if (target.inGameObject.GetComponent<CubilineTarget>().targetTag == "Big Target")
 				{
-					commonTargetCount = 100;
-					bigCurrentTime = 10f;
+					commonTargetCount = CubilineApplication.cubeSize * (CubilineApplication.cubeSize / 4);
+					bigCurrentTime = 20;
+				}
+				else if (target.inGameObject.GetComponent<CubilineTarget>().targetTag == "Magnet")
+				{
+					magnetCurrentTime = CubilineApplication.cubeSize / 2;
+					magnetTarget = target.inGameObject.GetComponent<CubilineTarget>().activator;
+					int index = 0;
+					foreach (KeyValuePair<int, TargetInf> ti in commonTargets)
+					{
+						ti.Value.inGameObject.GetComponent<CubilineGrabity>().targetPlanet = magnetTarget;
+						ti.Value.inGameObject.GetComponent<Rigidbody>().isKinematic = false;
+						ti.Value.inGameObject.GetComponent<Rigidbody>().AddExplosionForce(CubilineApplication.cubeSize * 500, Vector3.zero, CubilineApplication.cubeSize);
+						if (index++ == 100) break;
+					}
+					foreach (TargetInf ti in specialTargetInfs)
+					{
+						if(ti.inGameObject != null)
+						{
+							ti.inGameObject.GetComponent<CubilineGrabity>().targetPlanet = magnetTarget;
+							ti.inGameObject.GetComponent<Rigidbody>().isKinematic = false;
+							ti.inGameObject.GetComponent<Rigidbody>().AddExplosionForce(CubilineApplication.cubeSize * 500, Vector3.zero, CubilineApplication.cubeSize);
+						}
+						
+					}
 				}
 			}
 			Destroy(target.inGameObject, 1.0f);

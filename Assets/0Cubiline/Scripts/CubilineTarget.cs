@@ -15,6 +15,7 @@ public class CubilineTarget : MonoBehaviour
 
 	public string targetTag;
 	public bool activated = false;
+	public Transform activator;
 	public int index;
 	public int toGrow = 1;
 	public int score = 1;
@@ -43,9 +44,8 @@ public class CubilineTarget : MonoBehaviour
 
 	void OnTriggerEnter(Collider other)
 	{
-		if (other.tag == "Player")
+		if (other.tag == "Player" || other.tag == "Finish")
 		{
-			activated = true;
 			Destroy(Instantiate(particlePrefab, transform.position, Quaternion.identity), 8.0f);
 			foreach (Collider c in GetComponents<Collider>())
 				c.enabled = false;

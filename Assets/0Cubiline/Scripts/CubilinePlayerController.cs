@@ -291,6 +291,8 @@ public class CubilinePlayerController : MonoBehaviour
 		if (other.tag == "Target")
 		{
 			CubilineTarget target = other.GetComponent<CubilineTarget>();
+			target.activated = true;
+			target.activator = head;
 			if (target.toGrow >= 0)
 			{
 				Grow(target.toGrow);
@@ -316,6 +318,8 @@ public class CubilinePlayerController : MonoBehaviour
 		if (other.tag == "Special Target")
 		{
 			CubilineTarget target = other.GetComponent<CubilineTarget>();
+			target.activated = true;
+			target.activator = head;
 			if (target.toGrow >= 0)
 			{
 				Grow(target.toGrow);
@@ -1530,6 +1534,7 @@ public class CubilinePlayerController : MonoBehaviour
 		CubilineBody newBody = Instantiate(baseBody);
 		newBody.transform.parent = transform;
 		newBody.initialize(headPlace, headDirection, head.localPosition, size);
+		newBody.GetComponent<CubilineHeadCollider>().cubilineController = this;
 		bodyQueue.Enqueue(newBody);
 		lastBody = newBody;
 	}
