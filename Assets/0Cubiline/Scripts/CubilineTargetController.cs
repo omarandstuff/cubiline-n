@@ -180,7 +180,7 @@ public class CubilineTargetController : MonoBehaviour
 					{
 						ti.Value.inGameObject.GetComponent<CubilineGrabity>().targetPlanet = magnetTarget;
 						ti.Value.inGameObject.GetComponent<Rigidbody>().isKinematic = false;
-						ti.Value.inGameObject.GetComponent<Rigidbody>().AddExplosionForce(CubilineApplication.cubeSize * 500, Vector3.zero, CubilineApplication.cubeSize);
+						ti.Value.inGameObject.GetComponent<Rigidbody>().AddExplosionForce(CubilineApplication.cubeSize * 1000, Vector3.zero, CubilineApplication.cubeSize);
 						if (index++ == 100) break;
 					}
 					foreach (TargetInf ti in specialTargetInfs)
@@ -189,7 +189,7 @@ public class CubilineTargetController : MonoBehaviour
 						{
 							ti.inGameObject.GetComponent<CubilineGrabity>().targetPlanet = magnetTarget;
 							ti.inGameObject.GetComponent<Rigidbody>().isKinematic = false;
-							ti.inGameObject.GetComponent<Rigidbody>().AddExplosionForce(CubilineApplication.cubeSize * 500, Vector3.zero, CubilineApplication.cubeSize);
+							ti.inGameObject.GetComponent<Rigidbody>().AddExplosionForce(CubilineApplication.cubeSize * 1000, Vector3.zero, CubilineApplication.cubeSize);
 						}
 						
 					}

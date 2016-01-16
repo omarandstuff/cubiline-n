@@ -20,12 +20,15 @@ public class CubilineTarget : MonoBehaviour
 	public int toGrow = 1;
 	public int score = 1;
 	public Vector3 targetScale;
+	public bool pingPong = false;
+	public float pinpongMagnitude = 0.2f;
 	public float scaleTime = 0.3f;
 
 	//////////////////////////////////////////////////////////////
 	////////////////////// CONTROL VARIABLES /////////////////////
 	//////////////////////////////////////////////////////////////
 
+	private Vector3 pingPongTargetScale;
 	private Vector3 scaleVelocity = Vector3.zero;
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -35,11 +38,22 @@ public class CubilineTarget : MonoBehaviour
 	void Start()
 	{
 		transform.localScale = Vector3.zero;
+		pingPongTargetScale = targetScale;
 	}
 
 	void FixedUpdate()
 	{
-		if (transform.localScale != targetScale) transform.localScale = Vector3.SmoothDamp(transform.localScale, targetScale, ref scaleVelocity, scaleTime);
+		if(pingPong)
+		{
+			float scalePoned = targetScale.x - Mathf.PingPong(Time.time, pinpongMagnitude);
+			pingPongTargetScale = new Vector3(scalePoned, scalePoned, scalePoned);
+		}
+		else
+		{
+			pingPongTargetScale = targetScale;
+		}
+
+		if (transform.localScale != pingPongTargetScale) transform.localScale = Vector3.SmoothDamp(transform.localScale, pingPongTargetScale, ref scaleVelocity, scaleTime);
 	}
 
 	void OnTriggerEnter(Collider other)
