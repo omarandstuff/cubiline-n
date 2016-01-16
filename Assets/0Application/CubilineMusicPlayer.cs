@@ -7,10 +7,14 @@ public class CubilineMusicPlayer : MonoBehaviour
 	///////////////////////// COMPONENTS /////////////////////////
 	//////////////////////////////////////////////////////////////
 
+	public static CubilineMusicPlayer singleton;
+	
 	public Song[] songs;
+	public GameObject arcadeFinishWavePrefab;
 
 	[System.Serializable]
 	public struct Song { public AudioClip songFile; public string name; public string artist; public string album; }
+
 
 	//////////////////////////////////////////////////////////////
 	//////////////////////// PARAMETERS //////////////////////////
@@ -33,10 +37,15 @@ public class CubilineMusicPlayer : MonoBehaviour
 
 	void Awake()
 	{
-		if (loaded) Destroy(gameObject);
+		if (loaded)
+		{
+			Destroy(gameObject);
+			return;
+		}
 		loaded = true;
 		DontDestroyOnLoad(transform.gameObject);
 		currentIndex = 0;
+		singleton = this;
 	}
 
 	void Start ()
@@ -86,5 +95,12 @@ public class CubilineMusicPlayer : MonoBehaviour
 	{
 		GetComponent<AudioSource>().clip = songs[index].songFile;
 		GetComponent<AudioSource>().Play();
+	}
+
+	public void ArcadeFinishWave()
+	{
+		GameObject fw = Instantiate(arcadeFinishWavePrefab);
+		fw.transform.SetParent(transform);
+		Destroy(fw, 5);
 	}
 }

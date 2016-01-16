@@ -87,6 +87,8 @@ public class CubilineArcade : MonoBehaviour
 			status = STATUS.SHOW_SCORE;
 			uiController.GoOut();
 
+			if (CubilineMusicPlayer.singleton != null) CubilineMusicPlayer.singleton.ArcadeFinishWave();
+
 			// Player game inf
 			CubilinePlayerData.arcadeGamesPlayed++;
 			CubilinePlayerData.arcadeTimePlayed += Time.time - timeOfGame;

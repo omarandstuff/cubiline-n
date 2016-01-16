@@ -13,7 +13,7 @@ public class CubilinePlayerController : MonoBehaviour
 	public Transform smoothHead;
 	public Transform head;
 	public CubilineBody baseBody;
-	public Transform HUDobject;
+	public GameObject finishParticle;
 
 	//////////////////////////////////////////////////////////////
 	//////////////////// CUBILINE PARAMETERS /////////////////////
@@ -336,6 +336,7 @@ public class CubilinePlayerController : MonoBehaviour
 		}
 		if (other.tag == "Finish")
 		{
+			Destroy(Instantiate(finishParticle, head.position, Quaternion.identity), 8.0f);
 			status = STATUS.FINISH;
 		}
 	}

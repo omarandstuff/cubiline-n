@@ -29,7 +29,6 @@ public class CubilineTargetController : MonoBehaviour
 	private TargetInf[] specialTargetInfs;
 
 	private float bigCurrentTime;
-	private float magnetCurrentTime;
 	private Transform magnetTarget;
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -175,7 +174,6 @@ public class CubilineTargetController : MonoBehaviour
 				}
 				else if (target.inGameObject.GetComponent<CubilineTarget>().targetTag == "Magnet")
 				{
-					magnetCurrentTime = CubilineApplication.cubeSize / 2;
 					magnetTarget = target.inGameObject.GetComponent<CubilineTarget>().activator;
 					int index = 0;
 					foreach (KeyValuePair<int, TargetInf> ti in commonTargets)
