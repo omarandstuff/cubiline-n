@@ -8,12 +8,14 @@ public class CubilineTargetController : MonoBehaviour
 	//////////////////////////////////////////////////////////////
 	public GameObject commonTargetBase;
 	public SpecialTarget[] specialTargets;
+	public CubilineUIController uiController;
 
 	//////////////////////////////////////////////////////////////
 	//////////////////////// PARAMETERS //////////////////////////
 	//////////////////////////////////////////////////////////////
 
 	public uint commonTargetCount = 1;
+	public float specialCommonTime = 10.0f;
 
 	//////////////////////////////////////////////////////////////
 	////////////////////// CONTROL VARIABLES /////////////////////
@@ -67,10 +69,14 @@ public class CubilineTargetController : MonoBehaviour
 		if (bigCurrentTime > 0)
 		{
 			bigCurrentTime -= Time.deltaTime;
+
+			uiController.specialCommonTime = bigCurrentTime / specialCommonTime;
+
 			if (bigCurrentTime <= 0.0f)
 			{
 				commonTargetCount = 6;
 				bigCurrentTime = 0.0f;
+				uiController.specialCommon = false;
 			}
 		}
 
@@ -170,7 +176,8 @@ public class CubilineTargetController : MonoBehaviour
 				if (target.inGameObject.GetComponent<CubilineTarget>().targetTag == "Big Target")
 				{
 					commonTargetCount = CubilineApplication.cubeSize * (CubilineApplication.cubeSize / 4);
-					bigCurrentTime = 20;
+					bigCurrentTime = specialCommonTime;
+					uiController.specialCommon = true;
 				}
 				else if (target.inGameObject.GetComponent<CubilineTarget>().targetTag == "Magnet")
 				{

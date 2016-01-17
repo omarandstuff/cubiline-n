@@ -9,6 +9,7 @@ public class CubilineUIController : MonoBehaviour
 
 	public EaseScore scoreText;
 	public EaseScore lengthText;
+	public GameObject specialCommonBar;
 	public GameObject multiplerBar;
 	public GameObject multiplerHolder;
 	public GameObject multiplerText;
@@ -57,6 +58,32 @@ public class CubilineUIController : MonoBehaviour
 		{
 			Vector3 barSize = new Vector3(value, 1, 1);
 			multiplerBar.GetComponent<EaseScale>().inValues = barSize;
+		}
+	}
+
+	public bool specialCommon
+	{
+		set
+		{
+			if (!value)
+			{
+				specialCommonBar.GetComponent<EaseImageOpasity>().easeFace = EaseFloat.EASE_FACE.OUT;
+				specialCommonBar.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.OUT;
+			}
+			else
+			{
+				specialCommonBar.GetComponent<EaseImageOpasity>().easeFace = EaseFloat.EASE_FACE.IN;
+				specialCommonBar.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
+			}
+		}
+	}
+
+	public float specialCommonTime
+	{
+		set
+		{
+			Vector3 barSize = new Vector3(value, 1, 1);
+			specialCommonBar.GetComponent<EaseScale>().inValues = barSize;
 		}
 	}
 
