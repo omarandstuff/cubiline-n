@@ -14,6 +14,7 @@ public class CubilinePlayerController : MonoBehaviour
 	public Transform head;
 	public CubilineBody baseBody;
 	public GameObject finishParticle;
+	public CubilineUIController uiController;
 
 	//////////////////////////////////////////////////////////////
 	//////////////////// CUBILINE PARAMETERS /////////////////////
@@ -76,7 +77,9 @@ public class CubilinePlayerController : MonoBehaviour
 	private Queue<int> usedSlots = new Queue<int>(); // Positions used by the body.
 	private Vector3 lastSlotUsed; // Keep traking of where was the las time it take a slot from the arena.
 
-	private int bodyLength;
+	private int bodyLength; // measure how much the body length.
+	private int multipler; // Score multipler
+	private int multiplerCurrentTime; // If it is greater than 0 then time to multply the score earned.
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// MONO BEHAVIOR /////////////////////////////////////////
@@ -296,8 +299,6 @@ public class CubilinePlayerController : MonoBehaviour
 			if (target.toGrow >= 0)
 			{
 				Grow(target.toGrow);
-				if (playerKind == PLAYER_KIND.ARCADE)
-					CubilinePlayerData.totalArcadeLength += (uint)target.toGrow;
 			}
 			else
 				UnGrow(-target.toGrow);
@@ -312,8 +313,9 @@ public class CubilinePlayerController : MonoBehaviour
 			{
 				targetController.DismissCommon(target.index);
 			}
+
 			if(playerKind == PLAYER_KIND.ARCADE)
-				CubilineScoreController.currentArcadeScore += (uint)target.score;
+				CubilineScoreController.currentArcadeScore += (uint)target.score * (uint)(multiplerCurrentTime > 0 ? multipler : 1);
 		}
 		if (other.tag == "Special Target")
 		{
@@ -323,8 +325,6 @@ public class CubilinePlayerController : MonoBehaviour
 			if (target.toGrow >= 0)
 			{
 				Grow(target.toGrow);
-				if (playerKind == PLAYER_KIND.ARCADE)
-					CubilinePlayerData.totalArcadeLength += (uint)target.toGrow;
 			}
 			else
 				UnGrow(-target.toGrow);
@@ -332,7 +332,7 @@ public class CubilinePlayerController : MonoBehaviour
 			targetController.DismissSpecial(target.index);
 
 			if (playerKind == PLAYER_KIND.ARCADE)
-				CubilineScoreController.currentArcadeScore += (uint)target.score;
+				CubilineScoreController.currentArcadeScore += (uint)target.score * (uint)(multiplerCurrentTime > 0 ? multipler : 1); ;
 		}
 		if (other.tag == "Finish")
 		{
@@ -346,6 +346,12 @@ public class CubilinePlayerController : MonoBehaviour
 		eating = true;
 		toGrow += units;
 		bodyLength += units;
+		if (playerKind == PLAYER_KIND.ARCADE)
+		{
+			CubilinePlayerData.totalArcadeLength += (uint)units;
+			CubilinePlayerData.lastArcadeLength = (uint)bodyLength;
+			if (bodyLength > CubilinePlayerData.bestArcadeLength) CubilinePlayerData.bestArcadeLength = (uint)bodyLength;
+		}
 	}
 
 	public void UnGrow(int units)
