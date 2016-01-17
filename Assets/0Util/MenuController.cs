@@ -12,6 +12,8 @@ public class MenuController : MonoBehaviour
 	public Text ActionText; // Text that show the name of the menu side.
 	public EasePosition focalTarget; // What the camera will be focusing (can be move when outing the scene).
 	public GameObject backButtonPrefab; // Optionaly can present a button to enable the player to back in scene and sides.
+	public GameObject navigationLeft; // Optionaly can acces a button that enables the rotation navigation to the left.
+	public GameObject navigationRight; // Optionaly can acces a button that enables the rotation navigation to the right.
 	[System.Serializable]public struct Sides { public string frontActionText; public GameObject frontActionContentPrefab; public string backActionText; public GameObject backActionContentPrefab; public string rightActionText; public GameObject rightActionContentPrefab; public string leftActionText; public GameObject leftActionContentPrefab; }
 	public Sides[] sides; // Prefas of every side of the menu in every stage.
 	/*
@@ -339,6 +341,18 @@ public class MenuController : MonoBehaviour
 					backButton.GetComponent<Collider>().enabled = false;
 				}
 
+				if (navigationLeft != null) // If exist navigation left.
+				{
+					navigationLeft.transform.GetChild(0).GetComponent<EaseImageOpasity>().easeFace = EaseFloat.EASE_FACE.OUT;
+					navigationLeft.GetComponent<Collider>().enabled = false;
+				}
+
+				if (navigationRight != null) // If exist navigation right.
+				{
+					navigationRight.transform.GetChild(0).GetComponent<EaseImageOpasity>().easeFace = EaseFloat.EASE_FACE.OUT;
+					navigationRight.GetComponent<Collider>().enabled = false;
+				}
+
 				// Desable the text behind the cube too.
 				if (ActionText != null) ActionText.GetComponent<EaseTextOpasity>().easeFace = EaseFloat.EASE_FACE.OUT;
 				
@@ -405,6 +419,18 @@ public class MenuController : MonoBehaviour
 			backButton.transform.GetChild(0).GetComponent<EaseImageOpasity>().easeFace = EaseFloat.EASE_FACE.IN;
 			backButton.transform.GetChild(1).GetComponent<EaseTextOpasity>().easeFace = EaseFloat.EASE_FACE.IN;
 			backButton.GetComponent<Collider>().enabled = true;
+		}
+
+		if (navigationLeft != null) // If exist navigation left.
+		{
+			navigationLeft.transform.GetChild(0).GetComponent<EaseImageOpasity>().easeFace = EaseFloat.EASE_FACE.IN;
+			navigationLeft.GetComponent<Collider>().enabled = true;
+		}
+
+		if (navigationRight != null) // If exist navigation right.
+		{
+			navigationRight.transform.GetChild(0).GetComponent<EaseImageOpasity>().easeFace = EaseFloat.EASE_FACE.IN;
+			navigationRight.GetComponent<Collider>().enabled = true;
 		}
 
 		// And visualize the text behind the cube again.
