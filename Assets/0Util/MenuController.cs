@@ -78,6 +78,11 @@ public class MenuController : MonoBehaviour
 		// First things to do.
 		SetupMenu();
 
+		// Reset time scale.
+		Time.timeScale = 1.0f;
+
+		if (CubilineMusicPlayer.singleton != null) CubilineMusicPlayer.singleton.Play();
+
 		// Audio directive
 		CubilineMusicPlayer.inMenu = inMenuMusic;
 	}

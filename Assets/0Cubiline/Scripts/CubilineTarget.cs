@@ -63,7 +63,7 @@ public class CubilineTarget : MonoBehaviour
 			Destroy(Instantiate(particlePrefab, transform.position, Quaternion.identity), 8.0f);
 			foreach (Collider c in GetComponents<Collider>())
 				c.enabled = false;
-			GetComponent<MeshRenderer>().enabled = false;
+			if(GetComponent<MeshRenderer>() != null) GetComponent<MeshRenderer>().enabled = false;
 			GetComponent<AudioSource>().Play();
 		}
 	}

@@ -33,7 +33,7 @@ public class CubilineMusicPlayer : MonoBehaviour
 	private uint currentIndex;
 	private uint[] indexList = new uint[0];
 
-
+	private bool playing = true;
 
 	void Awake()
 	{
@@ -54,6 +54,7 @@ public class CubilineMusicPlayer : MonoBehaviour
 	
 	void Update ()
 	{
+		if (!playing) return;
 		if (!lastInMenu && inMenu)
 			PlaySong(0);
 
@@ -102,5 +103,16 @@ public class CubilineMusicPlayer : MonoBehaviour
 		GameObject fw = Instantiate(arcadeFinishWavePrefab);
 		fw.transform.SetParent(transform);
 		Destroy(fw, 5);
+	}
+
+	public void Stop()
+	{
+		GetComponent<AudioSource>().Stop();
+		playing = false;
+	}
+
+	public void Play()
+	{
+		playing = true;
 	}
 }
