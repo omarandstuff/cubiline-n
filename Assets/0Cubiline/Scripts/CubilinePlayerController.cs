@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 public class CubilinePlayerController : MonoBehaviour
 {
@@ -39,9 +40,13 @@ public class CubilinePlayerController : MonoBehaviour
 	public PLAYER_KIND playerKind;
 	public uint playerNumber;
 
+	public float multiplerTime = 10.0f;
+
 	//////////////////////////////////////////////////////////////
 	////////////////////// CONTROL VARIABLES /////////////////////
 	//////////////////////////////////////////////////////////////
+
+	private uint arcadeScore;
 
 	private float arenaLogicalLimit; // The side limit plus the 0.5 units offset for the head to be aout of the side.
 	private float arenaPlaceLimit; // The side limit minus 0.5 that is the tolerance distance to made a turn.
@@ -79,7 +84,7 @@ public class CubilinePlayerController : MonoBehaviour
 
 	private int bodyLength; // measure how much the body length.
 	private int multipler; // Score multipler
-	private int multiplerCurrentTime; // If it is greater than 0 then time to multply the score earned.
+	private float multiplerCurrentTime; // If it is greater than 0 then time to multply the score earned.
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// MONO BEHAVIOR /////////////////////////////////////////
@@ -175,6 +180,19 @@ public class CubilinePlayerController : MonoBehaviour
 
 		// This is step is the last known head's position.
 		lastHeadPosition = head.localPosition;
+
+		// Multipler system
+		if (multiplerCurrentTime > 0)
+		{
+			multiplerCurrentTime -= Time.deltaTime;
+			uiController.multiplerTime = multiplerCurrentTime / multiplerTime;
+		}
+		else
+		{
+			multipler = 0;
+			uiController.multipler = multipler;
+		}
+			
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -271,6 +289,11 @@ public class CubilinePlayerController : MonoBehaviour
 
 		// Update slots.
 		ControlSlots();
+
+		// Arcade
+		arcadeScore = 0;
+		uiController.score = arcadeScore;
+		uiController.length = (uint)bodyLength;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -314,8 +337,22 @@ public class CubilinePlayerController : MonoBehaviour
 				targetController.DismissCommon(target.index);
 			}
 
-			if(playerKind == PLAYER_KIND.ARCADE)
-				CubilineScoreController.currentArcadeScore += (uint)target.score * (uint)(multiplerCurrentTime > 0 ? multipler : 1);
+			if (playerKind == PLAYER_KIND.ARCADE)
+			{
+				arcadeScore += (uint)target.score * (uint)(multiplerCurrentTime > 0 ? multipler : 1);
+				CubilinePlayerData.lastArcadeScore = arcadeScore;
+				CubilinePlayerData.lastArcadeScoreDateTime = DateTime.Now;
+
+				uiController.plusScore = (uint)target.score * (uint)(multiplerCurrentTime > 0 ? multipler : 1);
+				uiController.score = arcadeScore;
+				uiController.length = (uint)bodyLength;
+
+				if (CubilinePlayerData.bestArcadeScore < arcadeScore)
+				{
+					CubilinePlayerData.bestArcadeScore = arcadeScore;
+					CubilinePlayerData.bestArcadeScoreDateTime = DateTime.Now;
+				}
+			}
 		}
 		if (other.tag == "Special Target")
 		{
@@ -329,10 +366,40 @@ public class CubilinePlayerController : MonoBehaviour
 			else
 				UnGrow(-target.toGrow);
 
+			if(target.targetTag == "2x")
+			{
+				multipler += 2;
+				multipler = Math.Min(multipler, 8);
+				multiplerCurrentTime = multiplerTime;
+				uiController.multipler = multipler;
+			}
+			else if (target.targetTag == "4x")
+			{
+				multipler += 4;
+				multipler = Math.Min(multipler, 8);
+				multiplerCurrentTime = multiplerTime;
+				uiController.multipler = multipler;
+			}
+
 			targetController.DismissSpecial(target.index);
 
 			if (playerKind == PLAYER_KIND.ARCADE)
-				CubilineScoreController.currentArcadeScore += (uint)target.score * (uint)(multiplerCurrentTime > 0 ? multipler : 1); ;
+			{
+				arcadeScore += (uint)target.score * (uint)(multiplerCurrentTime > 0 ? multipler : 1);
+				CubilinePlayerData.lastArcadeScore = arcadeScore;
+				CubilinePlayerData.lastArcadeScoreDateTime = DateTime.Now;
+
+				uiController.plusScore = (uint)target.score * (uint)(multiplerCurrentTime > 0 ? multipler : 1);
+				uiController.score = arcadeScore;
+				uiController.length = (uint)bodyLength;
+
+				if (CubilinePlayerData.bestArcadeScore < arcadeScore)
+				{
+					CubilinePlayerData.bestArcadeScore = arcadeScore;
+					CubilinePlayerData.bestArcadeScoreDateTime = DateTime.Now;
+				}
+			}
+				
 		}
 		if (other.tag == "Finish")
 		{
@@ -348,6 +415,8 @@ public class CubilinePlayerController : MonoBehaviour
 		bodyLength += units;
 		if (playerKind == PLAYER_KIND.ARCADE)
 		{
+			uiController.plusLength = units;
+
 			CubilinePlayerData.totalArcadeLength += (uint)units;
 			CubilinePlayerData.lastArcadeLength = (uint)bodyLength;
 			if (bodyLength > CubilinePlayerData.bestArcadeLength) CubilinePlayerData.bestArcadeLength = (uint)bodyLength;
@@ -360,6 +429,11 @@ public class CubilinePlayerController : MonoBehaviour
 		unEating = true;
 		toUnGrow += realUngorw;
 		bodyLength -= realUngorw;
+
+		if(playerKind == PLAYER_KIND.ARCADE)
+		{
+			uiController.plusLength = realUngorw;
+		}
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////

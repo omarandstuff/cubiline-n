@@ -197,6 +197,7 @@ public class CubilineTargetController : MonoBehaviour
 			}
 			Destroy(target.inGameObject, 1.0f);
 			target.inGameObject.GetComponent<CubilineTarget>().targetScale = Vector3.zero;
+			target.inGameObject.GetComponent<CubilineTarget>().pingPong = false;
 			slotController.FreeSlot(target.slotIndex);
 		}
 	}

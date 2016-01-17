@@ -7,6 +7,7 @@ public class EaseScore : MonoBehaviour
 	//////////////////////// PARAMETERS //////////////////////////
 	//////////////////////////////////////////////////////////////
 
+	public string posFix = "";
 	public float scoreSmoothTime = 0.1f;
 	public uint score
 	{
@@ -38,6 +39,6 @@ public class EaseScore : MonoBehaviour
 	void FixedUpdate()
 	{
 		currentScore = Mathf.SmoothDamp(currentScore, targetScore, ref velocity, scoreSmoothTime);
-		GetComponent<Text>().text = ((int)currentScore).ToString("D" + 2);
+		GetComponent<Text>().text = ((int)currentScore).ToString() + posFix;
 	}
 }

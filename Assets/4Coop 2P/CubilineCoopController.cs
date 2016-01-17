@@ -11,8 +11,8 @@ public class CubilineCoopController : MonoBehaviour
 	public OrbitAndLook followCamera1;
 	public OrbitAndLook followCamera2;
 	public PauseMenuController pauseMenuBase;
-	public GameObject horizotalUIControllerBase;
-	public GameObject verticalUIControllerBase;
+	public GameObject horizotalUIControllerPrefab;
+	public GameObject verticalUIControllerPrefab;
 	public Follow followTarget1;
 	public Follow followTarget2;
 	public Transform outTarget1;
@@ -159,7 +159,7 @@ public class CubilineCoopController : MonoBehaviour
 			followCamera1.GetComponent<Camera>().rect = new Rect(0, 0, 0.5f, 1.0f);
 			followCamera2.GetComponent<Camera>().rect = new Rect(0.5f, 0, 0.5f, 1.0f);
 			if (uiController != null) Destroy(uiController);
-			uiController = Instantiate(horizotalUIControllerBase);
+			uiController = Instantiate(horizotalUIControllerPrefab);
 			uiController.GetComponent<CubilineUIController>().enableVerticalDivision = true;
 		}
 		else
@@ -167,7 +167,7 @@ public class CubilineCoopController : MonoBehaviour
 			followCamera1.GetComponent<Camera>().rect = new Rect(0, 0, 1.0f, 0.5f);
 			followCamera2.GetComponent<Camera>().rect = new Rect(0, 0.5f, 1.0f, 0.5f);
 			if (uiController != null) Destroy(uiController);
-			uiController = Instantiate(verticalUIControllerBase);
+			uiController = Instantiate(verticalUIControllerPrefab);
 			uiController.GetComponent<CubilineUIController>().enableHorizontalDivision = true;
 		}
 

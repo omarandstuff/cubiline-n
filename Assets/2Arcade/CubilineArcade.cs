@@ -183,8 +183,6 @@ public class CubilineArcade : MonoBehaviour
 
 	public void Reset()
 	{
-		CubilineScoreController.currentArcadeScore = 0;
-
 		arenaController.Reset(CubilineApplication.cubeSize);
 		followCamera.transform.localPosition = new Vector3(0.0f, 0.0f, -CubilineApplication.cubeSize * 2.0f);
 
