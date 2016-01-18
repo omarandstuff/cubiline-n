@@ -57,7 +57,6 @@ public class CubilinePlayerData
 		XmlSerializer serializer = new XmlSerializer(typeof(PlayerData));
 		FileStream stream = new FileStream(Application.persistentDataPath + "/cubiline.dat", FileMode.Create);
 		serializer.Serialize(stream, pd);
-		stream.Close();
 	}
 
 	public static void Load()
@@ -66,8 +65,6 @@ public class CubilinePlayerData
 		XmlSerializer serializer = new XmlSerializer(typeof(PlayerData));
 		FileStream stream = new FileStream(Application.persistentDataPath + "/cubiline.dat", FileMode.Open);
 		PlayerData pd = serializer.Deserialize(stream) as PlayerData;
-		
-		stream.Close();
 
 		bestArcadeScore = pd.bestArcadeScore;
 		lastArcadeScore = pd.lastArcadeScore;

@@ -7,7 +7,7 @@ public class CubilineUIController : MonoBehaviour
 	///////////////////////// COMPONENTS /////////////////////////
 	//////////////////////////////////////////////////////////////
 
-	public EaseScore scoreText;
+	public EaseScore scoreText;	
 	public EaseScore lengthText;
 	public GameObject specialCommonBar;
 	public GameObject multiplerBar;
@@ -162,6 +162,9 @@ public class CubilineUIController : MonoBehaviour
 		multiplerBar.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.OUT;
 		multiplerHolder.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.OUT;
 		multiplerText.GetComponent<EaseTextOpasity>().easeFace = EaseFloat.EASE_FACE.OUT;
+
+		specialCommonBar.GetComponent<EaseImageOpasity>().easeFace = EaseFloat.EASE_FACE.OUT;
+		specialCommonBar.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.OUT;
 
 		if (enableVerticalDivision) verticalDivision.easeFace = EaseFloat.EASE_FACE.OUT;
 		if (enableHorizontalDivision) horizontalDivision.easeFace = EaseFloat.EASE_FACE.OUT;
