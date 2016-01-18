@@ -11,7 +11,7 @@ public class CubilineCoopController : MonoBehaviour
 	public OrbitAndLook followCamera1;
 	public OrbitAndLook followCamera2;
 	public PauseMenuController pauseMenuBase;
-	public GameObject uiController;
+	public CubilineCoopUIController coopUIController;
 	public Follow followTarget1;
 	public Follow followTarget2;
 	public Transform outTarget1;
@@ -30,12 +30,17 @@ public class CubilineCoopController : MonoBehaviour
 	private Touch[] touchAtBegin = new Touch[10];
 	private Resolution lastResolution;
 
+	private float timeOfGame;
+
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// MONO BEHAVIOR /////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////
 
 	void Start()
 	{
+		// Used for register de time the palyer has playing.
+		timeOfGame = Time.time;
+
 		DoScreenOrientation();
 		Reset();
 	}
@@ -48,11 +53,11 @@ public class CubilineCoopController : MonoBehaviour
 			{
 				if (status == STATUS.GIONG_OUT)
 				{
-					Application.LoadLevel(0);
+					Application.LoadLevel("main_menu_scene");
 				}
 				else if (status == STATUS.SHOW_SCORE)
 				{
-					Application.LoadLevel(2);
+					Application.LoadLevel("show_score_scene");
 				}
 			}
 			return;
@@ -79,21 +84,27 @@ public class CubilineCoopController : MonoBehaviour
 			else if (pauseMenu.status == PauseMenuController.STATUS.MAIN_MENU)
 			{
 				status = STATUS.GIONG_OUT;
-				uiController.GetComponent<CubilineUIController>().GoOut();
+				coopUIController.GoOut();
 				GoOut();
 			}
 		}
 
-		if (player1.status == CubilinePlayerController.STATUS.FINISH)
+		if (player1.status == CubilinePlayerController.STATUS.FINISH || player2.status == CubilinePlayerController.STATUS.FINISH)
 		{
 			status = STATUS.SHOW_SCORE;
-			uiController.GetComponent<CubilineUIController>().GoOut();
-			GoOut();
-		}
-		else if (player2.status == CubilinePlayerController.STATUS.FINISH)
-		{
-			status = STATUS.SHOW_SCORE;
-			uiController.GetComponent<CubilineUIController>().GoOut();
+			coopUIController.GoOut();
+			Time.timeScale = 0.2f;
+
+			if (CubilineMusicPlayer.singleton != null) CubilineMusicPlayer.singleton.ArcadeFinishWave();
+			if (CubilineMusicPlayer.singleton != null) CubilineMusicPlayer.singleton.Stop();
+
+			// Player game inf
+			CubilinePlayerData.coopGamesPlayed++;
+			CubilinePlayerData.coopTimePlayed += Time.time - timeOfGame;
+			CubilinePlayerData.Save();
+
+			CubilineApplication.lastComment = "coop_2p_scene";
+
 			GoOut();
 		}
 	}
@@ -103,23 +114,30 @@ public class CubilineCoopController : MonoBehaviour
 		Event e = Event.current;
 		if (e.type == EventType.KeyDown)
 		{
-			if (e.keyCode == KeyCode.A)
-				player1.AddTurn(CubilinePlayerController.TURN.LEFT);
-			else if (e.keyCode == KeyCode.D)
-				player1.AddTurn(CubilinePlayerController.TURN.RIGHT);
-			else if (e.keyCode == KeyCode.W)
-				player1.AddTurn(CubilinePlayerController.TURN.UP);
-			else if (e.keyCode == KeyCode.S)
-				player1.AddTurn(CubilinePlayerController.TURN.DOWN);
-			else if (e.keyCode == KeyCode.LeftArrow)
-				player2.AddTurn(CubilinePlayerController.TURN.LEFT);
-			else if (e.keyCode == KeyCode.RightArrow)
-				player2.AddTurn(CubilinePlayerController.TURN.RIGHT);
-			else if (e.keyCode == KeyCode.UpArrow)
-				player2.AddTurn(CubilinePlayerController.TURN.UP);
-			else if (e.keyCode == KeyCode.DownArrow)
-				player2.AddTurn(CubilinePlayerController.TURN.DOWN);
-			else if (e.keyCode == KeyCode.Escape && !menuKey) // Menu
+			if(pauseMenu == null)
+			{
+				if (e.keyCode == KeyCode.A)
+					player1.AddTurn(CubilinePlayerController.TURN.LEFT);
+				else if (e.keyCode == KeyCode.D)
+					player1.AddTurn(CubilinePlayerController.TURN.RIGHT);
+				else if (e.keyCode == KeyCode.W)
+					player1.AddTurn(CubilinePlayerController.TURN.UP);
+				else if (e.keyCode == KeyCode.S)
+					player1.AddTurn(CubilinePlayerController.TURN.DOWN);
+				else if (e.keyCode == KeyCode.Space)
+					player1.speed = CubilineApplication.lineSpeed * 2.0f;
+				else if (e.keyCode == KeyCode.LeftArrow)
+					player2.AddTurn(CubilinePlayerController.TURN.LEFT);
+				else if (e.keyCode == KeyCode.RightArrow)
+					player2.AddTurn(CubilinePlayerController.TURN.RIGHT);
+				else if (e.keyCode == KeyCode.UpArrow)
+					player2.AddTurn(CubilinePlayerController.TURN.UP);
+				else if (e.keyCode == KeyCode.DownArrow)
+					player2.AddTurn(CubilinePlayerController.TURN.DOWN);
+				else if (e.keyCode == KeyCode.RightControl)
+					player2.speed = CubilineApplication.lineSpeed * 2.0f;
+			}
+			if (e.keyCode == KeyCode.Escape && !menuKey) // Menu
 			{
 				menuKey = true;
 				if (pauseMenu != null)
@@ -142,7 +160,12 @@ public class CubilineCoopController : MonoBehaviour
 		}
 		else if (e.type == EventType.keyUp)
 		{
-			menuKey = false;
+			if (e.keyCode == KeyCode.Space)
+				player1.speed = CubilineApplication.lineSpeed;
+			if (e.keyCode == KeyCode.RightControl)
+				player2.speed = CubilineApplication.lineSpeed;
+			else if (e.keyCode == KeyCode.Escape)
+				menuKey = false;
 		}
 	}
 
@@ -155,13 +178,13 @@ public class CubilineCoopController : MonoBehaviour
 		{
 			followCamera1.GetComponent<Camera>().rect = new Rect(0, 0, 0.5f, 1.0f);
 			followCamera2.GetComponent<Camera>().rect = new Rect(0.5f, 0, 0.5f, 1.0f);
-			uiController.GetComponent<CubilineUIController>().enableVerticalDivision = true;
+			coopUIController.enableVerticalDivision = true;
 		}
 		else
 		{
 			followCamera1.GetComponent<Camera>().rect = new Rect(0, 0, 1.0f, 0.5f);
 			followCamera2.GetComponent<Camera>().rect = new Rect(0, 0.5f, 1.0f, 0.5f);
-			uiController.GetComponent<CubilineUIController>().enableHorizontalDivision = true;
+			coopUIController.enableHorizontalDivision = true;
 		}
 
 		lastResolution = resolution;
@@ -169,7 +192,7 @@ public class CubilineCoopController : MonoBehaviour
 
 	void DoTouch()
 	{
-		if (SystemInfo.deviceType != DeviceType.Handheld) return;
+		if (SystemInfo.deviceType != DeviceType.Handheld || pauseMenu != null) return;
 		for(int i = 0; i < Input.touchCount; i++)
 		{
 			Touch touch = Input.GetTouch(i);
@@ -240,7 +263,7 @@ public class CubilineCoopController : MonoBehaviour
 		followTarget2.transform.position = new Vector3(-CubilineApplication.cubeSize * 2, 0, -CubilineApplication.cubeSize / 2);
 
 		DoScreenOrientation();
-		uiController.GetComponent<CubilineUIController>().timeToApear = 1.0f;
+		coopUIController.timeToApear = 1.0f;
 	}
 
 	void GoOut()

@@ -15,23 +15,15 @@ public class PlayerData
 	public DateTime bestArcadeScoreDateTime;
 	public DateTime lastArcadeScoreDateTime;
 
-	public PlayerData()
-	{
-
-	}
-
-	public PlayerData(uint best_arcade_score, uint last_arcade_score, float arcade_time_played, uint arcade_games_played, uint total_arcade_length, uint best_arcade_length, uint last_arcade_length, DateTime best_arcade_score_date_time, DateTime last_arcade_score_date_time)
-	{
-		bestArcadeScore = best_arcade_score;
-		lastArcadeScore = last_arcade_score;
-		arcadeTimePlayed = arcade_time_played;
-		arcadeGamesPlayed = arcade_games_played;
-		totalArcadeLength = total_arcade_length;
-		bestArcadeLength = best_arcade_length;
-		lastArcadeLength = last_arcade_length;
-		bestArcadeScoreDateTime = best_arcade_score_date_time;
-		lastArcadeScoreDateTime = last_arcade_score_date_time;
-	}
+	public uint bestCoopScore;
+	public uint lastCoopScore;
+	public float coopTimePlayed;
+	public uint coopGamesPlayed;
+	public uint totalCoopLength;
+	public uint bestCoopLength;
+	public uint lastCoopLength;
+	public DateTime bestCoopScoreDateTime;
+	public DateTime lastCoopScoreDateTime;
 }
 
 public class CubilinePlayerData
@@ -50,10 +42,36 @@ public class CubilinePlayerData
 	public static DateTime bestArcadeScoreDateTime;
 	public static DateTime lastArcadeScoreDateTime;
 
+	public static uint bestCoopScore;
+	public static uint lastCoopScore;
+	public static float coopTimePlayed;
+	public static uint coopGamesPlayed;
+	public static uint totalCoopLength;
+	public static uint bestCoopLength;
+	public static uint lastCoopLength;
+	public static DateTime bestCoopScoreDateTime;
+	public static DateTime lastCoopScoreDateTime;
+
 
 	public static void Save()
 	{
-		PlayerData pd = new PlayerData(bestArcadeScore, lastArcadeScore, arcadeTimePlayed, arcadeGamesPlayed, totalArcadeLength, bestArcadeLength, lastArcadeLength, bestArcadeScoreDateTime, lastArcadeScoreDateTime);
+		PlayerData pd = new PlayerData();
+		pd.bestArcadeScore = bestArcadeScore;
+		pd.lastArcadeScore = lastArcadeScore;
+		pd.arcadeTimePlayed = arcadeTimePlayed;
+		pd.arcadeGamesPlayed = arcadeGamesPlayed;
+		pd.totalArcadeLength = totalArcadeLength;
+		pd.bestArcadeScoreDateTime = bestArcadeScoreDateTime;
+		pd.lastArcadeScoreDateTime = lastArcadeScoreDateTime;
+
+		pd.bestCoopScore = bestCoopScore;
+		pd.lastCoopScore = lastCoopScore;
+		pd.coopTimePlayed = coopTimePlayed;
+		pd.coopGamesPlayed = coopGamesPlayed;
+		pd.totalCoopLength = totalCoopLength;
+		pd.bestCoopScoreDateTime = bestCoopScoreDateTime;
+		pd.lastCoopScoreDateTime = lastCoopScoreDateTime;
+
 		XmlSerializer serializer = new XmlSerializer(typeof(PlayerData));
 		FileStream stream = new FileStream(Application.persistentDataPath + "/cubiline.dat", FileMode.Create);
 		serializer.Serialize(stream, pd);
@@ -73,6 +91,14 @@ public class CubilinePlayerData
 		totalArcadeLength = pd.totalArcadeLength;
 		bestArcadeScoreDateTime = pd.bestArcadeScoreDateTime;
 		lastArcadeScoreDateTime = pd.lastArcadeScoreDateTime;
+
+		bestCoopScore = pd.bestCoopScore;
+		lastCoopScore = pd.lastCoopScore;
+		coopTimePlayed = pd.coopTimePlayed;
+		coopGamesPlayed = pd.coopGamesPlayed;
+		totalCoopLength = pd.totalCoopLength;
+		bestCoopScoreDateTime = pd.bestCoopScoreDateTime;
+		lastCoopScoreDateTime = pd.lastCoopScoreDateTime;
 	}
 
 }

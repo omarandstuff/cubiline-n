@@ -499,8 +499,26 @@ public class MenuController : MonoBehaviour
 			// The ation is the same as the target 'cause stuff. (And because the target is the correct action rotation sice target rotation is the natural roatation for that side is close less that 45° to it self).
 			actionRotation = targetRotation;
 
+
+			float fixedY = Mathf.Repeat(actionRotation.y, 360.0f); // Get a roation between 0 and 360 to really know whish side select.
+
 			// Simulate the cube comes form the bottom side.
-			currentRotation = targetRotation + new Vector3(90.0f, 0.0f, 0.0f);
+			if (fixedY == 0.0f || fixedY == 360.0f) //  Front side
+			{
+				currentRotation = targetRotation + new Vector3(90.0f, 0.0f, 0.0f);
+			}
+			else if (fixedY == 90.0f) // Right side.
+			{
+				currentRotation = targetRotation + new Vector3(0.0f, 0.0f, 90.0f);
+			}
+			else if (fixedY == 180.0f) // Back side.
+			{
+				currentRotation = targetRotation + new Vector3(-90.0f, 0.0f, 0.0f);
+			}
+			else // And left side.
+			{
+				currentRotation = targetRotation + new Vector3(00.0f, 0.0f, -90.0f);
+			}
 
 			// This side index.
 			currentSideIndex = backState.sideIndex;

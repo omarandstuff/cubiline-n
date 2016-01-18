@@ -17,13 +17,13 @@ public class SetUpActionController : ActionContentController
 
 	void Start()
 	{
-		if(CubilineApplication.numberOfPlayers > 1)
+		if(CubilineApplication.lastComment == "coop")
 		{
-			sizeSlider.value = CubilineApplication.multiplayerCubeSize;
-			speedSlider.value = CubilineApplication.multiplayerLineSpeed;
-			hardToggle.isOn = CubilineApplication.multiplayerHardMove;
+			sizeSlider.value = CubilineApplication.coopCubeSize;
+			speedSlider.value = CubilineApplication.coopLineSpeed;
+ 
 		}
-		else
+		else if(CubilineApplication.lastComment == "arcade")
 		{
 			sizeSlider.value = CubilineApplication.cubeSize;
 			speedSlider.value = CubilineApplication.lineSpeed;
@@ -63,13 +63,13 @@ public class SetUpActionController : ActionContentController
 	public void OkAction()
 	{
 		Unselect();
-		if (CubilineApplication.numberOfPlayers > 1)
+		if (CubilineApplication.lastComment == "coop")
 		{
-			CubilineApplication.multiplayerCubeSize = (uint)sizeSlider.value;
-			CubilineApplication.multiplayerLineSpeed = (uint)speedSlider.value;
-			CubilineApplication.multiplayerHardMove = hardToggle.isOn;
+			CubilineApplication.coopCubeSize = (uint)sizeSlider.value;
+			CubilineApplication.coopLineSpeed = (uint)speedSlider.value;
+			CubilineApplication.coopHardMove = hardToggle.isOn;
 		}
-		else
+		else if (CubilineApplication.lastComment == "arcade")
 		{
 			CubilineApplication.cubeSize = (uint)sizeSlider.value;
 			CubilineApplication.lineSpeed = (uint)speedSlider.value;
@@ -80,13 +80,13 @@ public class SetUpActionController : ActionContentController
 	public void CancelAction()
 	{
 		Unselect();
-		if (CubilineApplication.numberOfPlayers > 1)
+		if (CubilineApplication.lastComment == "coop")
 		{
-			sizeSlider.value = CubilineApplication.multiplayerCubeSize;
-			speedSlider.value = CubilineApplication.multiplayerLineSpeed;
-			hardToggle.isOn = CubilineApplication.multiplayerHardMove;
+			sizeSlider.value = CubilineApplication.coopCubeSize;
+			speedSlider.value = CubilineApplication.coopLineSpeed;
+			hardToggle.isOn = CubilineApplication.coopHardMove;
 		}
-		else
+		else if (CubilineApplication.lastComment == "arcade")
 		{
 			sizeSlider.value = CubilineApplication.cubeSize;
 			speedSlider.value = CubilineApplication.lineSpeed;

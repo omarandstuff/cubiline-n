@@ -9,11 +9,13 @@ public class CubilineTargetController : MonoBehaviour
 	public GameObject commonTargetBase;
 	public SpecialTarget[] specialTargets;
 	public CubilineUIController uiController;
+	public CubilineCoopUIController coopUIController;
 
 	//////////////////////////////////////////////////////////////
 	//////////////////////// PARAMETERS //////////////////////////
 	//////////////////////////////////////////////////////////////
 
+	public CubilinePlayerController.PLAYER_KIND gameKind;
 	public uint commonTargetCount = 1;
 	public float specialCommonTime = 10.0f;
 
@@ -70,13 +72,20 @@ public class CubilineTargetController : MonoBehaviour
 		{
 			bigCurrentTime -= Time.deltaTime;
 
-			uiController.specialCommonTime = bigCurrentTime / specialCommonTime;
+			if (gameKind == CubilinePlayerController.PLAYER_KIND.ARCADE)
+				uiController.specialCommonTime = bigCurrentTime / specialCommonTime;
+			else if (gameKind == CubilinePlayerController.PLAYER_KIND.ARCADE_COOP)
+				coopUIController.specialCommonTime = bigCurrentTime / specialCommonTime;
 
 			if (bigCurrentTime <= 0.0f)
 			{
 				commonTargetCount = 6;
 				bigCurrentTime = 0.0f;
-				uiController.specialCommon = false;
+
+				if (gameKind == CubilinePlayerController.PLAYER_KIND.ARCADE)
+					uiController.specialCommon = false;
+				else if (gameKind == CubilinePlayerController.PLAYER_KIND.ARCADE_COOP)
+					coopUIController.specialCommon = false;
 			}
 		}
 
@@ -177,7 +186,11 @@ public class CubilineTargetController : MonoBehaviour
 				{
 					commonTargetCount = CubilineApplication.cubeSize * (CubilineApplication.cubeSize / 4);
 					bigCurrentTime = specialCommonTime;
-					uiController.specialCommon = true;
+
+					if (gameKind == CubilinePlayerController.PLAYER_KIND.ARCADE)
+						uiController.specialCommon = true;
+					else if (gameKind == CubilinePlayerController.PLAYER_KIND.ARCADE_COOP)
+						coopUIController.specialCommon = true;
 				}
 				else if (target.inGameObject.GetComponent<CubilineTarget>().targetTag == "Magnet")
 				{

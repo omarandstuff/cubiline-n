@@ -16,6 +16,8 @@ public class CubilinePlayerController : MonoBehaviour
 	public CubilineBody baseBody;
 	public GameObject finishParticle;
 	public CubilineUIController uiController;
+	public CubilineCoopUIController coopUIController;
+	public CubilinePlayerController player1;
 
 	//////////////////////////////////////////////////////////////
 	//////////////////// CUBILINE PARAMETERS /////////////////////
@@ -41,6 +43,7 @@ public class CubilinePlayerController : MonoBehaviour
 	public uint playerNumber;
 
 	public float multiplerTime = 10.0f;
+	public int multipler; // Score multipler
 
 	//////////////////////////////////////////////////////////////
 	////////////////////// CONTROL VARIABLES /////////////////////
@@ -83,7 +86,6 @@ public class CubilinePlayerController : MonoBehaviour
 	private Vector3 lastSlotUsed; // Keep traking of where was the las time it take a slot from the arena.
 
 	private int bodyLength; // measure how much the body length.
-	private int multipler; // Score multipler
 	private float multiplerCurrentTime; // If it is greater than 0 then time to multply the score earned.
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -182,17 +184,30 @@ public class CubilinePlayerController : MonoBehaviour
 		lastHeadPosition = head.localPosition;
 
 		// Multipler system
-		if (multiplerCurrentTime > 0)
+		if (playerNumber == 0)
 		{
-			multiplerCurrentTime -= Time.deltaTime;
-			uiController.multiplerTime = multiplerCurrentTime / multiplerTime;
+			if (multiplerCurrentTime > 0)
+			{
+				multiplerCurrentTime -= Time.deltaTime;
+
+				if (playerKind == PLAYER_KIND.ARCADE)
+					uiController.multiplerTime = multiplerCurrentTime / multiplerTime;
+				else if (playerKind == PLAYER_KIND.ARCADE_COOP)
+					coopUIController.multiplerTime = multiplerCurrentTime / multiplerTime;
+			}
+			else
+			{
+				multipler = 0;
+				if (playerKind == PLAYER_KIND.ARCADE)
+					uiController.multipler = multipler;
+				else if (playerKind == PLAYER_KIND.ARCADE_COOP)
+					coopUIController.multipler = multipler;
+			}
 		}
 		else
-		{
-			multipler = 0;
-			uiController.multipler = multipler;
-		}
-			
+			multipler = player1.multipler;
+
+
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -292,8 +307,18 @@ public class CubilinePlayerController : MonoBehaviour
 
 		// Arcade
 		arcadeScore = 0;
-		uiController.score = arcadeScore;
-		uiController.length = (uint)bodyLength;
+
+		if(playerKind == PLAYER_KIND.ARCADE)
+		{
+			uiController.score = arcadeScore;
+			uiController.length = (uint)bodyLength;
+		}
+		else if (playerKind == PLAYER_KIND.ARCADE_COOP)
+		{
+			coopUIController.score = arcadeScore;
+			coopUIController.length = (uint)bodyLength;
+		}
+
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -319,13 +344,16 @@ public class CubilinePlayerController : MonoBehaviour
 			CubilineTarget target = other.GetComponent<CubilineTarget>();
 			target.activated = true;
 			target.activator = head;
-			if (target.toGrow >= 0)
-			{
-				Grow(target.toGrow);
-			}
-			else
-				UnGrow(-target.toGrow);
 
+			if (playerKind == PLAYER_KIND.ARCADE || playerKind == PLAYER_KIND.ARCADE_COOP)
+			{
+				if (target.toGrow >= 0)
+				{
+					Grow(target.toGrow);
+				}
+				else
+					UnGrow(-target.toGrow);
+			}
 
 			if(targetController == null)
 			{
@@ -337,74 +365,72 @@ public class CubilinePlayerController : MonoBehaviour
 				targetController.DismissCommon(target.index);
 			}
 
-			if (playerKind == PLAYER_KIND.ARCADE)
-			{
-				arcadeScore += (uint)target.score * (uint)(multiplerCurrentTime > 0 ? multipler : 1);
-				CubilinePlayerData.lastArcadeScore = arcadeScore;
-				CubilinePlayerData.lastArcadeScoreDateTime = DateTime.Now;
+			if (playerNumber == 0)
+				AddScore((uint)target.score);
+			else
+				player1.AddScore((uint)target.score);
 
-				uiController.plusScore = (uint)target.score * (uint)(multiplerCurrentTime > 0 ? multipler : 1);
-				uiController.score = arcadeScore;
-				uiController.length = (uint)bodyLength;
-
-				if (CubilinePlayerData.bestArcadeScore < arcadeScore)
-				{
-					CubilinePlayerData.bestArcadeScore = arcadeScore;
-					CubilinePlayerData.bestArcadeScoreDateTime = DateTime.Now;
-				}
-			}
 		}
 		if (other.tag == "Special Target")
 		{
 			CubilineTarget target = other.GetComponent<CubilineTarget>();
 			target.activated = true;
 			target.activator = head;
-			if (target.toGrow >= 0)
-			{
-				Grow(target.toGrow);
-			}
-			else
-				UnGrow(-target.toGrow);
 
-			if(target.targetTag == "2x")
+			if (playerKind == PLAYER_KIND.ARCADE)
 			{
-				multipler += 2;
-				multipler = Math.Min(multipler, 8);
-				multiplerCurrentTime = multiplerTime;
-				uiController.multipler = multipler;
+				if (target.toGrow >= 0)
+				{
+					Grow(target.toGrow);
+				}
+				else
+					UnGrow(-target.toGrow);
+
+				if (target.targetTag == "2x")
+					Start2Xmultipler();
+				else if (target.targetTag == "4x")
+					Start4Xmultipler();
 			}
-			else if (target.targetTag == "4x")
+			else if (playerKind == PLAYER_KIND.ARCADE_COOP)
 			{
-				multipler += 4;
-				multipler = Math.Min(multipler, 8);
-				multiplerCurrentTime = multiplerTime;
-				uiController.multipler = multipler;
+				if (target.toGrow >= 0)
+				{
+					Grow(target.toGrow);
+				}
+				else
+					UnGrow(-target.toGrow);
+
+				if(playerNumber == 0)
+				{
+					if (target.targetTag == "2x")
+						Start2Xmultipler();
+					else if (target.targetTag == "4x")
+						Start4Xmultipler();
+				}
+				else
+				{
+					if (target.targetTag == "2x")
+						player1.Start2Xmultipler();
+					else if (target.targetTag == "4x")
+						player1.Start4Xmultipler();
+				}
 			}
 
 			targetController.DismissSpecial(target.index);
 
-			if (playerKind == PLAYER_KIND.ARCADE)
-			{
-				arcadeScore += (uint)target.score * (uint)(multiplerCurrentTime > 0 ? multipler : 1);
-				CubilinePlayerData.lastArcadeScore = arcadeScore;
-				CubilinePlayerData.lastArcadeScoreDateTime = DateTime.Now;
+			if (playerNumber == 0)
+				AddScore((uint)target.score);
+			else
+				player1.AddScore((uint)target.score);
 
-				uiController.plusScore = (uint)target.score * (uint)(multiplerCurrentTime > 0 ? multipler : 1);
-				uiController.score = arcadeScore;
-				uiController.length = (uint)bodyLength;
-
-				if (CubilinePlayerData.bestArcadeScore < arcadeScore)
-				{
-					CubilinePlayerData.bestArcadeScore = arcadeScore;
-					CubilinePlayerData.bestArcadeScoreDateTime = DateTime.Now;
-				}
-			}
-				
 		}
 		if (other.tag == "Finish")
 		{
-			Destroy(Instantiate(finishParticle, head.position, Quaternion.identity), 8.0f);
-			status = STATUS.FINISH;
+			if(playerKind == PLAYER_KIND.ARCADE || playerKind == PLAYER_KIND.ARCADE_COOP)
+			{
+				Destroy(Instantiate(finishParticle, head.position, Quaternion.identity), 8.0f);
+				status = STATUS.FINISH;
+			}
 		}
 	}
 
@@ -421,6 +447,14 @@ public class CubilinePlayerController : MonoBehaviour
 			CubilinePlayerData.lastArcadeLength = (uint)bodyLength;
 			if (bodyLength > CubilinePlayerData.bestArcadeLength) CubilinePlayerData.bestArcadeLength = (uint)bodyLength;
 		}
+		else if (playerKind == PLAYER_KIND.ARCADE_COOP)
+		{
+			coopUIController.plusLength = units;
+
+			CubilinePlayerData.totalCoopLength += (uint)units;
+			CubilinePlayerData.lastCoopLength = (uint)bodyLength;
+			if (bodyLength > CubilinePlayerData.bestCoopLength) CubilinePlayerData.bestCoopLength = (uint)bodyLength;
+		}
 	}
 
 	public void UnGrow(int units)
@@ -433,6 +467,70 @@ public class CubilinePlayerController : MonoBehaviour
 		if(playerKind == PLAYER_KIND.ARCADE)
 		{
 			uiController.plusLength = realUngorw;
+		}
+		else if (playerKind == PLAYER_KIND.ARCADE_COOP)
+		{
+			coopUIController.plusLength = realUngorw;
+		}
+	}
+
+	public void Start2Xmultipler()
+	{
+		multipler += 2;
+		multipler = Math.Min(multipler, 8);
+		multiplerCurrentTime = multiplerTime;
+
+		if(playerKind == PLAYER_KIND.ARCADE)
+			uiController.multipler = multipler;
+		else if (playerKind == PLAYER_KIND.ARCADE_COOP)
+			coopUIController.multipler = multipler;
+	}
+
+	public void Start4Xmultipler()
+	{
+		multipler += 4;
+		multipler = Math.Min(multipler, 8);
+		multiplerCurrentTime = multiplerTime;
+
+		if (playerKind == PLAYER_KIND.ARCADE)
+			uiController.multipler = multipler;
+		else if (playerKind == PLAYER_KIND.ARCADE_COOP)
+			coopUIController.multipler = multipler;
+	}
+
+	public void AddScore(uint score)
+	{
+		if (playerKind == PLAYER_KIND.ARCADE)
+		{
+			arcadeScore += score * (uint)(multiplerCurrentTime > 0 ? multipler : 1);
+			CubilinePlayerData.lastArcadeScore = arcadeScore;
+			CubilinePlayerData.lastArcadeScoreDateTime = DateTime.Now;
+
+			uiController.plusScore = score * (uint)(multiplerCurrentTime > 0 ? multipler : 1);
+			uiController.score = arcadeScore;
+			uiController.length = (uint)bodyLength;
+
+			if (CubilinePlayerData.bestArcadeScore < arcadeScore)
+			{
+				CubilinePlayerData.bestArcadeScore = arcadeScore;
+				CubilinePlayerData.bestArcadeScoreDateTime = DateTime.Now;
+			}
+		}
+		else if (playerKind == PLAYER_KIND.ARCADE_COOP)
+		{
+			arcadeScore += score * (uint)(multiplerCurrentTime > 0 ? multipler : 1);
+			CubilinePlayerData.lastCoopScore = arcadeScore;
+			CubilinePlayerData.lastCoopScoreDateTime = DateTime.Now;
+
+			coopUIController.plusScore = score * (uint)(multiplerCurrentTime > 0 ? multipler : 1);
+			coopUIController.score = arcadeScore;
+			coopUIController.length = (uint)bodyLength;
+
+			if (CubilinePlayerData.bestCoopScore < arcadeScore)
+			{
+				CubilinePlayerData.bestCoopScore = arcadeScore;
+				CubilinePlayerData.bestCoopScoreDateTime = DateTime.Now;
+			}
 		}
 	}
 

@@ -94,8 +94,10 @@ public class CubilineArcade : MonoBehaviour
 			// Player game inf
 			CubilinePlayerData.arcadeGamesPlayed++;
 			CubilinePlayerData.arcadeTimePlayed += Time.time - timeOfGame;
-
 			CubilinePlayerData.Save();
+
+			CubilineApplication.lastComment = "arcade_scene";
+
 			GoOut();
 		}
 	}
@@ -105,17 +107,28 @@ public class CubilineArcade : MonoBehaviour
 		Event e = Event.current;
 		if (e.type == EventType.KeyDown)
 		{
-			if (e.keyCode == KeyCode.A || e.keyCode == KeyCode.LeftArrow)
-				player.AddTurn(CubilinePlayerController.TURN.LEFT);
-			else if (e.keyCode == KeyCode.D || e.keyCode == KeyCode.RightArrow)
-				player.AddTurn(CubilinePlayerController.TURN.RIGHT);
-			else if (e.keyCode == KeyCode.W || e.keyCode == KeyCode.UpArrow)
-				player.AddTurn(CubilinePlayerController.TURN.UP);
-			else if (e.keyCode == KeyCode.S || e.keyCode == KeyCode.DownArrow)
-				player.AddTurn(CubilinePlayerController.TURN.DOWN);
-			else if (e.keyCode == KeyCode.Space)
-				player.speed = CubilineApplication.lineSpeed * 2.0f;
-			else if (e.keyCode == KeyCode.Escape && !menuKey) // Menu
+			if(pauseMenu == null)
+			{
+				if (e.keyCode == KeyCode.A || e.keyCode == KeyCode.LeftArrow)
+					player.AddTurn(CubilinePlayerController.TURN.LEFT);
+				else if (e.keyCode == KeyCode.D || e.keyCode == KeyCode.RightArrow)
+					player.AddTurn(CubilinePlayerController.TURN.RIGHT);
+				else if (e.keyCode == KeyCode.W || e.keyCode == KeyCode.UpArrow)
+					player.AddTurn(CubilinePlayerController.TURN.UP);
+				else if (e.keyCode == KeyCode.S || e.keyCode == KeyCode.DownArrow)
+					player.AddTurn(CubilinePlayerController.TURN.DOWN);
+				else if (e.keyCode == KeyCode.LeftArrow)
+					player.AddTurn(CubilinePlayerController.TURN.LEFT);
+				else if (e.keyCode == KeyCode.RightArrow)
+					player.AddTurn(CubilinePlayerController.TURN.RIGHT);
+				else if (e.keyCode == KeyCode.UpArrow)
+					player.AddTurn(CubilinePlayerController.TURN.UP);
+				else if (e.keyCode == KeyCode.DownArrow)
+					player.AddTurn(CubilinePlayerController.TURN.DOWN);
+				else if (e.keyCode == KeyCode.Space)
+					player.speed = CubilineApplication.lineSpeed * 2.0f;
+			}
+			if (e.keyCode == KeyCode.Escape && !menuKey) // Menu
 			{
 				menuKey = true;
 
