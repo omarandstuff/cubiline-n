@@ -39,6 +39,7 @@ public class CubilinePlayerData
 	public static uint totalArcadeLength;
 	public static uint bestArcadeLength;
 	public static uint lastArcadeLength;
+	public static float lastArcadeTime;
 	public static DateTime bestArcadeScoreDateTime;
 	public static DateTime lastArcadeScoreDateTime;
 
@@ -49,6 +50,7 @@ public class CubilinePlayerData
 	public static uint totalCoopLength;
 	public static uint bestCoopLength;
 	public static uint lastCoopLength;
+	public static float lastCoopTime;
 	public static DateTime bestCoopScoreDateTime;
 	public static DateTime lastCoopScoreDateTime;
 

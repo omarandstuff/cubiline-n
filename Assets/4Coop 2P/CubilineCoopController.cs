@@ -101,6 +101,7 @@ public class CubilineCoopController : MonoBehaviour
 			// Player game inf
 			CubilinePlayerData.coopGamesPlayed++;
 			CubilinePlayerData.coopTimePlayed += Time.time - timeOfGame;
+			CubilinePlayerData.lastCoopTime = Time.time - timeOfGame;
 			CubilinePlayerData.Save();
 
 			CubilineApplication.lastComment = "coop_2p_scene";

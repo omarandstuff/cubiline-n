@@ -94,6 +94,7 @@ public class CubilineArcade : MonoBehaviour
 			// Player game inf
 			CubilinePlayerData.arcadeGamesPlayed++;
 			CubilinePlayerData.arcadeTimePlayed += Time.time - timeOfGame;
+			CubilinePlayerData.lastArcadeTime = Time.time - timeOfGame;
 			CubilinePlayerData.Save();
 
 			CubilineApplication.lastComment = "arcade_scene";

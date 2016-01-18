@@ -1,6 +1,6 @@
 ﻿using UnityEngine.UI;
 
-public class SetUpActionController : ActionContentController
+public class SetUpCoopActionController : ActionContentController
 {
 	//////////////////////////////////////////////////////////////
 	///////////////////////// COMPONENTS /////////////////////////
@@ -17,9 +17,9 @@ public class SetUpActionController : ActionContentController
 
 	void Start()
 	{
-		sizeSlider.value = CubilineApplication.cubeSize;
-		speedSlider.value = CubilineApplication.lineSpeed;
-		hardToggle.isOn = CubilineApplication.hardMove;
+		sizeSlider.value = CubilineApplication.coopCubeSize;
+		speedSlider.value = CubilineApplication.coopLineSpeed;
+		hardToggle.isOn = CubilineApplication.coopHardMove;
 	}
 
 	public override void Select()
@@ -55,16 +55,16 @@ public class SetUpActionController : ActionContentController
 	{
 		Unselect();
 
-		CubilineApplication.cubeSize = (uint)sizeSlider.value;
-		CubilineApplication.lineSpeed = (uint)speedSlider.value;
-		CubilineApplication.hardMove = hardToggle.isOn;
+		CubilineApplication.coopCubeSize = (uint)sizeSlider.value;
+		CubilineApplication.coopLineSpeed = (uint)speedSlider.value;
+		CubilineApplication.coopHardMove = hardToggle.isOn;
 	}
 
 	public void CancelAction()
 	{
 		Unselect();
-		sizeSlider.value = CubilineApplication.cubeSize;
-		speedSlider.value = CubilineApplication.lineSpeed;
-		hardToggle.isOn = CubilineApplication.hardMove;
+		sizeSlider.value = CubilineApplication.coopCubeSize;
+		speedSlider.value = CubilineApplication.coopLineSpeed;
+		hardToggle.isOn = CubilineApplication.coopHardMove;
 	}
 }

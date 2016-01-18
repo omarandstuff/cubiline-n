@@ -307,8 +307,12 @@ public class CubilinePlayerController : MonoBehaviour
 
 		// Arcade
 		arcadeScore = 0;
+		CubilineApplication.newRecord = false;
+		CubilineApplication.coopNewRecord = false;
+		CubilineApplication.newLengthRecord = false;
+		CubilineApplication.coopNewLengthRecord = false;
 
-		if(playerKind == PLAYER_KIND.ARCADE)
+		if (playerKind == PLAYER_KIND.ARCADE)
 		{
 			uiController.score = arcadeScore;
 			uiController.length = (uint)bodyLength;
@@ -445,7 +449,11 @@ public class CubilinePlayerController : MonoBehaviour
 
 			CubilinePlayerData.totalArcadeLength += (uint)units;
 			CubilinePlayerData.lastArcadeLength = (uint)bodyLength;
-			if (bodyLength > CubilinePlayerData.bestArcadeLength) CubilinePlayerData.bestArcadeLength = (uint)bodyLength;
+			if (bodyLength > CubilinePlayerData.bestArcadeLength)
+			{
+				CubilinePlayerData.bestArcadeLength = (uint)bodyLength;
+				CubilineApplication.newLengthRecord = true;
+			}
 		}
 		else if (playerKind == PLAYER_KIND.ARCADE_COOP)
 		{
@@ -453,7 +461,11 @@ public class CubilinePlayerController : MonoBehaviour
 
 			CubilinePlayerData.totalCoopLength += (uint)units;
 			CubilinePlayerData.lastCoopLength = (uint)bodyLength;
-			if (bodyLength > CubilinePlayerData.bestCoopLength) CubilinePlayerData.bestCoopLength = (uint)bodyLength;
+			if (bodyLength > CubilinePlayerData.bestCoopLength)
+			{
+				CubilinePlayerData.bestCoopLength = (uint)bodyLength;
+				CubilineApplication.coopNewLengthRecord = true;
+			}
 		}
 	}
 
@@ -514,6 +526,7 @@ public class CubilinePlayerController : MonoBehaviour
 			{
 				CubilinePlayerData.bestArcadeScore = arcadeScore;
 				CubilinePlayerData.bestArcadeScoreDateTime = DateTime.Now;
+				CubilineApplication.newRecord = true;
 			}
 		}
 		else if (playerKind == PLAYER_KIND.ARCADE_COOP)
@@ -530,6 +543,7 @@ public class CubilinePlayerController : MonoBehaviour
 			{
 				CubilinePlayerData.bestCoopScore = arcadeScore;
 				CubilinePlayerData.bestCoopScoreDateTime = DateTime.Now;
+				CubilineApplication.coopNewRecord = true;
 			}
 		}
 	}

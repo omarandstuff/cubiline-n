@@ -44,6 +44,7 @@ public class PlayerActionController : ActionContentController
 		seconds -= minutes * 60;
 
 		arcadeTimePlayed.text = hours.ToString("D" + 2) + ":" + minutes.ToString("D" + 2) + ":" + seconds.ToString("D" + 2);
+
 		arcadeTotalLength.text = CubilinePlayerData.totalArcadeLength.ToString() + "m";
 
 	}
