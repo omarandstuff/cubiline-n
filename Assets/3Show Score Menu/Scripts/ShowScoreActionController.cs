@@ -30,47 +30,38 @@ public class ShowScoreActionController : ActionContentController
 	{
 		StartCoroutine(PublicScore());
 
-		CubilineApplication.lastComment = "arcade_scene";
-		CubilinePlayerData.lastArcadeScore = 650;
-		CubilinePlayerData.lastArcadeLength = 325;
-		CubilinePlayerData.lastArcadeTime = 156;
+		yield return new WaitForSeconds(timeToScore);
+		if (CubilineApplication.lastComment == "arcade_scene") score.score = CubilinePlayerData.lastArcadeScore;
+		if (CubilineApplication.lastComment == "coop_2p_scene") score.score = CubilinePlayerData.lastCoopScore;
+		score.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
+		score.GetComponent<EaseTextOpasity>().easeFace = EaseFloat.EASE_FACE.IN;
 
-		CubilineApplication.newRecord = true;
-		CubilineApplication.newLengthRecord = true;
+		yield return new WaitForSeconds(timeToScore + timeToStatsLapse);
+		if (CubilineApplication.lastComment == "arcade_scene") length.score = CubilinePlayerData.lastArcadeLength;
+		if (CubilineApplication.lastComment == "coop_2p_scene") score.score = CubilinePlayerData.lastCoopLength;
+		length.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
+		length.GetComponent<EaseTextOpasity>().easeFace = EaseFloat.EASE_FACE.IN;
 
-		if (CubilineApplication.lastComment == "arcade_scene")
+		if (CubilineApplication.newRecord)
 		{
-			yield return new WaitForSeconds(timeToScore);
-			score.score = CubilinePlayerData.lastArcadeScore;
-			score.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
-			score.GetComponent<EaseTextOpasity>().easeFace = EaseFloat.EASE_FACE.IN;
+			newScoreRecord.GetComponent<EaseRotation>().easeFace = EaseVector3.EASE_FACE.IN;
+			newScoreRecord.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
+			newScoreRecord.GetComponent<EaseTextOpasity>().easeFace = EaseFloat.EASE_FACE.IN;
+			Destroy(Instantiate(NewRecordParticlesPrefab, newScoreRecord.transform.position, Quaternion.identity), 8);
+		}
 
-			yield return new WaitForSeconds(timeToScore + timeToStatsLapse);
-			length.score = CubilinePlayerData.lastArcadeLength;
-			length.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
-			length.GetComponent<EaseTextOpasity>().easeFace = EaseFloat.EASE_FACE.IN;
-			
-			if(CubilineApplication.newRecord)
-			{
-				newScoreRecord.GetComponent<EaseRotation>().easeFace = EaseVector3.EASE_FACE.IN;
-				newScoreRecord.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
-				newScoreRecord.GetComponent<EaseTextOpasity>().easeFace = EaseFloat.EASE_FACE.IN;
-				Destroy(Instantiate(NewRecordParticlesPrefab, newScoreRecord.transform.position, Quaternion.identity), 8);
-			}
+		yield return new WaitForSeconds(timeToScore + timeToStatsLapse * 2);
+		if (CubilineApplication.lastComment == "arcade_scene") time.time = (uint)CubilinePlayerData.lastArcadeTime;
+		if (CubilineApplication.lastComment == "coop_2p_scene") time.time = (uint)CubilinePlayerData.lastCoopTime;
+		time.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
+		time.GetComponent<EaseTextOpasity>().easeFace = EaseFloat.EASE_FACE.IN;
 
-			yield return new WaitForSeconds(timeToScore + timeToStatsLapse * 2);
-			time.time = (uint)CubilinePlayerData.lastArcadeTime;
-			time.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
-			time.GetComponent<EaseTextOpasity>().easeFace = EaseFloat.EASE_FACE.IN;
-
-			if (CubilineApplication.newLengthRecord)
-			{
-				newLengthRecord.GetComponent<EaseRotation>().easeFace = EaseVector3.EASE_FACE.IN;
-				newLengthRecord.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
-				newLengthRecord.GetComponent<EaseTextOpasity>().easeFace = EaseFloat.EASE_FACE.IN;
-				Destroy(Instantiate(NewLengthRecordParticlesPrefab, newLengthRecord.transform.position, Quaternion.identity), 8);
-			}
-
+		if (CubilineApplication.newLengthRecord)
+		{
+			newLengthRecord.GetComponent<EaseRotation>().easeFace = EaseVector3.EASE_FACE.IN;
+			newLengthRecord.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
+			newLengthRecord.GetComponent<EaseTextOpasity>().easeFace = EaseFloat.EASE_FACE.IN;
+			Destroy(Instantiate(NewLengthRecordParticlesPrefab, newLengthRecord.transform.position, Quaternion.identity), 8);
 		}
 	}
 
