@@ -14,6 +14,7 @@ public class ShowScoreActionController : ActionContentController
 	public GameObject newScoreRecord;
 	public GameObject newLengthRecord;
 	public GameObject NewRecordParticlesPrefab;
+	public GameObject NewLengthRecordParticlesPrefab;
 	public float timeToScore = 0.5f;
 	public float timeToStatsLapse = 0.2f;
 
@@ -67,7 +68,7 @@ public class ShowScoreActionController : ActionContentController
 				newLengthRecord.GetComponent<EaseRotation>().easeFace = EaseVector3.EASE_FACE.IN;
 				newLengthRecord.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
 				newLengthRecord.GetComponent<EaseTextOpasity>().easeFace = EaseFloat.EASE_FACE.IN;
-				Destroy(Instantiate(NewRecordParticlesPrefab, newLengthRecord.transform.position, Quaternion.identity), 8);
+				Destroy(Instantiate(NewLengthRecordParticlesPrefab, newLengthRecord.transform.position, Quaternion.identity), 8);
 			}
 
 		}

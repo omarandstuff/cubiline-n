@@ -41,6 +41,9 @@ public class CubilineCoopController : MonoBehaviour
 		// Used for register de time the palyer has playing.
 		timeOfGame = Time.time;
 
+		// Audio directive.
+		CubilineMusicPlayer.inMenu = false;
+
 		DoScreenOrientation();
 		Reset();
 	}
