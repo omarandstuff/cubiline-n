@@ -478,11 +478,11 @@ public class CubilinePlayerController : MonoBehaviour
 
 		if(playerKind == PLAYER_KIND.ARCADE)
 		{
-			uiController.plusLength = realUngorw;
+			uiController.plusLength = -realUngorw;
 		}
 		else if (playerKind == PLAYER_KIND.ARCADE_COOP)
 		{
-			coopUIController.plusLength = realUngorw;
+			coopUIController.plusLength = -realUngorw;
 		}
 	}
 
