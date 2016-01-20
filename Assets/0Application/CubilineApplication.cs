@@ -8,33 +8,32 @@ public class AchievementsData
 	public uint blueCount;
 	public uint greenCount;
 	public uint orangeCount;
-	public uint purpleCount;
 	public uint yellowCount;
-	public uint redCount;
+	public uint purpleCount;
 	public bool blueAchieve;
 	public bool greenAchieve;
 	public bool orangeAchieve;
-	public bool purpleAchieve;
 	public bool yellowAchieve;
 	public bool redAchieve;
+	public bool purpleAchieve;
 	public bool byScoreColorAchieve;
 	public bool byLengthColorAchieve;
 	public bool byFillColorAchieve;
 
 	[XmlIgnore]
-	public uint totalBlue = 1000;
+	public uint blueColorTraget = 1000;
 	[XmlIgnore]
-	public uint totalGreen = 100;
+	public uint orangeColorTraget = 100;
 	[XmlIgnore]
-	public uint totalOrange = 100;
+	public uint greenColorTraget = 100;
 	[XmlIgnore]
-	public uint totalPurple = 100;
+	public uint yellowColorTraget = 100;
 	[XmlIgnore]
-	public uint totalYellow = 100;
+	public uint redColorTraget = 100;
 	[XmlIgnore]
-	public uint totalRed = 100;
+	public uint purpleColorTraget = 100;
 	[XmlIgnore]
-	public uint scoreColorTarget = 2000;
+	public uint scoreColorTarget = 5000;
 	[XmlIgnore]
 	public uint lengthColorTraget = 10000;
 	[XmlIgnore]
@@ -93,12 +92,25 @@ public class CubilineApplication : MonoBehaviour
 	//////////////////////////////////////////////////////////////
 	///////////////////////// PARAMETERS /////////////////////////
 	//////////////////////////////////////////////////////////////
-	public static string lastComment;
-	public static AchievementsData achievements;
-	public static SettingsData settings;
-	public static PlayerData player;
+	public string lastComment;
+	public AchievementsData achievements;
+	public SettingsData settings;
+	public PlayerData player;
+
+	public GameObject blueAchivementPortalPrefab;
+	public GameObject orangeAchivementPortalPrefab;
+	public GameObject greenAchivementPortalPrefab;
+	public GameObject yellowAchivementPortalPrefab;
+	public GameObject redAchivementPortalPrefab;
+	public GameObject purpleAchivementPortalPrefab;
+	public GameObject scoreColorAchivementPortalPrefab;
+	public GameObject lengthColorAchivementPortalPrefab;
+	public GameObject fillColorAchivementPortalPrefab;
 
 	private static bool loaded;
+
+	private static CubilineApplication thisone;
+	public static CubilineApplication singleton { get { return thisone; } }
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// MONO BEHAVIOR /////////////////////////////////////////
@@ -113,6 +125,7 @@ public class CubilineApplication : MonoBehaviour
 		}
 		loaded = true;
 
+		thisone = this;
 		DontDestroyOnLoad(gameObject);
 		achievements = new AchievementsData();
 		settings = new SettingsData();
@@ -120,21 +133,21 @@ public class CubilineApplication : MonoBehaviour
 		LoadAll();
 	}
 
-	public static void LoadAll()
+	public void LoadAll()
 	{
 		LoadAchievements();
 		LoadSettings();
 		LoadPlayer();
 	}
 
-	public static void SaveAll()
+	public void SaveAll()
 	{
 		SaveAchievements();
 		SaveSettings();
 		SavePlayer();
 	}
 
-	public static void SaveAchievements()
+	public void SaveAchievements()
 	{
 		XmlSerializer serializer = new XmlSerializer(typeof(AchievementsData));
 		FileStream stream = new FileStream(Application.persistentDataPath + "/c_a_d.dat", FileMode.Create);
@@ -144,7 +157,7 @@ public class CubilineApplication : MonoBehaviour
 #endif
 	}
 
-	public static void SaveSettings()
+	public void SaveSettings()
 	{
 		XmlSerializer serializer = new XmlSerializer(typeof(SettingsData));
 		FileStream stream = new FileStream(Application.persistentDataPath + "/c_s_d.dat", FileMode.Create);
@@ -154,7 +167,7 @@ public class CubilineApplication : MonoBehaviour
 #endif
 	}
 
-	public static void SavePlayer()
+	public void SavePlayer()
 	{
 		XmlSerializer serializer = new XmlSerializer(typeof(PlayerData));
 		FileStream stream = new FileStream(Application.persistentDataPath + "/c_p_d.dat", FileMode.Create);
@@ -164,7 +177,7 @@ public class CubilineApplication : MonoBehaviour
 #endif
 	}
 
-	public static void LoadAchievements()
+	public void LoadAchievements()
 	{
 		if (!File.Exists(Application.persistentDataPath + "/c_a_d.dat")) return;
 		XmlSerializer serializer = new XmlSerializer(typeof(AchievementsData));
@@ -176,7 +189,7 @@ public class CubilineApplication : MonoBehaviour
 #endif
 	}
 
-	public static void LoadSettings()
+	public void LoadSettings()
 	{
 		if (!File.Exists(Application.persistentDataPath + "/c_s_d.dat")) return;
 		XmlSerializer serializer = new XmlSerializer(typeof(SettingsData));
@@ -188,7 +201,7 @@ public class CubilineApplication : MonoBehaviour
 #endif
 	}
 
-	public static void LoadPlayer()
+	public void LoadPlayer()
 	{
 		if (!File.Exists(Application.persistentDataPath + "/c_p_d.dat")) return;
 		XmlSerializer serializer = new XmlSerializer(typeof(PlayerData));
@@ -200,4 +213,152 @@ public class CubilineApplication : MonoBehaviour
 #endif
 	}
 
+
+	////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////// ACHIEVEMENTS //////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////
+
+	public void CheckBlueColorAchievement()
+	{
+		if (!achievements.blueAchieve)
+		{
+			if (achievements.blueCount >= achievements.blueColorTraget)
+			{
+				achievements.blueAchieve = true;
+				GameObject ap = Instantiate(blueAchivementPortalPrefab);
+				ap.transform.SetParent(transform);
+				ap.GetComponent<RectTransform>().offsetMax = Vector2.zero;
+				ap.GetComponent<RectTransform>().offsetMin = Vector2.zero;
+				SaveAchievements();
+			}
+		}
+	}
+
+	public void CheckOrangeColorAchievement()
+	{
+		if (!achievements.orangeAchieve)
+		{
+			if (achievements.orangeCount >= achievements.orangeColorTraget)
+			{
+				achievements.orangeAchieve = true;
+				GameObject ap = Instantiate(orangeAchivementPortalPrefab);
+				ap.transform.SetParent(transform);
+				ap.GetComponent<RectTransform>().offsetMax = Vector2.zero;
+				ap.GetComponent<RectTransform>().offsetMin = Vector2.zero;
+				SaveAchievements();
+			}
+		}
+	}
+
+	public void CheckGreenColorAchievement()
+	{
+		if (!achievements.greenAchieve)
+		{
+			if (achievements.greenCount >= achievements.greenColorTraget)
+			{
+				achievements.greenAchieve = true;
+				GameObject ap = Instantiate(greenAchivementPortalPrefab);
+				ap.transform.SetParent(transform);
+				ap.GetComponent<RectTransform>().offsetMax = Vector2.zero;
+				ap.GetComponent<RectTransform>().offsetMin = Vector2.zero;
+				SaveAchievements();
+			}
+		}
+	}
+
+	public void CheckYellowColorAchievement()
+	{
+		if (!achievements.yellowAchieve)
+		{
+			if (achievements.yellowCount >= achievements.yellowColorTraget)
+			{
+				achievements.yellowAchieve = true;
+				GameObject ap = Instantiate(yellowAchivementPortalPrefab);
+				ap.transform.SetParent(transform);
+				ap.GetComponent<RectTransform>().offsetMax = Vector2.zero;
+				ap.GetComponent<RectTransform>().offsetMin = Vector2.zero;
+				SaveAchievements();
+			}
+		}
+	}
+
+	public void CheckRedColorAchievement()
+	{
+		if (!achievements.redAchieve)
+		{
+			if (player.arcadeGamesPlayed + player.coopGamesPlayed >= achievements.redColorTraget)
+			{
+				achievements.redAchieve = true;
+				GameObject ap = Instantiate(redAchivementPortalPrefab);
+				ap.transform.SetParent(transform);
+				ap.GetComponent<RectTransform>().offsetMax = Vector2.zero;
+				ap.GetComponent<RectTransform>().offsetMin = Vector2.zero;
+				SaveAchievements();
+			}
+		}
+	}
+
+	public void CheckPurpleColorAchievement()
+	{
+		if (!achievements.purpleAchieve)
+		{
+			if (achievements.orangeCount >= achievements.purpleColorTraget)
+			{
+				achievements.purpleAchieve = true;
+				GameObject ap = Instantiate(purpleAchivementPortalPrefab);
+				ap.transform.SetParent(transform);
+				ap.GetComponent<RectTransform>().offsetMax = Vector2.zero;
+				ap.GetComponent<RectTransform>().offsetMin = Vector2.zero;
+				SaveAchievements();
+			}
+		}
+	}
+
+	public void CheckScoreColorAchievement()
+	{
+		if (!achievements.byScoreColorAchieve)
+		{
+			if (player.lastArcadeScore >= achievements.scoreColorTarget || player.lastCoopScore >= achievements.scoreColorTarget)
+			{
+				achievements.byScoreColorAchieve = true;
+				GameObject ap = Instantiate(scoreColorAchivementPortalPrefab);
+				ap.transform.SetParent(transform);
+				ap.GetComponent<RectTransform>().offsetMax = Vector2.zero;
+				ap.GetComponent<RectTransform>().offsetMin = Vector2.zero;
+				SaveAchievements();
+			}
+		}
+	}
+
+	public void CheckLengthColorAchievement()
+	{
+		if (!achievements.byLengthColorAchieve)
+		{
+			if (player.totalArcadeLength >= achievements.lengthColorTraget || player.totalCoopLength >= achievements.lengthColorTraget)
+			{
+				achievements.byLengthColorAchieve = true;
+				GameObject ap = Instantiate(lengthColorAchivementPortalPrefab);
+				ap.transform.SetParent(transform);
+				ap.GetComponent<RectTransform>().offsetMax = Vector2.zero;
+				ap.GetComponent<RectTransform>().offsetMin = Vector2.zero;
+				SaveAchievements();
+			}
+		}
+	}
+
+	public void CheckFillColorAchievement()
+	{
+		if (!achievements.byFillColorAchieve)
+		{
+			if (player.lastArcadeLength >= achievements.fillColorTarget || player.lastCoopLength >= achievements.fillColorTarget)
+			{
+				achievements.byFillColorAchieve = true;
+				GameObject ap = Instantiate(fillColorAchivementPortalPrefab);
+				ap.transform.SetParent(transform);
+				ap.GetComponent<RectTransform>().offsetMax = Vector2.zero;
+				ap.GetComponent<RectTransform>().offsetMin = Vector2.zero;
+				SaveAchievements();
+			}
+		}
+	}
 }

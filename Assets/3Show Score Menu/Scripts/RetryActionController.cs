@@ -5,6 +5,6 @@ public class RetryActionController : ActionContentController
 {
 	void Start()
 	{
-		SceneName = CubilineApplication.lastComment;
+		SceneName = CubilineApplication.singleton.lastComment;
 	}
 }

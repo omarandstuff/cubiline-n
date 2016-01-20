@@ -52,7 +52,7 @@ public class CubilineCoopController : MonoBehaviour
 	{
 		if (status != STATUS.PLAYING)
 		{
-			if ((followTarget1.transform.position - outTarget1.position).magnitude < CubilineApplication.settings.coopCubeSize)
+			if ((followTarget1.transform.position - outTarget1.position).magnitude < CubilineApplication.singleton.settings.coopCubeSize)
 			{
 				if (status == STATUS.GIONG_OUT)
 				{
@@ -102,12 +102,12 @@ public class CubilineCoopController : MonoBehaviour
 			if (CubilineMusicPlayer.singleton != null) CubilineMusicPlayer.singleton.Stop();
 
 			// Player game inf
-			CubilineApplication.player.coopGamesPlayed++;
-			CubilineApplication.player.coopTimePlayed += Time.time - timeOfGame;
-			CubilineApplication.player.lastCoopTime = Time.time - timeOfGame;
-			CubilineApplication.SavePlayer();
+			CubilineApplication.singleton.player.coopGamesPlayed++;
+			CubilineApplication.singleton.player.coopTimePlayed += Time.time - timeOfGame;
+			CubilineApplication.singleton.player.lastCoopTime = Time.time - timeOfGame;
+			CubilineApplication.singleton.SavePlayer();
 
-			CubilineApplication.lastComment = "coop_2p_scene";
+			CubilineApplication.singleton.lastComment = "coop_2p_scene";
 
 			GoOut();
 		}
@@ -129,7 +129,7 @@ public class CubilineCoopController : MonoBehaviour
 				else if (e.keyCode == KeyCode.S)
 					player1.AddTurn(CubilinePlayerController.TURN.DOWN);
 				else if (e.keyCode == KeyCode.Space)
-					player1.speed = CubilineApplication.settings.coopLineSpeed * 2.0f;
+					player1.speed = CubilineApplication.singleton.settings.coopLineSpeed * 2.0f;
 				else if (e.keyCode == KeyCode.LeftArrow)
 					player2.AddTurn(CubilinePlayerController.TURN.LEFT);
 				else if (e.keyCode == KeyCode.RightArrow)
@@ -139,7 +139,7 @@ public class CubilineCoopController : MonoBehaviour
 				else if (e.keyCode == KeyCode.DownArrow)
 					player2.AddTurn(CubilinePlayerController.TURN.DOWN);
 				else if (e.keyCode == KeyCode.RightControl)
-					player2.speed = CubilineApplication.settings.coopLineSpeed * 2.0f;
+					player2.speed = CubilineApplication.singleton.settings.coopLineSpeed * 2.0f;
 			}
 			if (e.keyCode == KeyCode.Escape && !menuKey) // Menu
 			{
@@ -165,9 +165,9 @@ public class CubilineCoopController : MonoBehaviour
 		else if (e.type == EventType.keyUp)
 		{
 			if (e.keyCode == KeyCode.Space)
-				player1.speed = CubilineApplication.settings.coopLineSpeed;
+				player1.speed = CubilineApplication.singleton.settings.coopLineSpeed;
 			if (e.keyCode == KeyCode.RightControl)
-				player2.speed = CubilineApplication.settings.coopLineSpeed;
+				player2.speed = CubilineApplication.singleton.settings.coopLineSpeed;
 			else if (e.keyCode == KeyCode.Escape)
 				menuKey = false;
 		}
@@ -250,24 +250,21 @@ public class CubilineCoopController : MonoBehaviour
 
 	public void Reset()
 	{
-		//CubilineScoreController.currentScore = 0;
-		//CubilineScoreController.currentNumberOfPlayers = 2;
+		arenaController.Reset(CubilineApplication.singleton.settings.coopCubeSize);
+		followCamera1.transform.localPosition = new Vector3(0.0f, 0.0f, -CubilineApplication.singleton.settings.coopCubeSize * 2.0f);
+		followCamera1.transform.localPosition = new Vector3(0.0f, 0.0f, -CubilineApplication.singleton.settings.coopCubeSize * 2.0f);
 
-		arenaController.Reset(CubilineApplication.settings.coopCubeSize);
-		followCamera1.transform.localPosition = new Vector3(0.0f, 0.0f, -CubilineApplication.settings.coopCubeSize * 2.0f);
-		followCamera1.transform.localPosition = new Vector3(0.0f, 0.0f, -CubilineApplication.settings.coopCubeSize * 2.0f);
-
-		player1.Reset(CubilineApplication.settings.coopCubeSize);
-		player1.speed = CubilineApplication.settings.coopLineSpeed;
+		player1.Reset(CubilineApplication.singleton.settings.coopCubeSize);
+		player1.speed = CubilineApplication.singleton.settings.coopLineSpeed;
 		
-		player2.Reset(CubilineApplication.settings.coopCubeSize);
-		player2.speed = CubilineApplication.settings.coopLineSpeed;
+		player2.Reset(CubilineApplication.singleton.settings.coopCubeSize);
+		player2.speed = CubilineApplication.singleton.settings.coopLineSpeed;
 
-		player1.hardMove = CubilineApplication.settings.coopHardMove;
-		player2.hardMove = CubilineApplication.settings.coopHardMove;
+		player1.hardMove = CubilineApplication.singleton.settings.coopHardMove;
+		player2.hardMove = CubilineApplication.singleton.settings.coopHardMove;
 
-		followTarget1.transform.position = new Vector3(-CubilineApplication.settings.coopCubeSize * 2, 0, -CubilineApplication.settings.coopCubeSize / 2);
-		followTarget2.transform.position = new Vector3(-CubilineApplication.settings.coopCubeSize * 2, 0, -CubilineApplication.settings.coopCubeSize / 2);
+		followTarget1.transform.position = new Vector3(-CubilineApplication.singleton.settings.coopCubeSize * 2, 0, -CubilineApplication.singleton.settings.coopCubeSize / 2);
+		followTarget2.transform.position = new Vector3(-CubilineApplication.singleton.settings.coopCubeSize * 2, 0, -CubilineApplication.singleton.settings.coopCubeSize / 2);
 
 		DoScreenOrientation();
 		coopUIController.timeToApear = 1.0f;
@@ -275,11 +272,11 @@ public class CubilineCoopController : MonoBehaviour
 
 	void GoOut()
 	{
-		outTarget1.transform.position = followCamera1.transform.localPosition + (followCamera1.transform.localPosition - followCamera1.target.transform.localPosition).normalized * CubilineApplication.settings.coopCubeSize;
+		outTarget1.transform.position = followCamera1.transform.localPosition + (followCamera1.transform.localPosition - followCamera1.target.transform.localPosition).normalized * CubilineApplication.singleton.settings.coopCubeSize;
 		followTarget1.target = outTarget1;
 		followTarget1.followSmoothTime = 0.8f;
 
-		outTarget2.transform.position = followCamera2.transform.localPosition + (followCamera2.transform.localPosition - followCamera2.target.transform.localPosition).normalized * CubilineApplication.settings.coopCubeSize;
+		outTarget2.transform.position = followCamera2.transform.localPosition + (followCamera2.transform.localPosition - followCamera2.target.transform.localPosition).normalized * CubilineApplication.singleton.settings.coopCubeSize;
 		followTarget2.target = outTarget2;
 		followTarget2.followSmoothTime = 0.8f;
 	}

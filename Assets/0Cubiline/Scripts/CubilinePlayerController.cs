@@ -45,6 +45,8 @@ public class CubilinePlayerController : MonoBehaviour
 	public float multiplerTime = 10.0f;
 	public int multipler; // Score multipler
 
+	public int coopLength; // For coop porpuses
+
 	//////////////////////////////////////////////////////////////
 	////////////////////// CONTROL VARIABLES /////////////////////
 	//////////////////////////////////////////////////////////////
@@ -206,8 +208,6 @@ public class CubilinePlayerController : MonoBehaviour
 		}
 		else
 			multipler = player1.multipler;
-
-
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -301,16 +301,18 @@ public class CubilinePlayerController : MonoBehaviour
 		stepGrown = 0.0f;
 		stepUnGrown = 0.0f;
 		bodyLength = 3;
+		if (playerKind == PLAYER_KIND.ARCADE_COOP) coopLength = 3;
+			
 
 		// Update slots.
 		ControlSlots();
 
 		// Arcade
 		arcadeScore = 0;
-		CubilineApplication.player.newRecord = false;
-		CubilineApplication.player.coopNewRecord = false;
-		CubilineApplication.player.newLengthRecord = false;
-		CubilineApplication.player.coopNewLengthRecord = false;
+		CubilineApplication.singleton.player.newRecord = false;
+		CubilineApplication.singleton.player.coopNewRecord = false;
+		CubilineApplication.singleton.player.newLengthRecord = false;
+		CubilineApplication.singleton.player.coopNewLengthRecord = false;
 
 		if (playerKind == PLAYER_KIND.ARCADE)
 		{
@@ -320,7 +322,7 @@ public class CubilinePlayerController : MonoBehaviour
 		else if (playerKind == PLAYER_KIND.ARCADE_COOP)
 		{
 			coopUIController.score = arcadeScore;
-			coopUIController.length = (uint)bodyLength;
+			coopUIController.length = (uint)bodyLength + (uint)coopLength;
 		}
 
 	}
@@ -447,24 +449,31 @@ public class CubilinePlayerController : MonoBehaviour
 		{
 			uiController.plusLength = units;
 
-			CubilineApplication.player.totalArcadeLength += (uint)units;
-			CubilineApplication.player.lastArcadeLength = (uint)bodyLength;
-			if (bodyLength > CubilineApplication.player.bestArcadeLength)
+			CubilineApplication.singleton.player.totalArcadeLength += (uint)units;
+			CubilineApplication.singleton.player.lastArcadeLength = (uint)bodyLength;
+			if (bodyLength > CubilineApplication.singleton.player.bestArcadeLength)
 			{
-				CubilineApplication.player.bestArcadeLength = (uint)bodyLength;
-				CubilineApplication.player.newLengthRecord = true;
+				CubilineApplication.singleton.player.bestArcadeLength = (uint)bodyLength;
+				CubilineApplication.singleton.player.newLengthRecord = true;
 			}
 		}
 		else if (playerKind == PLAYER_KIND.ARCADE_COOP)
 		{
 			coopUIController.plusLength = units;
 
-			CubilineApplication.player.totalCoopLength += (uint)units;
-			CubilineApplication.player.lastCoopLength = (uint)bodyLength;
-			if (bodyLength > CubilineApplication.player.bestCoopLength)
+			CubilineApplication.singleton.player.totalCoopLength += (uint)units;
+
+			if (player1 != null)
+				player1.coopLength += units;
+			else
 			{
-				CubilineApplication.player.bestCoopLength = (uint)bodyLength;
-				CubilineApplication.player.coopNewLengthRecord = true;
+				
+				CubilineApplication.singleton.player.lastCoopLength = (uint)bodyLength + (uint)coopLength;
+				if (CubilineApplication.singleton.player.lastCoopLength > CubilineApplication.singleton.player.bestCoopLength)
+				{
+					CubilineApplication.singleton.player.bestCoopLength = CubilineApplication.singleton.player.lastCoopLength;
+					CubilineApplication.singleton.player.coopNewLengthRecord = true;
+				}
 			}
 		}
 	}
@@ -483,6 +492,7 @@ public class CubilinePlayerController : MonoBehaviour
 		else if (playerKind == PLAYER_KIND.ARCADE_COOP)
 		{
 			coopUIController.plusLength = -realUngorw;
+			if (player1 != null) player1.coopLength -= realUngorw;
 		}
 	}
 
@@ -515,35 +525,35 @@ public class CubilinePlayerController : MonoBehaviour
 		if (playerKind == PLAYER_KIND.ARCADE)
 		{
 			arcadeScore += score * (uint)(multiplerCurrentTime > 0 ? multipler : 1);
-			CubilineApplication.player.lastArcadeScore = arcadeScore;
-			CubilineApplication.player.lastArcadeScoreDateTime = DateTime.Now;
+			CubilineApplication.singleton.player.lastArcadeScore = arcadeScore;
+			CubilineApplication.singleton.player.lastArcadeScoreDateTime = DateTime.Now;
 
 			uiController.plusScore = score * (uint)(multiplerCurrentTime > 0 ? multipler : 1);
 			uiController.score = arcadeScore;
 			uiController.length = (uint)bodyLength;
 
-			if (CubilineApplication.player.bestArcadeScore < arcadeScore)
+			if (CubilineApplication.singleton.player.bestArcadeScore < arcadeScore)
 			{
-				CubilineApplication.player.bestArcadeScore = arcadeScore;
-				CubilineApplication.player.bestArcadeScoreDateTime = DateTime.Now;
-				CubilineApplication.player.newRecord = true;
+				CubilineApplication.singleton.player.bestArcadeScore = arcadeScore;
+				CubilineApplication.singleton.player.bestArcadeScoreDateTime = DateTime.Now;
+				CubilineApplication.singleton.player.newRecord = true;
 			}
 		}
 		else if (playerKind == PLAYER_KIND.ARCADE_COOP)
 		{
 			arcadeScore += score * (uint)(multiplerCurrentTime > 0 ? multipler : 1);
-			CubilineApplication.player.lastCoopScore = arcadeScore;
-			CubilineApplication.player.lastCoopScoreDateTime = DateTime.Now;
+			CubilineApplication.singleton.player.lastCoopScore = arcadeScore;
+			CubilineApplication.singleton.player.lastCoopScoreDateTime = DateTime.Now;
 
-			coopUIController.plusScore = score * (uint)(multiplerCurrentTime > 0 ? multipler : 1);
+			if(score > 0) coopUIController.plusScore = score * (uint)(multiplerCurrentTime > 0 ? multipler : 1);
 			coopUIController.score = arcadeScore;
-			coopUIController.length = (uint)bodyLength;
 
-			if (CubilineApplication.player.bestCoopScore < arcadeScore)
+			coopUIController.length = (uint)bodyLength + (uint)coopLength;
+			if (CubilineApplication.singleton.player.bestCoopScore < arcadeScore)
 			{
-				CubilineApplication.player.bestCoopScore = arcadeScore;
-				CubilineApplication.player.bestCoopScoreDateTime = DateTime.Now;
-				CubilineApplication.player.coopNewRecord = true;
+				CubilineApplication.singleton.player.bestCoopScore = arcadeScore;
+				CubilineApplication.singleton.player.bestCoopScoreDateTime = DateTime.Now;
+				CubilineApplication.singleton.player.coopNewRecord = true;
 			}
 		}
 	}

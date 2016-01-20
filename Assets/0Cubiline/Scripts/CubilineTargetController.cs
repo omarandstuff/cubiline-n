@@ -35,13 +35,17 @@ public class CubilineTargetController : MonoBehaviour
 	private float bigCurrentTime;
 	private Transform magnetTarget;
 
+	private uint arenaSize;
+
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	///////////////////////////////////////////// SETUP ////////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////
 
-	public void Reset(float arenaSize)
+	public void Reset(float arena_size)
 	{
 		slotController = GetComponent<CubilineSlotController>();
+
+		arenaSize = (uint)arena_size;
 
 		for (int i = 0; i < commonTargets.Count; i++)
 		{
@@ -184,7 +188,8 @@ public class CubilineTargetController : MonoBehaviour
 			{
 				if (target.inGameObject.GetComponent<CubilineTarget>().targetTag == "Big Target")
 				{
-					commonTargetCount = CubilineApplication.settings.arcadeCubeSize * (CubilineApplication.settings.arcadeCubeSize / 4);
+					commonTargetCount = arenaSize * (arenaSize / 4);
+
 					bigCurrentTime = specialCommonTime;
 
 					if (gameKind == CubilinePlayerController.PLAYER_KIND.ARCADE)
@@ -200,7 +205,7 @@ public class CubilineTargetController : MonoBehaviour
 					{
 						ti.Value.inGameObject.GetComponent<CubilineGrabity>().targetPlanet = magnetTarget;
 						ti.Value.inGameObject.GetComponent<Rigidbody>().isKinematic = false;
-						ti.Value.inGameObject.GetComponent<Rigidbody>().AddExplosionForce(CubilineApplication.settings.arcadeCubeSize * 1000, Vector3.zero, CubilineApplication.settings.arcadeCubeSize);
+						ti.Value.inGameObject.GetComponent<Rigidbody>().AddExplosionForce(arenaSize * 1000, Vector3.zero, arenaSize);
 						if (index++ == 100) break;
 					}
 					foreach (TargetInf ti in specialTargetInfs)
@@ -209,7 +214,7 @@ public class CubilineTargetController : MonoBehaviour
 						{
 							ti.inGameObject.GetComponent<CubilineGrabity>().targetPlanet = magnetTarget;
 							ti.inGameObject.GetComponent<Rigidbody>().isKinematic = false;
-							ti.inGameObject.GetComponent<Rigidbody>().AddExplosionForce(CubilineApplication.settings.arcadeCubeSize * 1000, Vector3.zero, CubilineApplication.settings.arcadeCubeSize);
+							ti.inGameObject.GetComponent<Rigidbody>().AddExplosionForce(arenaSize * 1000, Vector3.zero, arenaSize);
 						}
 						
 					}
