@@ -60,7 +60,8 @@ public class CubilineTarget : MonoBehaviour
 	{
 		if (other.tag == "Player" || other.tag == "Finish")
 		{
-			GetComponent<ControlAchievement>().Check();
+			if(GetComponent<ControlAchievement>() != null)
+				GetComponent<ControlAchievement>().Check();
 			Destroy(Instantiate(particlePrefab, transform.position, Quaternion.identity), 8.0f);
 			foreach (Collider c in GetComponents<Collider>())
 				c.enabled = false;

@@ -97,6 +97,8 @@ public class CubilineArcade : MonoBehaviour
 			CubilineApplication.singleton.player.lastArcadeTime = Time.time - timeOfGame;
 			CubilineApplication.singleton.SavePlayer();
 
+			CubilineApplication.singleton.CheckRedColorAchievement();
+
 			CubilineApplication.singleton.lastComment = "arcade_scene";
 
 			GoOut();

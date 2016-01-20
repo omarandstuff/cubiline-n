@@ -107,6 +107,8 @@ public class CubilineCoopController : MonoBehaviour
 			CubilineApplication.singleton.player.lastCoopTime = Time.time - timeOfGame;
 			CubilineApplication.singleton.SavePlayer();
 
+			CubilineApplication.singleton.CheckRedColorAchievement();
+
 			CubilineApplication.singleton.lastComment = "coop_2p_scene";
 
 			GoOut();

@@ -556,6 +556,9 @@ public class CubilinePlayerController : MonoBehaviour
 				CubilineApplication.singleton.player.coopNewRecord = true;
 			}
 		}
+		CubilineApplication.singleton.CheckScoreColorAchievement();
+		CubilineApplication.singleton.CheckLengthColorAchievement();
+		CubilineApplication.singleton.CheckFillColorAchievement();
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////

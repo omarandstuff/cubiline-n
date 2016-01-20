@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml.Serialization;
 using UnityEngine;
@@ -21,23 +23,23 @@ public class AchievementsData
 	public bool byFillColorAchieve;
 
 	[XmlIgnore]
-	public uint blueColorTraget = 1000;
+	public uint blueColorTraget = 1;
 	[XmlIgnore]
-	public uint orangeColorTraget = 100;
+	public uint orangeColorTraget = 1;
 	[XmlIgnore]
-	public uint greenColorTraget = 100;
+	public uint greenColorTraget = 1;
 	[XmlIgnore]
-	public uint yellowColorTraget = 100;
+	public uint yellowColorTraget = 1;
 	[XmlIgnore]
-	public uint redColorTraget = 100;
+	public uint redColorTraget = 1;
 	[XmlIgnore]
-	public uint purpleColorTraget = 100;
+	public uint purpleColorTraget = 1;
 	[XmlIgnore]
-	public uint scoreColorTarget = 5000;
+	public uint scoreColorTarget = 5;
 	[XmlIgnore]
-	public uint lengthColorTraget = 10000;
+	public uint lengthColorTraget = 5;
 	[XmlIgnore]
-	public uint fillColorTarget = 500;
+	public uint fillColorTarget = 5;
 }
 
 public class SettingsData
@@ -111,6 +113,9 @@ public class CubilineApplication : MonoBehaviour
 
 	private static CubilineApplication thisone;
 	public static CubilineApplication singleton { get { return thisone; } }
+
+	private Stack<GameObject> inStack = new Stack<GameObject>();
+	public Stack waithStack = new Stack();
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// MONO BEHAVIOR /////////////////////////////////////////
@@ -225,10 +230,8 @@ public class CubilineApplication : MonoBehaviour
 			if (achievements.blueCount >= achievements.blueColorTraget)
 			{
 				achievements.blueAchieve = true;
-				GameObject ap = Instantiate(blueAchivementPortalPrefab);
-				ap.transform.SetParent(transform);
-				ap.GetComponent<RectTransform>().offsetMax = Vector2.zero;
-				ap.GetComponent<RectTransform>().offsetMin = Vector2.zero;
+				inStack.Push(blueAchivementPortalPrefab);
+				if (waithStack.Count == 0) ShowPortal();
 				SaveAchievements();
 			}
 		}
@@ -241,10 +244,8 @@ public class CubilineApplication : MonoBehaviour
 			if (achievements.orangeCount >= achievements.orangeColorTraget)
 			{
 				achievements.orangeAchieve = true;
-				GameObject ap = Instantiate(orangeAchivementPortalPrefab);
-				ap.transform.SetParent(transform);
-				ap.GetComponent<RectTransform>().offsetMax = Vector2.zero;
-				ap.GetComponent<RectTransform>().offsetMin = Vector2.zero;
+				inStack.Push(orangeAchivementPortalPrefab);
+				if (waithStack.Count == 0) ShowPortal();
 				SaveAchievements();
 			}
 		}
@@ -257,10 +258,8 @@ public class CubilineApplication : MonoBehaviour
 			if (achievements.greenCount >= achievements.greenColorTraget)
 			{
 				achievements.greenAchieve = true;
-				GameObject ap = Instantiate(greenAchivementPortalPrefab);
-				ap.transform.SetParent(transform);
-				ap.GetComponent<RectTransform>().offsetMax = Vector2.zero;
-				ap.GetComponent<RectTransform>().offsetMin = Vector2.zero;
+				inStack.Push(greenAchivementPortalPrefab);
+				if (waithStack.Count == 0) ShowPortal();
 				SaveAchievements();
 			}
 		}
@@ -273,10 +272,8 @@ public class CubilineApplication : MonoBehaviour
 			if (achievements.yellowCount >= achievements.yellowColorTraget)
 			{
 				achievements.yellowAchieve = true;
-				GameObject ap = Instantiate(yellowAchivementPortalPrefab);
-				ap.transform.SetParent(transform);
-				ap.GetComponent<RectTransform>().offsetMax = Vector2.zero;
-				ap.GetComponent<RectTransform>().offsetMin = Vector2.zero;
+				inStack.Push(yellowAchivementPortalPrefab);
+				if (waithStack.Count == 0) ShowPortal();
 				SaveAchievements();
 			}
 		}
@@ -289,10 +286,8 @@ public class CubilineApplication : MonoBehaviour
 			if (player.arcadeGamesPlayed + player.coopGamesPlayed >= achievements.redColorTraget)
 			{
 				achievements.redAchieve = true;
-				GameObject ap = Instantiate(redAchivementPortalPrefab);
-				ap.transform.SetParent(transform);
-				ap.GetComponent<RectTransform>().offsetMax = Vector2.zero;
-				ap.GetComponent<RectTransform>().offsetMin = Vector2.zero;
+				inStack.Push(redAchivementPortalPrefab);
+				if (waithStack.Count == 0) ShowPortal();
 				SaveAchievements();
 			}
 		}
@@ -305,10 +300,8 @@ public class CubilineApplication : MonoBehaviour
 			if (achievements.orangeCount >= achievements.purpleColorTraget)
 			{
 				achievements.purpleAchieve = true;
-				GameObject ap = Instantiate(purpleAchivementPortalPrefab);
-				ap.transform.SetParent(transform);
-				ap.GetComponent<RectTransform>().offsetMax = Vector2.zero;
-				ap.GetComponent<RectTransform>().offsetMin = Vector2.zero;
+				inStack.Push(purpleAchivementPortalPrefab);
+				if (waithStack.Count == 0) ShowPortal();
 				SaveAchievements();
 			}
 		}
@@ -321,10 +314,8 @@ public class CubilineApplication : MonoBehaviour
 			if (player.lastArcadeScore >= achievements.scoreColorTarget || player.lastCoopScore >= achievements.scoreColorTarget)
 			{
 				achievements.byScoreColorAchieve = true;
-				GameObject ap = Instantiate(scoreColorAchivementPortalPrefab);
-				ap.transform.SetParent(transform);
-				ap.GetComponent<RectTransform>().offsetMax = Vector2.zero;
-				ap.GetComponent<RectTransform>().offsetMin = Vector2.zero;
+				inStack.Push(scoreColorAchivementPortalPrefab);
+				if (waithStack.Count == 0) ShowPortal();
 				SaveAchievements();
 			}
 		}
@@ -337,10 +328,8 @@ public class CubilineApplication : MonoBehaviour
 			if (player.totalArcadeLength >= achievements.lengthColorTraget || player.totalCoopLength >= achievements.lengthColorTraget)
 			{
 				achievements.byLengthColorAchieve = true;
-				GameObject ap = Instantiate(lengthColorAchivementPortalPrefab);
-				ap.transform.SetParent(transform);
-				ap.GetComponent<RectTransform>().offsetMax = Vector2.zero;
-				ap.GetComponent<RectTransform>().offsetMin = Vector2.zero;
+				inStack.Push(lengthColorAchivementPortalPrefab);
+				if (waithStack.Count == 0) ShowPortal();
 				SaveAchievements();
 			}
 		}
@@ -353,12 +342,21 @@ public class CubilineApplication : MonoBehaviour
 			if (player.lastArcadeLength >= achievements.fillColorTarget || player.lastCoopLength >= achievements.fillColorTarget)
 			{
 				achievements.byFillColorAchieve = true;
-				GameObject ap = Instantiate(fillColorAchivementPortalPrefab);
-				ap.transform.SetParent(transform);
-				ap.GetComponent<RectTransform>().offsetMax = Vector2.zero;
-				ap.GetComponent<RectTransform>().offsetMin = Vector2.zero;
+				inStack.Push(fillColorAchivementPortalPrefab);
+				if (waithStack.Count == 0) ShowPortal();
 				SaveAchievements();
 			}
 		}
+	}
+
+	public void ShowPortal()
+	{
+		if (inStack.Count == 0) return;
+		waithStack.Push(0);
+
+		GameObject ap = Instantiate(inStack.Pop());
+		ap.transform.SetParent(transform);
+		ap.GetComponent<RectTransform>().offsetMax = Vector2.zero;
+		ap.GetComponent<RectTransform>().offsetMin = Vector2.zero;
 	}
 }
