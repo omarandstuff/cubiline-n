@@ -17,9 +17,9 @@ public class SetUpCoopActionController : ActionContentController
 
 	void Start()
 	{
-		sizeSlider.value = CubilineApplication.coopCubeSize;
-		speedSlider.value = CubilineApplication.coopLineSpeed;
-		hardToggle.isOn = CubilineApplication.coopHardMove;
+		sizeSlider.value = CubilineApplication.settings.coopCubeSize;
+		speedSlider.value = CubilineApplication.settings.coopLineSpeed;
+		hardToggle.isOn = CubilineApplication.settings.coopHardMove;
 	}
 
 	public override void Select()
@@ -55,16 +55,18 @@ public class SetUpCoopActionController : ActionContentController
 	{
 		Unselect();
 
-		CubilineApplication.coopCubeSize = (uint)sizeSlider.value;
-		CubilineApplication.coopLineSpeed = (uint)speedSlider.value;
-		CubilineApplication.coopHardMove = hardToggle.isOn;
+		CubilineApplication.settings.coopCubeSize = (uint)sizeSlider.value;
+		CubilineApplication.settings.coopLineSpeed = (uint)speedSlider.value;
+		CubilineApplication.settings.coopHardMove = hardToggle.isOn;
+
+		CubilineApplication.SaveSettings();
 	}
 
 	public void CancelAction()
 	{
 		Unselect();
-		sizeSlider.value = CubilineApplication.coopCubeSize;
-		speedSlider.value = CubilineApplication.coopLineSpeed;
-		hardToggle.isOn = CubilineApplication.coopHardMove;
+		sizeSlider.value = CubilineApplication.settings.coopCubeSize;
+		speedSlider.value = CubilineApplication.settings.coopLineSpeed;
+		hardToggle.isOn = CubilineApplication.settings.coopHardMove;
 	}
 }

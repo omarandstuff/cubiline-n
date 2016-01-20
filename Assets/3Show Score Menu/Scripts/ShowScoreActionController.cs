@@ -31,18 +31,18 @@ public class ShowScoreActionController : ActionContentController
 		StartCoroutine(PublicScore());
 
 		yield return new WaitForSeconds(timeToScore);
-		if (CubilineApplication.lastComment == "arcade_scene") score.score = CubilinePlayerData.lastArcadeScore;
-		if (CubilineApplication.lastComment == "coop_2p_scene") score.score = CubilinePlayerData.lastCoopScore;
+		if (CubilineApplication.lastComment == "arcade_scene") score.score = CubilineApplication.player.lastArcadeScore;
+		if (CubilineApplication.lastComment == "coop_2p_scene") score.score = CubilineApplication.player.lastCoopScore;
 		score.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
 		score.GetComponent<EaseTextOpasity>().easeFace = EaseFloat.EASE_FACE.IN;
 
 		yield return new WaitForSeconds(timeToScore + timeToStatsLapse);
-		if (CubilineApplication.lastComment == "arcade_scene") length.score = CubilinePlayerData.lastArcadeLength;
-		if (CubilineApplication.lastComment == "coop_2p_scene") score.score = CubilinePlayerData.lastCoopLength;
+		if (CubilineApplication.lastComment == "arcade_scene") length.score = CubilineApplication.player.lastArcadeLength;
+		if (CubilineApplication.lastComment == "coop_2p_scene") score.score = CubilineApplication.player.lastCoopLength;
 		length.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
 		length.GetComponent<EaseTextOpasity>().easeFace = EaseFloat.EASE_FACE.IN;
 
-		if (CubilineApplication.newRecord)
+		if (CubilineApplication.player.newRecord)
 		{
 			newScoreRecord.GetComponent<EaseRotation>().easeFace = EaseVector3.EASE_FACE.IN;
 			newScoreRecord.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
@@ -51,12 +51,12 @@ public class ShowScoreActionController : ActionContentController
 		}
 
 		yield return new WaitForSeconds(timeToScore + timeToStatsLapse * 2);
-		if (CubilineApplication.lastComment == "arcade_scene") time.time = (uint)CubilinePlayerData.lastArcadeTime;
-		if (CubilineApplication.lastComment == "coop_2p_scene") time.time = (uint)CubilinePlayerData.lastCoopTime;
+		if (CubilineApplication.lastComment == "arcade_scene") time.time = (uint)CubilineApplication.player.lastArcadeTime;
+		if (CubilineApplication.lastComment == "coop_2p_scene") time.time = (uint)CubilineApplication.player.lastCoopTime;
 		time.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
 		time.GetComponent<EaseTextOpasity>().easeFace = EaseFloat.EASE_FACE.IN;
 
-		if (CubilineApplication.newLengthRecord)
+		if (CubilineApplication.player.newLengthRecord)
 		{
 			newLengthRecord.GetComponent<EaseRotation>().easeFace = EaseVector3.EASE_FACE.IN;
 			newLengthRecord.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
@@ -88,7 +88,7 @@ public class ShowScoreActionController : ActionContentController
 		// Create a form object for sending high score data to the server
 		//WWWForm form = new WWWForm();
 		//form.AddField("demo_score[players]", "Jose");//CubilineApplication.player1Name + " Feat. " + CubilineApplication.player2Name);
-		//form.AddField("demo_score[score]", CubilinePlayerData.lastArcadeScore.ToString());
+		//form.AddField("demo_score[score]", CubilineApplication.lastArcadeScore.ToString());
 
 		// Create a download object
 		//WWW download = new WWW("http://www.cubiline.com/demo_score", form);

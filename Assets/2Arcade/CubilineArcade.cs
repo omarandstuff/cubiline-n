@@ -45,7 +45,7 @@ public class CubilineArcade : MonoBehaviour
 	{
 		if(status != STATUS.PLAYING)
 		{
-			if((followTarget.transform.position - outTarget.position).magnitude < CubilineApplication.cubeSize)
+			if((followTarget.transform.position - outTarget.position).magnitude < CubilineApplication.settings.arcadeCubeSize)
 			{
 				if(status == STATUS.GIONG_OUT)
 				{
@@ -77,7 +77,7 @@ public class CubilineArcade : MonoBehaviour
 			{
 				status = STATUS.GIONG_OUT;
 				uiController.GoOut();
-				CubilinePlayerData.Save();
+				CubilineApplication.SavePlayer();
 				GoOut();
 			}
 		}
@@ -92,10 +92,10 @@ public class CubilineArcade : MonoBehaviour
 			if (CubilineMusicPlayer.singleton != null) CubilineMusicPlayer.singleton.Stop();
 
 			// Player game inf
-			CubilinePlayerData.arcadeGamesPlayed++;
-			CubilinePlayerData.arcadeTimePlayed += Time.time - timeOfGame;
-			CubilinePlayerData.lastArcadeTime = Time.time - timeOfGame;
-			CubilinePlayerData.Save();
+			CubilineApplication.player.arcadeGamesPlayed++;
+			CubilineApplication.player.arcadeTimePlayed += Time.time - timeOfGame;
+			CubilineApplication.player.lastArcadeTime = Time.time - timeOfGame;
+			CubilineApplication.SavePlayer();
 
 			CubilineApplication.lastComment = "arcade_scene";
 
@@ -127,7 +127,7 @@ public class CubilineArcade : MonoBehaviour
 				else if (e.keyCode == KeyCode.DownArrow)
 					player.AddTurn(CubilinePlayerController.TURN.DOWN);
 				else if (e.keyCode == KeyCode.Space)
-					player.speed = CubilineApplication.lineSpeed * 2.0f;
+					player.speed = CubilineApplication.settings.arcadeLineSpeed * 2.0f;
 			}
 			if (e.keyCode == KeyCode.Escape && !menuKey) // Menu
 			{
@@ -152,7 +152,7 @@ public class CubilineArcade : MonoBehaviour
 		else if (e.type == EventType.keyUp)
 		{
 			if (e.keyCode == KeyCode.Space)
-				player.speed = CubilineApplication.lineSpeed;
+				player.speed = CubilineApplication.settings.arcadeLineSpeed;
 			else if (e.keyCode == KeyCode.Escape)
 				menuKey = false;
 		}
@@ -197,19 +197,19 @@ public class CubilineArcade : MonoBehaviour
 
 	public void Reset()
 	{
-		arenaController.Reset(CubilineApplication.cubeSize);
-		followCamera.transform.localPosition = new Vector3(0.0f, 0.0f, -CubilineApplication.cubeSize * 2.0f);
+		arenaController.Reset(CubilineApplication.settings.arcadeCubeSize);
+		followCamera.transform.localPosition = new Vector3(0.0f, 0.0f, -CubilineApplication.settings.arcadeCubeSize * 2.0f);
 
-		player.Reset(CubilineApplication.cubeSize);
-		player.speed = CubilineApplication.lineSpeed;
-		player.hardMove = CubilineApplication.hardMove;
+		player.Reset(CubilineApplication.settings.arcadeCubeSize);
+		player.speed = CubilineApplication.settings.arcadeLineSpeed;
+		player.hardMove = CubilineApplication.settings.arcadeHardMove;
 
-		followTarget.transform.position = new Vector3(-CubilineApplication.cubeSize * 2, 0, -CubilineApplication.cubeSize / 2);
+		followTarget.transform.position = new Vector3(-CubilineApplication.settings.arcadeCubeSize * 2, 0, -CubilineApplication.settings.arcadeCubeSize / 2);
 	}
 
 	void GoOut()
 	{
-		outTarget.transform.position = followCamera.transform.localPosition + (followCamera.transform.localPosition - followCamera.target.transform.localPosition).normalized * CubilineApplication.cubeSize;
+		outTarget.transform.position = followCamera.transform.localPosition + (followCamera.transform.localPosition - followCamera.target.transform.localPosition).normalized * CubilineApplication.settings.arcadeCubeSize;
 		followTarget.target = outTarget;
 		followTarget.followSmoothTime = 0.8f;
 	}

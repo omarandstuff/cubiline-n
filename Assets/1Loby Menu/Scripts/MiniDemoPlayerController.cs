@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections;
+using UnityEngine.UI;
 
 public class MiniDemoPlayerController : MonoBehaviour
 {
@@ -8,7 +8,6 @@ public class MiniDemoPlayerController : MonoBehaviour
 	//////////////////////////////////////////////////////////////
 	public RectTransform line1;
 	public RectTransform line2;
-
 	//////////////////////////////////////////////////////////////
 	//////////////////////// PARAMETERS //////////////////////////
 	//////////////////////////////////////////////////////////////
@@ -49,6 +48,15 @@ public class MiniDemoPlayerController : MonoBehaviour
 		set
 		{
 			_hard = value;
+		}
+	}
+
+	public Color color
+	{
+		set
+		{
+			line1.GetComponent<Image>().color = value;
+			line2.GetComponent<Image>().color = value;
 		}
 	}
 

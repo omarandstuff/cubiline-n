@@ -184,7 +184,7 @@ public class CubilineTargetController : MonoBehaviour
 			{
 				if (target.inGameObject.GetComponent<CubilineTarget>().targetTag == "Big Target")
 				{
-					commonTargetCount = CubilineApplication.cubeSize * (CubilineApplication.cubeSize / 4);
+					commonTargetCount = CubilineApplication.settings.arcadeCubeSize * (CubilineApplication.settings.arcadeCubeSize / 4);
 					bigCurrentTime = specialCommonTime;
 
 					if (gameKind == CubilinePlayerController.PLAYER_KIND.ARCADE)
@@ -200,7 +200,7 @@ public class CubilineTargetController : MonoBehaviour
 					{
 						ti.Value.inGameObject.GetComponent<CubilineGrabity>().targetPlanet = magnetTarget;
 						ti.Value.inGameObject.GetComponent<Rigidbody>().isKinematic = false;
-						ti.Value.inGameObject.GetComponent<Rigidbody>().AddExplosionForce(CubilineApplication.cubeSize * 1000, Vector3.zero, CubilineApplication.cubeSize);
+						ti.Value.inGameObject.GetComponent<Rigidbody>().AddExplosionForce(CubilineApplication.settings.arcadeCubeSize * 1000, Vector3.zero, CubilineApplication.settings.arcadeCubeSize);
 						if (index++ == 100) break;
 					}
 					foreach (TargetInf ti in specialTargetInfs)
@@ -209,7 +209,7 @@ public class CubilineTargetController : MonoBehaviour
 						{
 							ti.inGameObject.GetComponent<CubilineGrabity>().targetPlanet = magnetTarget;
 							ti.inGameObject.GetComponent<Rigidbody>().isKinematic = false;
-							ti.inGameObject.GetComponent<Rigidbody>().AddExplosionForce(CubilineApplication.cubeSize * 1000, Vector3.zero, CubilineApplication.cubeSize);
+							ti.inGameObject.GetComponent<Rigidbody>().AddExplosionForce(CubilineApplication.settings.arcadeCubeSize * 1000, Vector3.zero, CubilineApplication.settings.arcadeCubeSize);
 						}
 						
 					}

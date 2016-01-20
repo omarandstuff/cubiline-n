@@ -31,21 +31,21 @@ public class PlayerActionController : ActionContentController
 
 	void Start()
 	{
-		arcadeHighScore.text = CubilinePlayerData.bestArcadeScore.ToString();
-		if(CubilinePlayerData.bestArcadeScoreDateTime.Year != 1)
-			SetDateLeyend(arcadeObtained, CubilinePlayerData.bestArcadeScoreDateTime);
-		if (CubilinePlayerData.lastArcadeScoreDateTime.Year != 1)
-			SetDateLeyend(arcadeLastGame, CubilinePlayerData.lastArcadeScoreDateTime);
-		arcadeGamesPlayed.text = CubilinePlayerData.arcadeGamesPlayed.ToString();
+		arcadeHighScore.text = CubilineApplication.player.bestArcadeScore.ToString();
+		if(CubilineApplication.player.bestArcadeScoreDateTime.Year != 1)
+			SetDateLeyend(arcadeObtained, CubilineApplication.player.bestArcadeScoreDateTime);
+		if (CubilineApplication.player.lastArcadeScoreDateTime.Year != 1)
+			SetDateLeyend(arcadeLastGame, CubilineApplication.player.lastArcadeScoreDateTime);
+		arcadeGamesPlayed.text = CubilineApplication.player.arcadeGamesPlayed.ToString();
 
-		int hours = (int)CubilinePlayerData.arcadeTimePlayed / 3600;
-		int seconds = (int)CubilinePlayerData.arcadeTimePlayed - hours * 3600;
+		int hours = (int)CubilineApplication.player.arcadeTimePlayed / 3600;
+		int seconds = (int)CubilineApplication.player.arcadeTimePlayed - hours * 3600;
 		int minutes = seconds / 60;
 		seconds -= minutes * 60;
 
 		arcadeTimePlayed.text = hours.ToString("D" + 2) + ":" + minutes.ToString("D" + 2) + ":" + seconds.ToString("D" + 2);
 
-		arcadeTotalLength.text = CubilinePlayerData.totalArcadeLength.ToString() + "m";
+		arcadeTotalLength.text = CubilineApplication.player.totalArcadeLength.ToString() + "m";
 
 	}
 
