@@ -23,23 +23,23 @@ public class AchievementsData
 	public bool byFillColorAchieve;
 
 	[XmlIgnore]
-	public uint blueColorTraget = 1;
+	public uint blueColorTraget = 1000;
 	[XmlIgnore]
-	public uint orangeColorTraget = 1;
+	public uint orangeColorTraget = 100;
 	[XmlIgnore]
-	public uint greenColorTraget = 1;
+	public uint greenColorTraget = 100;
 	[XmlIgnore]
-	public uint yellowColorTraget = 1;
+	public uint yellowColorTraget = 100;
 	[XmlIgnore]
-	public uint redColorTraget = 1;
+	public uint redColorTraget = 100;
 	[XmlIgnore]
-	public uint purpleColorTraget = 1;
+	public uint purpleColorTraget = 100;
 	[XmlIgnore]
-	public uint scoreColorTarget = 5;
+	public uint scoreColorTarget = 5000;
 	[XmlIgnore]
-	public uint lengthColorTraget = 5;
+	public uint lengthColorTraget = 10000;
 	[XmlIgnore]
-	public uint fillColorTarget = 5;
+	public uint fillColorTarget = 500;
 }
 
 public class SettingsData
