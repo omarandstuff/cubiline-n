@@ -51,7 +51,7 @@ public class CastController : MonoBehaviour
 		}
 		else
 		{
-			if (Input.GetMouseButton(0) && interacting) return;
+			if ((Input.GetMouseButton(0) || Input.touchCount > 0) && interacting) return;
 			
 			GetComponent<RectTransform>().localPosition = position += Vector3.up * Time.deltaTime * castSpeed;
 			if (position.y >= bottomPosition)

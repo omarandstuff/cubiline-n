@@ -22,6 +22,17 @@ public class AchievementsData
 	public bool byLengthColorAchieve;
 	public bool byFillColorAchieve;
 
+	public bool blackCubeAchieve;
+	public bool diceAchieve;
+	public bool blackADiceAchieve;
+	public bool toyAchieve;
+	public bool blackToyAchieve;
+	public bool paperAchieve;
+	public bool blackPaperAchieve;
+	public bool incognitAchieve;
+	public bool blackIncognitAchieve;
+
+
 	[XmlIgnore]
 	public uint blueColorTraget = 1000;
 	[XmlIgnore]
@@ -40,6 +51,27 @@ public class AchievementsData
 	public uint lengthColorTraget = 10000;
 	[XmlIgnore]
 	public uint fillColorTarget = 500;
+
+	[XmlIgnore]
+	public uint blackCubeTarget = 100;
+	[XmlIgnore]
+	public bool diceCheck1;
+	[XmlIgnore]
+	public bool diceCheck2;
+	[XmlIgnore]
+	public bool diceCheck3;
+	[XmlIgnore]
+	public bool blackdiceCheck1;
+	[XmlIgnore]
+	public bool blackdiceCheck2;
+	[XmlIgnore]
+	public bool blackdiceCheck3;
+	[XmlIgnore]
+	public uint toyTarget = 100;
+	[XmlIgnore]
+	public uint blacKToyTarget = 200;
+	[XmlIgnore]
+	public uint blackIncognitTarget = 1;
 }
 
 public class SettingsData
