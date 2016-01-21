@@ -24,7 +24,7 @@ public class AchievementsData
 
 	public bool blackCubeAchieve;
 	public bool diceAchieve;
-	public bool blackADiceAchieve;
+	public bool blackDiceAchieve;
 	public bool toyAchieve;
 	public bool blackToyAchieve;
 	public bool paperAchieve;
@@ -78,6 +78,8 @@ public class SettingsData
 {
 	public uint player1ColorIndex;
 	public uint player2ColorIndex;
+	public uint arcadeLevelIndex;
+	public uint coopLevelIndex;
 	public uint arcadeLineSpeed = 4;
 	public uint arcadeCubeSize = 15;
 	public bool arcadeHardMove = false;
@@ -140,6 +142,10 @@ public class CubilineApplication : MonoBehaviour
 	public GameObject scoreColorAchivementPortalPrefab;
 	public GameObject lengthColorAchivementPortalPrefab;
 	public GameObject fillColorAchivementPortalPrefab;
+
+	[Serializable]
+	public struct Level { public GameObject levelPrefav; public string levelName; public string levelLeyend; }
+	public Level[] levels;
 
 	private static bool loaded;
 

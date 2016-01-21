@@ -1,19 +1,54 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class MiniSelectorFixer : MonoBehaviour
 {
+	public Text nameText;
+	public Text leyendText;
 
 	public Transform content;
+	public int levelIndex
+	{
+		set
+		{
+			if (value == _levelIndex || value < 0) return;
+
+
+			if(_levelIndex != -1)
+				GetComponent<AudioSource>().Play(0);
+
+			_levelIndex = value;
+
+			float targetX = _levelIndex * 4.8f;
+			targetPosition = new Vector3(-targetX, 0.0f, 0.0f);
+
+			if (unlocked[_levelIndex])
+			{
+				nameText.text = CubilineApplication.singleton.levels[_levelIndex].levelName;
+				leyendText.text = "";
+			}
+				
+			else
+			{
+				nameText.text = "?";
+				leyendText.text = CubilineApplication.singleton.levels[_levelIndex].levelLeyend;
+			}
+		}
+		get
+		{
+			return _levelIndex;
+		}
+	}
+	public bool[] unlocked;
 
 	private Vector3 targetPosition = Vector3.zero;
 	private Vector3 velocity = Vector3.zero;
 	private bool interactig;
 
-	void Start ()
-	{
-	
-	}
+	private int _levelIndex = -1;
+
+	private bool inCommand;
 
 	void Update ()
 	{
@@ -27,12 +62,44 @@ public class MiniSelectorFixer : MonoBehaviour
 			
 	}
 
-	public void ResetVelocity()
+	public void Interacting()
 	{
+		if (inCommand)
+		{
+			if (content.localPosition.x / -4.8f - _levelIndex < 0.1f)
+			{
+				inCommand = false;
+				return;
+			}
+			else
+			{
+				interactig = false;
+				return;
+			}
+		}
 		interactig = true;
-
-		float targetX = Mathf.Round(content.localPosition.x / 4.8f) * 4.8f;
-
-		targetPosition = new Vector3(targetX, 0.0f, 0.0f);
+		levelIndex = -(int)Mathf.Round(content.localPosition.x / 4.8f);
 	}
+
+	public void SetLevelIndex(int index)
+	{
+		inCommand = true;
+		interactig = false;
+		levelIndex = index;
+	}
+
+	public void PlusLevel()
+	{
+		inCommand = true;
+		interactig = false;
+		levelIndex = (int)Mathf.Repeat((float)levelIndex + 1,  (float)CubilineApplication.singleton.levels.Length - 1);
+	}
+
+	public void MinusLevel()
+	{
+		inCommand = true;
+		interactig = false;
+		levelIndex = (int)Mathf.Repeat((float)levelIndex - 1, (float)CubilineApplication.singleton.levels.Length - 1);
+	}
+
 }
