@@ -3,7 +3,7 @@ using System.Collections;
 
 public class ControlAchievement : MonoBehaviour
 {
-	public enum ACHIEVEMNT { BLUE_COLOR, ORANGE_COLOR, GREEN_COLOR, YELLOW_COLOR, RED_COLOR, PURPLE_COLOR, SCORE_COLOR, LENGTH_COLOR, FILL_COLOR }
+	public enum ACHIEVEMNT { BLUE_COLOR, ORANGE_COLOR, GREEN_COLOR, YELLOW_COLOR, RED_COLOR, PURPLE_COLOR, SCORE_COLOR, LENGTH_COLOR, FILL_COLOR, BLACK_LEVEL}
 	public ACHIEVEMNT achievement;
 	
 	public void Check()
@@ -48,6 +48,10 @@ public class ControlAchievement : MonoBehaviour
 		else if (achievement == ACHIEVEMNT.FILL_COLOR)
 		{
 			CubilineApplication.singleton.CheckFillColorAchievement();
+		}
+		else if (achievement == ACHIEVEMNT.BLACK_LEVEL)
+		{
+			CubilineApplication.singleton.CheckBlackLevelAchievement();
 		}
 		CubilineApplication.singleton.SaveAchievements();
 	}

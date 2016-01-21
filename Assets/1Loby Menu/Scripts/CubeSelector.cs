@@ -130,5 +130,51 @@ public class CubeSelector : ActionContentController
 		unlocked[7] = CubilineApplication.singleton.achievements.blackPaperAchieve;
 		unlocked[8] = CubilineApplication.singleton.achievements.incognitAchieve;
 		unlocked[9] = CubilineApplication.singleton.achievements.blackIncognitAchieve;
+
+		if(unlocked[1])
+		{
+			blackCube.color = Color.white;
+			blackCubeLock.SetActive(false);
+		}
+		if (unlocked[2])
+		{
+			diceCube.color = Color.white;
+			diceCubeLock.SetActive(false);
+		}
+		if (unlocked[3])
+		{
+			blackDiceCube.color = Color.white;
+			blackDiceCubeLock.SetActive(false);
+		}
+		if (unlocked[4])
+		{
+			toyCube.color = Color.white;
+			toyCubeLock.SetActive(false);
+		}
+		if (unlocked[5])
+		{
+			blackToyCube.color = Color.white;
+			blackToyCubeLock.SetActive(false);
+		}
+		if (unlocked[6])
+		{
+			boxCube.color = Color.white;
+			boxCubeLock.SetActive(false);
+		}
+		if (unlocked[7])
+		{
+			blackBoxCube.color = Color.white;
+			blackBoxCubeLock.SetActive(false);
+		}
+		if (unlocked[8])
+		{
+			knowledgeCube.color = Color.white;
+			knowledgeCubeLock.SetActive(false);
+		}
+		if (unlocked[9])
+		{
+			blacknowledgeCube.color = Color.white;
+			blacknowledgeCubeLock.SetActive(false);
+		}
 	}
 }

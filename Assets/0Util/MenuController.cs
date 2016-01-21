@@ -93,6 +93,9 @@ public class MenuController : MonoBehaviour
 	
 		if (CubilineMusicPlayer.singleton != null) CubilineMusicPlayer.singleton.Play();
 
+		// Check For the preciois one.
+		CubilineApplication.singleton.CheckBoxLevelAchievement();
+
 		// Audio directive
 		CubilineMusicPlayer.inMenu = inMenuMusic;
 	}

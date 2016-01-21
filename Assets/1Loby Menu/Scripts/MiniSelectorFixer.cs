@@ -12,7 +12,7 @@ public class MiniSelectorFixer : MonoBehaviour
 	{
 		set
 		{
-			if (value == _levelIndex || value < 0) return;
+			if (value == _levelIndex || value < 0 || value > CubilineApplication.singleton.levels.Length - 1) return;
 
 
 			if(_levelIndex != -1)
@@ -20,8 +20,8 @@ public class MiniSelectorFixer : MonoBehaviour
 
 			_levelIndex = value;
 
-			float targetX = _levelIndex * 4.8f;
-			targetPosition = new Vector3(-targetX, 0.0f, 0.0f);
+			float targetX = _levelIndex * -4.8f;
+			targetPosition = new Vector3(targetX, 0.0f, 0.0f);
 
 			if (unlocked[_levelIndex])
 			{
@@ -66,7 +66,7 @@ public class MiniSelectorFixer : MonoBehaviour
 	{
 		if (inCommand)
 		{
-			if (content.localPosition.x / -4.8f - _levelIndex < 0.1f)
+			if (Math.Abs(content.localPosition.x + _levelIndex * 4.8) < 0.3f)
 			{
 				inCommand = false;
 				return;

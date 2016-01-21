@@ -22,6 +22,7 @@ public class AchievementsData
 	public bool byLengthColorAchieve;
 	public bool byFillColorAchieve;
 
+	public uint grayCount;
 	public bool blackCubeAchieve;
 	public bool diceAchieve;
 	public bool blackDiceAchieve;
@@ -142,6 +143,17 @@ public class CubilineApplication : MonoBehaviour
 	public GameObject scoreColorAchivementPortalPrefab;
 	public GameObject lengthColorAchivementPortalPrefab;
 	public GameObject fillColorAchivementPortalPrefab;
+
+	public GameObject blackLevelAchivementPortalPrefab;
+	public GameObject diceLevelAchivementPortalPrefab;
+	public GameObject blackDiceLevelAchivementPortalPrefab;
+	public GameObject toyLevelAchivementPortalPrefab;
+	public GameObject blackToyLevelAchivementPortalPrefab;
+	public GameObject boxLevelAchivementPortalPrefab;
+	public GameObject blackBoxLevelAchivementPortalPrefab;
+	public GameObject knowledgeLevelAchivementPortalPrefab;
+	public GameObject blackKnowledgeLevelAchivementPortalPrefab;
+
 
 	[Serializable]
 	public struct Level { public GameObject levelPrefav; public string levelName; public string levelLeyend; }
@@ -335,7 +347,7 @@ public class CubilineApplication : MonoBehaviour
 	{
 		if (!achievements.purpleAchieve)
 		{
-			if (achievements.orangeCount >= achievements.purpleColorTraget)
+			if (achievements.purpleCount >= achievements.purpleColorTraget)
 			{
 				achievements.purpleAchieve = true;
 				inStack.Push(purpleAchivementPortalPrefab);
@@ -381,6 +393,126 @@ public class CubilineApplication : MonoBehaviour
 			{
 				achievements.byFillColorAchieve = true;
 				inStack.Push(fillColorAchivementPortalPrefab);
+				if (waithStack.Count == 0) ShowPortal();
+				SaveAchievements();
+			}
+		}
+	}
+
+	public void CheckBlackLevelAchievement()
+	{
+		if (!achievements.blackCubeAchieve)
+		{
+			if (achievements.grayCount >= achievements.blackCubeTarget)
+			{
+				achievements.blackCubeAchieve = true;
+				inStack.Push(blackLevelAchivementPortalPrefab);
+				if (waithStack.Count == 0) ShowPortal();
+				SaveAchievements();
+			}
+		}
+	}
+
+	public void CheckDiceLevelAchievement()
+	{
+		if (!achievements.diceAchieve)
+		{
+			if (achievements.diceCheck1 && achievements.diceCheck2 && achievements.diceCheck3)
+			{
+				achievements.diceAchieve = true;
+				inStack.Push(diceLevelAchivementPortalPrefab);
+				if (waithStack.Count == 0) ShowPortal();
+				SaveAchievements();
+			}
+		}
+	}
+
+	public void CheckBlackDiceLevelAchievement()
+	{
+		if (!achievements.blackDiceAchieve)
+		{
+			if (achievements.blackdiceCheck1 && achievements.blackdiceCheck2 && achievements.blackdiceCheck3)
+			{
+				achievements.blackDiceAchieve = true;
+				inStack.Push(blackDiceLevelAchivementPortalPrefab);
+				if (waithStack.Count == 0) ShowPortal();
+				SaveAchievements();
+			}
+		}
+	}
+
+	public void CheckToyLevelAchievement()
+	{
+		if (!achievements.toyAchieve)
+		{
+			if ((player.lastArcadeScore >= 100 && player.lastArcadeLength == 3) || (player.lastCoopScore >= 100 && player.lastCoopLength == 6))
+			{
+				achievements.toyAchieve = true;
+				inStack.Push(toyLevelAchivementPortalPrefab);
+				if (waithStack.Count == 0) ShowPortal();
+				SaveAchievements();
+			}
+		}
+	}
+
+	public void CheckBlackToyLevelAchievement()
+	{
+		if (!achievements.blackToyAchieve)
+		{
+			if ((player.lastArcadeScore >= 200 && player.lastArcadeLength == 3) || (player.lastCoopScore >= 200 && player.lastCoopLength == 6))
+			{
+				achievements.blackToyAchieve = true;
+				inStack.Push(blackToyLevelAchivementPortalPrefab);
+				if (waithStack.Count == 0) ShowPortal();
+				SaveAchievements();
+			}
+		}
+	}
+
+	public void CheckBoxLevelAchievement()
+	{
+		if (!achievements.paperAchieve)
+		{
+			achievements.paperAchieve = true;
+			inStack.Push(boxLevelAchivementPortalPrefab);
+			if (waithStack.Count == 0) ShowPortal();
+			SaveAchievements();
+		}
+	}
+
+	public void CheckBlackBoxLevelAchievement()
+	{
+		if (!achievements.blackPaperAchieve)
+		{
+			if(achievements.blueAchieve && achievements.orangeAchieve && achievements.greenAchieve && achievements.yellowAchieve && achievements.redAchieve && achievements.purpleAchieve && achievements.byScoreColorAchieve && achievements.byLengthColorAchieve && achievements.byFillColorAchieve)
+			{
+				achievements.blackPaperAchieve = true;
+				inStack.Push(blackBoxLevelAchivementPortalPrefab);
+				if (waithStack.Count == 0) ShowPortal();
+				SaveAchievements();
+			}
+		}
+	}
+
+	public void CheckKnowledgeLevelAchievement()
+	{
+		if (!achievements.incognitAchieve)
+		{
+			achievements.incognitAchieve = true;
+			inStack.Push(knowledgeLevelAchivementPortalPrefab);
+			if (waithStack.Count == 0) ShowPortal();
+			SaveAchievements();
+		}
+	}
+
+	public void CheckBlackKnowledgeLevelAchievement()
+	{
+		if (!achievements.blackIncognitAchieve)
+		{
+			if(player.arcadeTimePlayed + player.coopTimePlayed >= 36000)
+			{
+				achievements.blackIncognitAchieve = true;
+				inStack.Push(blackKnowledgeLevelAchivementPortalPrefab);
 				if (waithStack.Count == 0) ShowPortal();
 				SaveAchievements();
 			}
