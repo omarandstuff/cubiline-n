@@ -18,6 +18,8 @@ public class CubilineTargetController : MonoBehaviour
 	public CubilinePlayerController.PLAYER_KIND gameKind;
 	public uint commonTargetCount = 1;
 	public float specialCommonTime = 10.0f;
+	public bool enableCommonTargets = true;
+	public bool enableSpecialTargets = true;
 
 	//////////////////////////////////////////////////////////////
 	////////////////////// CONTROL VARIABLES /////////////////////
@@ -96,34 +98,39 @@ public class CubilineTargetController : MonoBehaviour
 			}
 		}
 
-		while (commonTargets.Count < commonTargetCount && slotController.freeSlots > 0)
-			spawnCommon();
-
-		while (commonTargets.Count > commonTargetCount)
+		if(enableCommonTargets)
 		{
-			Dictionary<int, TargetInf>.Enumerator enumer = commonTargets.GetEnumerator();
-			enumer.MoveNext();
-			DismissCommon(enumer.Current.Value.slotIndex);
-		}
+			while (commonTargets.Count < commonTargetCount && slotController.freeSlots > 0)
+				spawnCommon();
 
-		for (int i = 0; i < specialTargets.Length; i++)
-		{
-			if (specialTargetInfs[i].waiting)
+			while (commonTargets.Count > commonTargetCount)
 			{
-				specialTargetInfs[i].currentTime += Time.deltaTime;
-				if (specialTargetInfs[i].currentTime >= specialTargetInfs[i].selectedRandomTime)
-				{
-					specialTargetInfs[i].waiting = false;
-					specialTargetInfs[i].currentTime = 0.0f;
-					spawnSpecial(i);
-				}
+				Dictionary<int, TargetInf>.Enumerator enumer = commonTargets.GetEnumerator();
+				enumer.MoveNext();
+				DismissCommon(enumer.Current.Value.slotIndex);
 			}
-			else
+		}
+		if(enableSpecialTargets)
+		{
+			for (int i = 0; i < specialTargets.Length; i++)
 			{
-				specialTargetInfs[i].currentTime += Time.deltaTime;
-				if (specialTargetInfs[i].currentTime >= specialTargetInfs[i].showTime)
+				if (specialTargetInfs[i].waiting)
 				{
-					DismissSpecial(i);
+					specialTargetInfs[i].currentTime += Time.deltaTime;
+					if (specialTargetInfs[i].currentTime >= specialTargetInfs[i].selectedRandomTime)
+					{
+						specialTargetInfs[i].waiting = false;
+						specialTargetInfs[i].currentTime = 0.0f;
+						spawnSpecial(i);
+					}
+				}
+				else
+				{
+					specialTargetInfs[i].currentTime += Time.deltaTime;
+					if (specialTargetInfs[i].currentTime >= specialTargetInfs[i].showTime)
+					{
+						DismissSpecial(i);
+					}
 				}
 			}
 		}
@@ -189,9 +196,9 @@ public class CubilineTargetController : MonoBehaviour
 		{
 			foreach (Collider cl in target.inGameObject.GetComponents<Collider>())
 				cl.enabled = false;
-			Destroy(target.inGameObject, 1.0f);
 			target.inGameObject.GetComponent<CubilineTarget>().targetScale = Vector3.zero;
 			target.inGameObject.GetComponent<CubilineTarget>().pingPong = false;
+			Destroy(target.inGameObject, 1.0f);
 			slotController.FreeSlot(target.slotIndex);
 		}
 	}

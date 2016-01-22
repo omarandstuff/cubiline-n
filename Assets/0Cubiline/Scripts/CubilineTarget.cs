@@ -60,7 +60,11 @@ public class CubilineTarget : MonoBehaviour
 	{
 		if (other.tag == "Player" || other.tag == "Finish")
 		{
-			if(GetComponent<ControlAchievement>() != null)
+			Destroy(gameObject, 1.0f);
+			GetComponent<CubilineTarget>().targetScale = Vector3.zero;
+			GetComponent<CubilineTarget>().pingPong = false;
+
+			if (GetComponent<ControlAchievement>() != null)
 				GetComponent<ControlAchievement>().Check();
 			Destroy(Instantiate(particlePrefab, transform.position, Quaternion.identity), 8.0f);
 			foreach (Collider c in GetComponents<Collider>())
