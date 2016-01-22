@@ -7,8 +7,9 @@ public class CubilineArenaController : MonoBehaviour
 	///////////////////////// COMPONENTS /////////////////////////
 	//////////////////////////////////////////////////////////////
 
-	public EaseScale arenaCube;
+	public Transform arenaCube;
 	public CubilinePlayerController.STATUS status;
+	public CubilinePlayerController.PLAYER_KIND gameKind;
 
 	//////////////////////////////////////////////////////////////
 	//////////////////////// PARAMETERS //////////////////////////
@@ -20,6 +21,7 @@ public class CubilineArenaController : MonoBehaviour
 
 	private CubilineSlotController slotController;
 	private CubilineTargetController targetController;
+	private GameObject level;
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// MONO BEHAVIOR /////////////////////////////////////////
@@ -38,15 +40,33 @@ public class CubilineArenaController : MonoBehaviour
 	public void Reset(float arenaSize)
 	{
 		slotController = GetComponent<CubilineSlotController>();
-		if(slotController != null) slotController.Reset(arenaSize);
+		if (slotController != null) slotController.Reset(arenaSize);
 
 		targetController = GetComponent<CubilineTargetController>();
-		if(targetController != null)targetController.Reset(arenaSize);
+		if (targetController != null) targetController.Reset(arenaSize);
+
+		// Load level
+		if (gameKind == CubilinePlayerController.PLAYER_KIND.ARCADE)
+		{
+			if (level == null)
+			{
+				level = Instantiate(CubilineApplication.singleton.levels[CubilineApplication.singleton.settings.arcadeLevelIndex].levelPrefav);
+			}
+		}
+		else if (gameKind == CubilinePlayerController.PLAYER_KIND.ARCADE_COOP)
+		{
+			if (level == null)
+			{
+				level = Instantiate(CubilineApplication.singleton.levels[CubilineApplication.singleton.settings.coopLevelIndex].levelPrefav);
+			}
+		}
+		level.GetComponent<EaseScale>().outValues = new Vector3(arenaSize / 2.0f, arenaSize / 2.0f, arenaSize / 2.0f);
+		level.GetComponent<EaseScale>().inValues = new Vector3(arenaSize, arenaSize, arenaSize);
+		level.GetComponent<EaseScale>().Reset();
+		level.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
+
 
 		// Set size of arena
-		arenaCube.outValues = new Vector3(arenaSize / 2.0f, arenaSize / 2.0f, arenaSize / 2.0f);
-		arenaCube.inValues = new Vector3(arenaSize, arenaSize, arenaSize);
-		arenaCube.Reset();
-		arenaCube.easeFace = EaseVector3.EASE_FACE.IN;
+		arenaCube.localScale = new Vector3(arenaSize, arenaSize, arenaSize);
 	}
 }
