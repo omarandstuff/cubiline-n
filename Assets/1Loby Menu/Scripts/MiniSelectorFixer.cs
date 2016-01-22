@@ -92,14 +92,14 @@ public class MiniSelectorFixer : MonoBehaviour
 	{
 		inCommand = true;
 		interactig = false;
-		levelIndex = (int)Mathf.Repeat((float)levelIndex + 1,  (float)CubilineApplication.singleton.levels.Length - 1);
+		levelIndex = (int)Mathf.Repeat((float)levelIndex + 1,  CubilineApplication.singleton.levels.Length);
 	}
 
 	public void MinusLevel()
 	{
 		inCommand = true;
 		interactig = false;
-		levelIndex = (int)Mathf.Repeat((float)levelIndex - 1, (float)CubilineApplication.singleton.levels.Length - 1);
+		levelIndex = (int)Mathf.Repeat((float)levelIndex - 1, CubilineApplication.singleton.levels.Length);
 	}
 
 }
