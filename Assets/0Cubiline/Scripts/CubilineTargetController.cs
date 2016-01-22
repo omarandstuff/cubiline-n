@@ -187,6 +187,9 @@ public class CubilineTargetController : MonoBehaviour
 	{
 		if (target.inGameObject != null)
 		{
+			foreach (Collider cl in target.inGameObject.GetComponents<Collider>())
+				cl.enabled = false;
+
 			if(target.inGameObject.GetComponent<CubilineTarget>().activated)
 			{
 				if (target.inGameObject.GetComponent<CubilineTarget>().targetTag == "Big Target")
