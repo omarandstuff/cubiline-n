@@ -57,6 +57,7 @@ public class CastController : MonoBehaviour
 			if (position.y >= bottomPosition)
 			{
 				isFinalWaiting = true;
+				CubilineApplication.singleton.CheckKnowledgeLevelAchievement();
 			}
 		}
 	}

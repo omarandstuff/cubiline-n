@@ -45,7 +45,24 @@ public class CubilinePlayerController : MonoBehaviour
 	public float multiplerTime = 10.0f;
 	public int multipler; // Score multipler
 
-	public int coopLength; // For coop porpuses
+	public int coopLength // For coop porpuses
+	{
+		set
+		{
+			_coopLength = value;
+			CubilineApplication.singleton.player.lastCoopLength = (uint)bodyLength + (uint)_coopLength;
+			if (CubilineApplication.singleton.player.lastCoopLength > CubilineApplication.singleton.player.bestCoopLength)
+			{
+				CubilineApplication.singleton.player.bestCoopLength = CubilineApplication.singleton.player.lastCoopLength;
+				CubilineApplication.singleton.player.coopNewLengthRecord = true;
+			}
+		}
+		get
+		{
+			return _coopLength;
+		}
+	}
+	private int _coopLength;
 
 	//////////////////////////////////////////////////////////////
 	////////////////////// CONTROL VARIABLES /////////////////////
@@ -204,6 +221,9 @@ public class CubilinePlayerController : MonoBehaviour
 					uiController.multipler = multipler;
 				else if (playerKind == PLAYER_KIND.ARCADE_COOP)
 					coopUIController.multipler = multipler;
+
+				CubilineApplication.singleton.achievements.diceCheck1 = false;
+				CubilineApplication.singleton.achievements.blackdiceCheck1 = false;
 			}
 		}
 		else
@@ -465,17 +485,9 @@ public class CubilinePlayerController : MonoBehaviour
 
 			if (player1 != null)
 				player1.coopLength += units;
-			else
-			{
-				
-				CubilineApplication.singleton.player.lastCoopLength = (uint)bodyLength + (uint)coopLength;
-				if (CubilineApplication.singleton.player.lastCoopLength > CubilineApplication.singleton.player.bestCoopLength)
-				{
-					CubilineApplication.singleton.player.bestCoopLength = CubilineApplication.singleton.player.lastCoopLength;
-					CubilineApplication.singleton.player.coopNewLengthRecord = true;
-				}
-			}
 		}
+		CubilineApplication.singleton.CheckToyLevelAchievement();
+		CubilineApplication.singleton.CheckBlackToyLevelAchievement();
 	}
 
 	public void UnGrow(int units)
@@ -488,12 +500,16 @@ public class CubilinePlayerController : MonoBehaviour
 		if(playerKind == PLAYER_KIND.ARCADE)
 		{
 			uiController.plusLength = -realUngorw;
+			CubilineApplication.singleton.player.lastArcadeLength = (uint)bodyLength;
 		}
 		else if (playerKind == PLAYER_KIND.ARCADE_COOP)
 		{
 			coopUIController.plusLength = -realUngorw;
-			if (player1 != null) player1.coopLength -= realUngorw;
+			if (player1 != null)
+				player1.coopLength -= realUngorw;
 		}
+		CubilineApplication.singleton.CheckToyLevelAchievement();
+		CubilineApplication.singleton.CheckBlackToyLevelAchievement();
 	}
 
 	public void Start2Xmultipler()
@@ -506,6 +522,10 @@ public class CubilinePlayerController : MonoBehaviour
 			uiController.multipler = multipler;
 		else if (playerKind == PLAYER_KIND.ARCADE_COOP)
 			coopUIController.multipler = multipler;
+
+		CubilineApplication.singleton.achievements.diceCheck1 = true;
+		if (multipler >= 6)
+			CubilineApplication.singleton.achievements.blackdiceCheck1 = true;
 	}
 
 	public void Start4Xmultipler()
@@ -518,6 +538,10 @@ public class CubilinePlayerController : MonoBehaviour
 			uiController.multipler = multipler;
 		else if (playerKind == PLAYER_KIND.ARCADE_COOP)
 			coopUIController.multipler = multipler;
+
+		CubilineApplication.singleton.achievements.diceCheck1 = true;
+		if (multipler >= 6)
+			CubilineApplication.singleton.achievements.blackdiceCheck1 = true;
 	}
 
 	public void AddScore(uint score)

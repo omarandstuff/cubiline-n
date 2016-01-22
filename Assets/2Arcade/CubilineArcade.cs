@@ -98,6 +98,7 @@ public class CubilineArcade : MonoBehaviour
 			CubilineApplication.singleton.SavePlayer();
 
 			CubilineApplication.singleton.CheckRedColorAchievement();
+			CubilineApplication.singleton.CheckBlackKnowledgeLevelAchievement();
 
 			CubilineApplication.singleton.lastComment = "arcade_scene";
 

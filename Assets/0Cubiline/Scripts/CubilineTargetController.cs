@@ -90,6 +90,9 @@ public class CubilineTargetController : MonoBehaviour
 					uiController.specialCommon = false;
 				else if (gameKind == CubilinePlayerController.PLAYER_KIND.ARCADE_COOP)
 					coopUIController.specialCommon = false;
+
+				CubilineApplication.singleton.achievements.diceCheck2 = false;
+				CubilineApplication.singleton.achievements.blackdiceCheck2 = false;
 			}
 		}
 
@@ -196,6 +199,9 @@ public class CubilineTargetController : MonoBehaviour
 						uiController.specialCommon = true;
 					else if (gameKind == CubilinePlayerController.PLAYER_KIND.ARCADE_COOP)
 						coopUIController.specialCommon = true;
+
+					CubilineApplication.singleton.achievements.diceCheck2 = true;
+					CubilineApplication.singleton.achievements.blackdiceCheck2 = true;
 				}
 				else if (target.inGameObject.GetComponent<CubilineTarget>().targetTag == "Magnet")
 				{
@@ -216,8 +222,14 @@ public class CubilineTargetController : MonoBehaviour
 							ti.inGameObject.GetComponent<Rigidbody>().isKinematic = false;
 							ti.inGameObject.GetComponent<Rigidbody>().AddExplosionForce(arenaSize * 1000, Vector3.zero, arenaSize);
 						}
-						
 					}
+
+					CubilineApplication.singleton.achievements.diceCheck3 = true;
+					CubilineApplication.singleton.achievements.blackdiceCheck3 = true;
+					CubilineApplication.singleton.CheckDiceLevelAchievement();
+					CubilineApplication.singleton.CheckBlackDiceLevelAchievement();
+					CubilineApplication.singleton.achievements.diceCheck3 = false;
+					CubilineApplication.singleton.achievements.blackdiceCheck3 = false;
 				}
 			}
 			Destroy(target.inGameObject, 1.0f);

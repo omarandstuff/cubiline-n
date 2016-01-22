@@ -72,7 +72,7 @@ public class AchievementsData
 	[XmlIgnore]
 	public uint blacKToyTarget = 200;
 	[XmlIgnore]
-	public uint blackIncognitTarget = 1;
+	public uint blackIncognitTarget = 36000;
 }
 
 public class SettingsData
@@ -283,6 +283,8 @@ public class CubilineApplication : MonoBehaviour
 				inStack.Push(blueAchivementPortalPrefab);
 				if (waithStack.Count == 0) ShowPortal();
 				SaveAchievements();
+
+				CheckBlackBoxLevelAchievement();
 			}
 		}
 	}
@@ -297,6 +299,8 @@ public class CubilineApplication : MonoBehaviour
 				inStack.Push(orangeAchivementPortalPrefab);
 				if (waithStack.Count == 0) ShowPortal();
 				SaveAchievements();
+
+				CheckBlackBoxLevelAchievement();
 			}
 		}
 	}
@@ -311,6 +315,8 @@ public class CubilineApplication : MonoBehaviour
 				inStack.Push(greenAchivementPortalPrefab);
 				if (waithStack.Count == 0) ShowPortal();
 				SaveAchievements();
+
+				CheckBlackBoxLevelAchievement();
 			}
 		}
 	}
@@ -325,6 +331,8 @@ public class CubilineApplication : MonoBehaviour
 				inStack.Push(yellowAchivementPortalPrefab);
 				if (waithStack.Count == 0) ShowPortal();
 				SaveAchievements();
+
+				CheckBlackBoxLevelAchievement();
 			}
 		}
 	}
@@ -339,6 +347,8 @@ public class CubilineApplication : MonoBehaviour
 				inStack.Push(redAchivementPortalPrefab);
 				if (waithStack.Count == 0) ShowPortal();
 				SaveAchievements();
+
+				CheckBlackBoxLevelAchievement();
 			}
 		}
 	}
@@ -353,6 +363,8 @@ public class CubilineApplication : MonoBehaviour
 				inStack.Push(purpleAchivementPortalPrefab);
 				if (waithStack.Count == 0) ShowPortal();
 				SaveAchievements();
+
+				CheckBlackBoxLevelAchievement();
 			}
 		}
 	}
@@ -367,6 +379,8 @@ public class CubilineApplication : MonoBehaviour
 				inStack.Push(scoreColorAchivementPortalPrefab);
 				if (waithStack.Count == 0) ShowPortal();
 				SaveAchievements();
+
+				CheckBlackBoxLevelAchievement();
 			}
 		}
 	}
@@ -381,6 +395,8 @@ public class CubilineApplication : MonoBehaviour
 				inStack.Push(lengthColorAchivementPortalPrefab);
 				if (waithStack.Count == 0) ShowPortal();
 				SaveAchievements();
+
+				CheckBlackBoxLevelAchievement();
 			}
 		}
 	}
@@ -395,6 +411,8 @@ public class CubilineApplication : MonoBehaviour
 				inStack.Push(fillColorAchivementPortalPrefab);
 				if (waithStack.Count == 0) ShowPortal();
 				SaveAchievements();
+
+				CheckBlackBoxLevelAchievement();
 			}
 		}
 	}
@@ -509,7 +527,7 @@ public class CubilineApplication : MonoBehaviour
 	{
 		if (!achievements.blackIncognitAchieve)
 		{
-			if(player.arcadeTimePlayed + player.coopTimePlayed >= 36000)
+			if(player.arcadeTimePlayed + player.coopTimePlayed >= achievements.blackIncognitTarget)
 			{
 				achievements.blackIncognitAchieve = true;
 				inStack.Push(blackKnowledgeLevelAchivementPortalPrefab);

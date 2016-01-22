@@ -51,6 +51,7 @@ public class ControlAchievement : MonoBehaviour
 		}
 		else if (achievement == ACHIEVEMNT.BLACK_LEVEL)
 		{
+			CubilineApplication.singleton.achievements.grayCount++;
 			CubilineApplication.singleton.CheckBlackLevelAchievement();
 		}
 		CubilineApplication.singleton.SaveAchievements();
