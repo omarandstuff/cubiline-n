@@ -38,7 +38,7 @@ public class CubilinePlayerController : MonoBehaviour
 	public float speed = 4.0f; // Units per second.
 	public bool hardMove;
 
-	public enum PLAYER_KIND { ARCADE, ARCADE_COOP, VS}
+	public enum PLAYER_KIND { ARCADE, ARCADE_COOP, VS, TUTORIAL}
 	public PLAYER_KIND playerKind;
 	public uint playerNumber;
 
@@ -449,6 +449,17 @@ public class CubilinePlayerController : MonoBehaviour
 			else
 				player1.AddScore((uint)target.score);
 
+			if (target.activated)
+			{
+				if (target.targetTag == "Big Target")
+				{
+					targetController.ApplyBigBlue();
+				}
+				else if (target.targetTag == "Magnet")
+				{
+					targetController.ApplyMagnet(head);
+				}
+			}
 		}
 		if (other.tag == "Finish")
 		{

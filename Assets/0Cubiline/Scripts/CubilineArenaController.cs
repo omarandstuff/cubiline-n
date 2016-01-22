@@ -60,6 +60,13 @@ public class CubilineArenaController : MonoBehaviour
 				level = Instantiate(CubilineApplication.singleton.levels[CubilineApplication.singleton.settings.coopLevelIndex].levelPrefav);
 			}
 		}
+		else if (gameKind == CubilinePlayerController.PLAYER_KIND.TUTORIAL)
+		{
+			if (level == null)
+			{
+				level = Instantiate(CubilineApplication.singleton.levels[0].levelPrefav);
+			}
+		}
 		level.GetComponent<EaseScale>().outValues = new Vector3(arenaSize / 2.0f, arenaSize / 2.0f, arenaSize / 2.0f);
 		level.GetComponent<EaseScale>().inValues = new Vector3(arenaSize, arenaSize, arenaSize);
 		level.GetComponent<EaseScale>().Reset();

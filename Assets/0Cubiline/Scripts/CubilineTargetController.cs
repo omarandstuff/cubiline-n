@@ -189,57 +189,55 @@ public class CubilineTargetController : MonoBehaviour
 		{
 			foreach (Collider cl in target.inGameObject.GetComponents<Collider>())
 				cl.enabled = false;
-
-			if(target.inGameObject.GetComponent<CubilineTarget>().activated)
-			{
-				if (target.inGameObject.GetComponent<CubilineTarget>().targetTag == "Big Target")
-				{
-					commonTargetCount = arenaSize * (arenaSize / 4);
-
-					bigCurrentTime = specialCommonTime;
-
-					if (gameKind == CubilinePlayerController.PLAYER_KIND.ARCADE)
-						uiController.specialCommon = true;
-					else if (gameKind == CubilinePlayerController.PLAYER_KIND.ARCADE_COOP)
-						coopUIController.specialCommon = true;
-
-					CubilineApplication.singleton.achievements.diceCheck2 = true;
-					CubilineApplication.singleton.achievements.blackdiceCheck2 = true;
-				}
-				else if (target.inGameObject.GetComponent<CubilineTarget>().targetTag == "Magnet")
-				{
-					magnetTarget = target.inGameObject.GetComponent<CubilineTarget>().activator;
-					int index = 0;
-					foreach (KeyValuePair<int, TargetInf> ti in commonTargets)
-					{
-						ti.Value.inGameObject.GetComponent<CubilineGrabity>().targetPlanet = magnetTarget;
-						ti.Value.inGameObject.GetComponent<Rigidbody>().isKinematic = false;
-						ti.Value.inGameObject.GetComponent<Rigidbody>().AddExplosionForce(arenaSize * 1000, Vector3.zero, arenaSize);
-						if (index++ == 100) break;
-					}
-					foreach (TargetInf ti in specialTargetInfs)
-					{
-						if(ti.inGameObject != null)
-						{
-							ti.inGameObject.GetComponent<CubilineGrabity>().targetPlanet = magnetTarget;
-							ti.inGameObject.GetComponent<Rigidbody>().isKinematic = false;
-							ti.inGameObject.GetComponent<Rigidbody>().AddExplosionForce(arenaSize * 1000, Vector3.zero, arenaSize);
-						}
-					}
-
-					CubilineApplication.singleton.achievements.diceCheck3 = true;
-					CubilineApplication.singleton.achievements.blackdiceCheck3 = true;
-					CubilineApplication.singleton.CheckDiceLevelAchievement();
-					CubilineApplication.singleton.CheckBlackDiceLevelAchievement();
-					CubilineApplication.singleton.achievements.diceCheck3 = false;
-					CubilineApplication.singleton.achievements.blackdiceCheck3 = false;
-				}
-			}
 			Destroy(target.inGameObject, 1.0f);
 			target.inGameObject.GetComponent<CubilineTarget>().targetScale = Vector3.zero;
 			target.inGameObject.GetComponent<CubilineTarget>().pingPong = false;
 			slotController.FreeSlot(target.slotIndex);
 		}
+	}
+
+	public void ApplyBigBlue()
+	{
+		commonTargetCount = arenaSize * (arenaSize / 4);
+
+		bigCurrentTime = specialCommonTime;
+
+		if (gameKind == CubilinePlayerController.PLAYER_KIND.ARCADE)
+			uiController.specialCommon = true;
+		else if (gameKind == CubilinePlayerController.PLAYER_KIND.ARCADE_COOP)
+			coopUIController.specialCommon = true;
+
+		CubilineApplication.singleton.achievements.diceCheck2 = true;
+		CubilineApplication.singleton.achievements.blackdiceCheck2 = true;
+	}
+
+	public void ApplyMagnet(Transform activator)
+	{
+		magnetTarget = activator;
+		int index = 0;
+		foreach (KeyValuePair<int, TargetInf> ti in commonTargets)
+		{
+			ti.Value.inGameObject.GetComponent<CubilineGrabity>().targetPlanet = magnetTarget;
+			ti.Value.inGameObject.GetComponent<Rigidbody>().isKinematic = false;
+			ti.Value.inGameObject.GetComponent<Rigidbody>().AddExplosionForce(arenaSize * 1000, Vector3.zero, arenaSize);
+			if (index++ == 100) break;
+		}
+		foreach (TargetInf ti in specialTargetInfs)
+		{
+			if (ti.inGameObject != null)
+			{
+				ti.inGameObject.GetComponent<CubilineGrabity>().targetPlanet = magnetTarget;
+				ti.inGameObject.GetComponent<Rigidbody>().isKinematic = false;
+				ti.inGameObject.GetComponent<Rigidbody>().AddExplosionForce(arenaSize * 1000, Vector3.zero, arenaSize);
+			}
+		}
+
+		CubilineApplication.singleton.achievements.diceCheck3 = true;
+		CubilineApplication.singleton.achievements.blackdiceCheck3 = true;
+		CubilineApplication.singleton.CheckDiceLevelAchievement();
+		CubilineApplication.singleton.CheckBlackDiceLevelAchievement();
+		CubilineApplication.singleton.achievements.diceCheck3 = false;
+		CubilineApplication.singleton.achievements.blackdiceCheck3 = false;
 	}
 
 }
