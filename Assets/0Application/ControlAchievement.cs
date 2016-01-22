@@ -54,6 +54,5 @@ public class ControlAchievement : MonoBehaviour
 			CubilineApplication.singleton.achievements.grayCount++;
 			CubilineApplication.singleton.CheckBlackLevelAchievement();
 		}
-		CubilineApplication.singleton.SaveAchievements();
 	}
 }

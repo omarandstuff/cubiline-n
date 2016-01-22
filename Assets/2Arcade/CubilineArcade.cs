@@ -47,7 +47,14 @@ public class CubilineArcade : MonoBehaviour
 		{
 			if((followTarget.transform.position - outTarget.position).magnitude < CubilineApplication.singleton.settings.arcadeCubeSize)
 			{
-				if(status == STATUS.GIONG_OUT)
+				// Player game inf
+				CubilineApplication.singleton.player.arcadeTimePlayed += Time.time - timeOfGame;
+				CubilineApplication.singleton.SavePlayer();
+
+				CubilineApplication.singleton.CheckBlackKnowledgeLevelAchievement();
+				CubilineApplication.singleton.SaveAchievements();
+
+				if (status == STATUS.GIONG_OUT)
 				{
 					Application.LoadLevel("main_menu_scene");
 				}
@@ -99,6 +106,7 @@ public class CubilineArcade : MonoBehaviour
 
 			CubilineApplication.singleton.CheckRedColorAchievement();
 			CubilineApplication.singleton.CheckBlackKnowledgeLevelAchievement();
+			CubilineApplication.singleton.SaveAchievements();
 
 			CubilineApplication.singleton.lastComment = "arcade_scene";
 

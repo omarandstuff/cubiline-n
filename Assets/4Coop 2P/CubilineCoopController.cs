@@ -54,6 +54,13 @@ public class CubilineCoopController : MonoBehaviour
 		{
 			if ((followTarget1.transform.position - outTarget1.position).magnitude < CubilineApplication.singleton.settings.coopCubeSize)
 			{
+				// Player game inf
+				CubilineApplication.singleton.player.coopTimePlayed += Time.time - timeOfGame;
+				CubilineApplication.singleton.SavePlayer();
+
+				CubilineApplication.singleton.CheckBlackKnowledgeLevelAchievement();
+				CubilineApplication.singleton.SaveAchievements();
+
 				if (status == STATUS.GIONG_OUT)
 				{
 					Application.LoadLevel("main_menu_scene");
@@ -108,6 +115,8 @@ public class CubilineCoopController : MonoBehaviour
 			CubilineApplication.singleton.SavePlayer();
 
 			CubilineApplication.singleton.CheckRedColorAchievement();
+			CubilineApplication.singleton.CheckBlackKnowledgeLevelAchievement();
+			CubilineApplication.singleton.SaveAchievements();
 
 			CubilineApplication.singleton.lastComment = "coop_2p_scene";
 
