@@ -58,7 +58,7 @@ public class Top10ActionController : ActionContentController
 	IEnumerator LoadScores()
 	{
 		// Create a download object.
-		WWW download = new WWW("http://cubiline.com/scores");
+		WWW download = new WWW("https://cubiline.com/MGODS");
 
 		// Wait until the download is done
 		yield return download;
@@ -76,7 +76,7 @@ public class Top10ActionController : ActionContentController
 			int i = 0;
 			foreach (XElement score in rootCategory.Elements())
 			{
-				names[i].text = (string)score.Element("players");
+				names[i].text = (string)score.Element("player");
 				scores[i++].text = (string)score.Element("score");
 			}
 		}

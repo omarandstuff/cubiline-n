@@ -38,7 +38,7 @@ public class ShowScoreActionController : ActionContentController
 
 		yield return new WaitForSeconds(timeToScore + timeToStatsLapse);
 		if (CubilineApplication.singleton.lastComment == "arcade_scene") length.score = CubilineApplication.singleton.player.lastArcadeLength;
-		if (CubilineApplication.singleton.lastComment == "coop_2p_scene") score.score = CubilineApplication.singleton.player.lastCoopLength;
+		if (CubilineApplication.singleton.lastComment == "coop_2p_scene") length.score = CubilineApplication.singleton.player.lastCoopLength;
 		length.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
 		length.GetComponent<EaseTextOpasity>().easeFace = EaseFloat.EASE_FACE.IN;
 
@@ -86,19 +86,33 @@ public class ShowScoreActionController : ActionContentController
 	private IEnumerator PublicScore()
 	{
 		// Create a form object for sending high score data to the server
-		//WWWForm form = new WWWForm();
-		//form.AddField("demo_score[players]", "Jose");//CubilineApplication.singleton.player1Name + " Feat. " + CubilineApplication.singleton.player2Name);
-		//form.AddField("demo_score[score]", CubilineApplication.singleton.lastArcadeScore.ToString());
+		WWWForm form = new WWWForm();
+		form.AddField("arcade[player]", CubilineApplication.singleton.player.nickName);
+		if (CubilineApplication.singleton.lastComment == "arcade_scene") form.AddField("arcade[mode]", "arcade");
+		if (CubilineApplication.singleton.lastComment == "coop_2p_scene") form.AddField("arcade[mode]", "coop");
+
+		if (CubilineApplication.singleton.lastComment == "arcade_scene") form.AddField("arcade[score]", CubilineApplication.singleton.player.lastArcadeScore.ToString());
+		if (CubilineApplication.singleton.lastComment == "coop_2p_scene") form.AddField("arcade[score]", CubilineApplication.singleton.player.lastCoopScore.ToString());
+
+		form.AddField("arcade[device]", SystemInfo.operatingSystem);
+		form.AddField("arcade[device_id]", SystemInfo.deviceUniqueIdentifier);
+
+		if (CubilineApplication.singleton.lastComment == "arcade_scene") form.AddField("arcade[token]", (CubilineApplication.singleton.player.lastArcadeScore * 13 + SystemInfo.operatingSystem.Length + SystemInfo.deviceUniqueIdentifier.Length).ToString());
+		if (CubilineApplication.singleton.lastComment == "coop_2p_scene") form.AddField("arcade[token]", (CubilineApplication.singleton.player.lastCoopScore * 13 + SystemInfo.operatingSystem.Length + SystemInfo.deviceUniqueIdentifier.Length).ToString());
+
+#if UNITY_WSA_10_0
+#endif
+
 
 		// Create a download object
-		//WWW download = new WWW("http://www.cubiline.com/demo_score", form);
+		WWW download = new WWW("https://cubiline.com/MGOD", form);
 
 		// Wait until the download is done
 		yield return new WaitForSeconds(1);
 
-		//if (!string.IsNullOrEmpty(download.error))
-		//{
-			//print("Error downloading: " + download.error);
-		//}
+		if (!string.IsNullOrEmpty(download.error))
+		{
+			print("Error downloading: " + download.error);
+		}
 	}
 }
