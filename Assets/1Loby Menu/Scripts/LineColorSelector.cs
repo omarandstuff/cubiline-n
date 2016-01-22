@@ -30,6 +30,7 @@ public class LineColorSelector : ActionContentController
 
 	private uint selectedIndex;
 	private Color selectedColor;
+	private bool unlocked = true;
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// MONO BEHAVIOR /////////////////////////////////////////
@@ -46,54 +47,63 @@ public class LineColorSelector : ActionContentController
 			blockBlue.SetActive(true);
 			lockIcon.SetActive(true);
 			leyend.gameObject.SetActive(true);
+			unlocked = false;
 		}
 		if (!CubilineApplication.singleton.achievements.orangeAchieve)
 		{
 			blockOrange.SetActive(true);
 			lockIcon.SetActive(true);
 			leyend.gameObject.SetActive(true);
+			unlocked = false;
 		}
 		if (!CubilineApplication.singleton.achievements.greenAchieve)
 		{
 			blockGreen.SetActive(true);
 			lockIcon.SetActive(true);
 			leyend.gameObject.SetActive(true);
+			unlocked = false;
 		}
 		if (!CubilineApplication.singleton.achievements.yellowAchieve)
 		{
 			blockYellow.SetActive(true);
 			lockIcon.SetActive(true);
 			leyend.gameObject.SetActive(true);
+			unlocked = false;
 		}
 		if (!CubilineApplication.singleton.achievements.redAchieve)
 		{
 			blockRed.SetActive(true);
 			lockIcon.SetActive(true);
 			leyend.gameObject.SetActive(true);
+			unlocked = false;
 		}
 		if (!CubilineApplication.singleton.achievements.purpleAchieve)
 		{
 			blockPurple.SetActive(true);
 			lockIcon.SetActive(true);
 			leyend.gameObject.SetActive(true);
+			unlocked = false;
 		}
 		if (!CubilineApplication.singleton.achievements.byScoreColorAchieve)
 		{
 			blockScore.SetActive(true);
 			lockIcon.SetActive(true);
 			leyend.gameObject.SetActive(true);
+			unlocked = false;
 		}
 		if (!CubilineApplication.singleton.achievements.byLengthColorAchieve)
 		{
 			blockLength.SetActive(true);
 			lockIcon.SetActive(true);
 			leyend.gameObject.SetActive(true);
+			unlocked = false;
 		}
 		if (!CubilineApplication.singleton.achievements.byFillColorAchieve)
 		{
 			blockFill.SetActive(true);
 			lockIcon.SetActive(true);
 			leyend.gameObject.SetActive(true);
+			unlocked = false;
 		}
 	}
 
@@ -113,8 +123,13 @@ public class LineColorSelector : ActionContentController
 		cancelButton.GetComponent<EaseImageOpasity>().easeFace = EaseFloat.EASE_FACE.OUT;
 		cancelButton.transform.GetChild(0).GetComponent<EaseTextOpasity>().easeFace = EaseFloat.EASE_FACE.OUT;
 		GetComponent<GraphicRaycaster>().enabled = false;
-		leyend.text = "!";
-		lockIcon.SetActive(true);
+
+		if (!unlocked )
+		{
+			leyend.text = "!";
+			lockIcon.SetActive(true);
+		}
+		
 		base.Unselect();
 	}
 
