@@ -21,6 +21,7 @@ public class SettingsActionController : ActionContentController
 	//////////////////////////////////////////////////////////////
 
 	private int selectedIndex;
+	private int realIndex;
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// MONO BEHAVIOR /////////////////////////////////////////
@@ -29,6 +30,7 @@ public class SettingsActionController : ActionContentController
 	void Start()
 	{
 		selectedIndex = CubilineApplication.singleton.settings.qualityIndex;
+		realIndex = selectedIndex;
 		levelsToggles[selectedIndex].isOn = true;
 		particlesToggle.isOn = CubilineApplication.singleton.settings.particles;
 		dofToggle.isOn = CubilineApplication.singleton.settings.depthOfField;
@@ -68,6 +70,8 @@ public class SettingsActionController : ActionContentController
 	public void SetQualityLevel(string index)
 	{
 		selectedIndex = int.Parse(index);
+		CubilineApplication.singleton.settings.qualityIndex = selectedIndex;
+		QualitySettings.SetQualityLevel(selectedIndex, true);
 	}
 
 	public void SetAudioLevel(float level)
@@ -77,7 +81,7 @@ public class SettingsActionController : ActionContentController
 
 	public void OkAction()
 	{
-		QualitySettings.SetQualityLevel(selectedIndex, true);
+		realIndex = selectedIndex;
 		CubilineApplication.singleton.settings.qualityIndex = selectedIndex;
 		CubilineApplication.singleton.settings.particles = particlesToggle.isOn;
 		CubilineApplication.singleton.settings.depthOfField = dofToggle.isOn;
@@ -89,7 +93,9 @@ public class SettingsActionController : ActionContentController
 
 	public void CancelAction()
 	{
-		selectedIndex = CubilineApplication.singleton.settings.qualityIndex;
+		selectedIndex = realIndex;
+		CubilineApplication.singleton.settings.qualityIndex = realIndex;
+		QualitySettings.SetQualityLevel(selectedIndex, true);
 		levelsToggles[selectedIndex].isOn = true;
 		particlesToggle.isOn = CubilineApplication.singleton.settings.particles;
 		dofToggle.isOn = CubilineApplication.singleton.settings.depthOfField;
