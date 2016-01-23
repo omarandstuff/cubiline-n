@@ -686,16 +686,16 @@ public class CubilineTutorialFase1 : MonoBehaviour
 
 				if (Mathf.Abs(delta.x) > Mathf.Abs(delta.y))
 				{
-					if (delta.x > 0)
+					if (delta.x > 5)
 						player.AddTurn(CubilinePlayerController.TURN.RIGHT);
-					else
+					else if (delta.x < -5)
 						player.AddTurn(CubilinePlayerController.TURN.LEFT);
 				}
 				else
 				{
-					if (delta.y > 0)
+					if (delta.y > 5)
 						player.AddTurn(CubilinePlayerController.TURN.UP);
-					else
+					else if (delta.y < -5)
 						player.AddTurn(CubilinePlayerController.TURN.DOWN);
 				}
 			}

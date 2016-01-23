@@ -88,7 +88,7 @@ public class SettingsData
 	public uint coopCubeSize = 15;
 	public bool coopHardMove = false;
 	public bool notFirstTime;
-	public int qualityIndex = 2;
+	public int qualityIndex = -1;
 	public bool particles = true;
 	public bool depthOfField;
 	public bool ambientOcclusion;
@@ -195,8 +195,18 @@ public class CubilineApplication : MonoBehaviour
 		player = new PlayerData();
 		LoadAll();
 		deviceID = SystemInfo.deviceUniqueIdentifier;
-		QualitySettings.SetQualityLevel(settings.qualityIndex, true);
 		AudioListener.volume = settings.masterSoundLevel;
+
+		if(settings.qualityIndex == -1)
+		{
+			settings.qualityIndex = 0;
+#if !UNITY_WP8_1
+			settings.qualityIndex = 2;
+#endif
+			SaveSettings();
+		}
+
+		QualitySettings.SetQualityLevel(settings.qualityIndex, true);
 	}
 
 	public void LoadAll()

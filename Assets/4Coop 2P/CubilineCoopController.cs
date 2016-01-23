@@ -194,12 +194,14 @@ public class CubilineCoopController : MonoBehaviour
 			followCamera1.GetComponent<Camera>().rect = new Rect(0, 0, 0.5f, 1.0f);
 			followCamera2.GetComponent<Camera>().rect = new Rect(0.5f, 0, 0.5f, 1.0f);
 			coopUIController.enableVerticalDivision = true;
+			coopUIController.enableHorizontalDivision = false;
 		}
 		else
 		{
 			followCamera1.GetComponent<Camera>().rect = new Rect(0, 0, 1.0f, 0.5f);
 			followCamera2.GetComponent<Camera>().rect = new Rect(0, 0.5f, 1.0f, 0.5f);
 			coopUIController.enableHorizontalDivision = true;
+			coopUIController.enableVerticalDivision = false;
 		}
 
 		lastResolution = resolution;
@@ -265,16 +267,16 @@ public class CubilineCoopController : MonoBehaviour
 
 				if (Mathf.Abs(delta.x) > Mathf.Abs(delta.y))
 				{
-					if (delta.x > 0)
+					if (delta.x > 5)
 						player.AddTurn(CubilinePlayerController.TURN.RIGHT);
-					else
+					else if (delta.x < -5)
 						player.AddTurn(CubilinePlayerController.TURN.LEFT);
 				}
 				else
 				{
-					if (delta.y > 0)
+					if (delta.y > 5)
 						player.AddTurn(CubilinePlayerController.TURN.UP);
-					else
+					else if (delta.y < -5)
 						player.AddTurn(CubilinePlayerController.TURN.DOWN);
 				}
 			}

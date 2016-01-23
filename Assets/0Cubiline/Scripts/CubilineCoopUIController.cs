@@ -13,12 +13,45 @@ public class CubilineCoopUIController : MonoBehaviour
 	public GameObject multiplerBar;
 	public GameObject multiplerHolder;
 	public GameObject multiplerText;
-	public bool enableHorizontalDivision;
 	public EaseImageOpasity horizontalDivision;
-	public bool enableVerticalDivision;
 	public EaseImageOpasity verticalDivision;
 	public PlusScore plusScorePrefab;
 	public PlusScore plusLengthPrefab;
+
+
+	public bool enableHorizontalDivision
+	{
+		get
+		{
+			return _enableHorizontalDivision;
+		}
+		set
+		{
+			_enableHorizontalDivision = value;
+			if (value)
+				horizontalDivision.easeFace = EaseFloat.EASE_FACE.IN;
+			else
+				horizontalDivision.easeFace = EaseFloat.EASE_FACE.OUT;
+		}
+	}
+	public bool enableVerticalDivision
+	{
+		get
+		{
+			return _enableVerticalDivision;
+		}
+		set
+		{
+			_enableVerticalDivision = value;
+			if (value)
+				verticalDivision.easeFace = EaseFloat.EASE_FACE.IN;
+			else
+				verticalDivision.easeFace = EaseFloat.EASE_FACE.OUT;
+		}
+	}
+
+	private bool _enableVerticalDivision;
+	private bool _enableHorizontalDivision;
 
 	//////////////////////////////////////////////////////////////
 	///////////////////////// PARAMETERS /////////////////////////
@@ -128,8 +161,6 @@ public class CubilineCoopUIController : MonoBehaviour
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	void Start()
 	{
-		if (enableVerticalDivision) verticalDivision.easeFace = EaseFloat.EASE_FACE.IN;
-		if (enableHorizontalDivision) horizontalDivision.easeFace = EaseFloat.EASE_FACE.IN;
 	}
 
 	void Update ()
