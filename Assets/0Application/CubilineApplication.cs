@@ -88,6 +88,11 @@ public class SettingsData
 	public uint coopCubeSize = 15;
 	public bool coopHardMove = false;
 	public bool notFirstTime;
+	public int qualityIndex = 2;
+	public bool particles = true;
+	public bool depthOfField;
+	public bool ambientOcclusion;
+	public float masterSoundLevel = 1;
 }
 
 public class PlayerData
@@ -190,6 +195,8 @@ public class CubilineApplication : MonoBehaviour
 		player = new PlayerData();
 		LoadAll();
 		deviceID = SystemInfo.deviceUniqueIdentifier;
+		QualitySettings.SetQualityLevel(settings.qualityIndex, true);
+		AudioListener.volume = settings.masterSoundLevel;
 	}
 
 	public void LoadAll()
