@@ -95,7 +95,7 @@ public class ShowScoreActionController : ActionContentController
 		if (CubilineApplication.singleton.lastComment == "coop_2p_scene") form.AddField("arcade[score]", CubilineApplication.singleton.player.lastCoopScore.ToString());
 
 		form.AddField("arcade[device]", SystemInfo.operatingSystem);
-		form.AddField("arcade[device_id]", SystemInfo.deviceUniqueIdentifier);
+		form.AddField("arcade[device_id]", CubilineApplication.deviceID);
 
 		if (CubilineApplication.singleton.lastComment == "arcade_scene") form.AddField("arcade[token]", (CubilineApplication.singleton.player.lastArcadeScore * 13 + SystemInfo.operatingSystem.Length + SystemInfo.deviceUniqueIdentifier.Length).ToString());
 		if (CubilineApplication.singleton.lastComment == "coop_2p_scene") form.AddField("arcade[token]", (CubilineApplication.singleton.player.lastCoopScore * 13 + SystemInfo.operatingSystem.Length + SystemInfo.deviceUniqueIdentifier.Length).ToString());

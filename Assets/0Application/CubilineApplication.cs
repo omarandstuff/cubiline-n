@@ -167,6 +167,8 @@ public class CubilineApplication : MonoBehaviour
 	private Stack<GameObject> inStack = new Stack<GameObject>();
 	public Stack waithStack = new Stack();
 
+	public static string deviceID;
+
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// MONO BEHAVIOR /////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -186,6 +188,7 @@ public class CubilineApplication : MonoBehaviour
 		settings = new SettingsData();
 		player = new PlayerData();
 		LoadAll();
+		deviceID = SystemInfo.deviceUniqueIdentifier;
 	}
 
 	public void LoadAll()
