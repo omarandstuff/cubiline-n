@@ -37,7 +37,7 @@ public class CastController : MonoBehaviour
 				return;
 			}
 			currentWaitTime += Time.deltaTime;
-			if(currentWaitTime >= waitTime)
+			if((!isFinalWaiting && currentWaitTime >= waitTime) || (isFinalWaiting && currentWaitTime >= waitTime * 3))
 			{
 				currentWaitTime = 0;
 				if (isFinalWaiting)
