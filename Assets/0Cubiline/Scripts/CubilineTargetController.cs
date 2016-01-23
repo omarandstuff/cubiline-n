@@ -78,17 +78,17 @@ public class CubilineTargetController : MonoBehaviour
 		{
 			bigCurrentTime -= Time.deltaTime;
 
-			if (gameKind == CubilinePlayerController.PLAYER_KIND.ARCADE)
+			if (gameKind == CubilinePlayerController.PLAYER_KIND.ARCADE || gameKind == CubilinePlayerController.PLAYER_KIND.TUTORIAL)
 				uiController.specialCommonTime = bigCurrentTime / specialCommonTime;
 			else if (gameKind == CubilinePlayerController.PLAYER_KIND.ARCADE_COOP)
 				coopUIController.specialCommonTime = bigCurrentTime / specialCommonTime;
 
 			if (bigCurrentTime <= 0.0f)
 			{
-				commonTargetCount = 6;
+				commonTargetCount = gameKind == CubilinePlayerController.PLAYER_KIND.TUTORIAL ? 0u : 6u;
 				bigCurrentTime = 0.0f;
 
-				if (gameKind == CubilinePlayerController.PLAYER_KIND.ARCADE)
+				if (gameKind == CubilinePlayerController.PLAYER_KIND.ARCADE || gameKind == CubilinePlayerController.PLAYER_KIND.TUTORIAL)
 					uiController.specialCommon = false;
 				else if (gameKind == CubilinePlayerController.PLAYER_KIND.ARCADE_COOP)
 					coopUIController.specialCommon = false;
@@ -209,7 +209,7 @@ public class CubilineTargetController : MonoBehaviour
 
 		bigCurrentTime = specialCommonTime;
 
-		if (gameKind == CubilinePlayerController.PLAYER_KIND.ARCADE)
+		if (gameKind == CubilinePlayerController.PLAYER_KIND.ARCADE || gameKind == CubilinePlayerController.PLAYER_KIND.TUTORIAL)
 			uiController.specialCommon = true;
 		else if (gameKind == CubilinePlayerController.PLAYER_KIND.ARCADE_COOP)
 			coopUIController.specialCommon = true;

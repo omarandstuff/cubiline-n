@@ -208,9 +208,35 @@ public class CubilineCoopController : MonoBehaviour
 	void DoTouch()
 	{
 		if (SystemInfo.deviceType != DeviceType.Handheld || pauseMenu != null) return;
-		for(int i = 0; i < Input.touchCount; i++)
+
+		player1.speed = CubilineApplication.singleton.settings.coopLineSpeed;
+		player2.speed = CubilineApplication.singleton.settings.coopLineSpeed;
+
+		for (int i = 0; i < Input.touchCount; i++)
 		{
 			Touch touch = Input.GetTouch(i);
+
+			if (touch.phase == TouchPhase.Stationary)
+			{
+				CubilinePlayerController player = null;
+
+				if (lastResolution.width > lastResolution.height)
+				{
+					if (touch.position.x < lastResolution.width / 2)
+						player = player1;
+					else
+						player = player2;
+				}
+				else
+				{
+					if (touch.position.y < lastResolution.height / 2)
+						player = player1;
+					else
+						player = player2;
+				}
+
+				player.speed = CubilineApplication.singleton.settings.coopLineSpeed * 2;
+			}
 
 			if (touch.phase == TouchPhase.Began)
 			{
@@ -220,7 +246,7 @@ public class CubilineCoopController : MonoBehaviour
 			{
 				Vector2 delta = touch.position - touchAtBegin[touch.fingerId].position;
 
-				CubilinePlayerController player = player1;
+				CubilinePlayerController player = null;
 
 				if(lastResolution.width > lastResolution.height)
 				{

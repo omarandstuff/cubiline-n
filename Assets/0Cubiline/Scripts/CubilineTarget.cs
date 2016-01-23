@@ -8,6 +8,7 @@ public class CubilineTarget : MonoBehaviour
 	//////////////////////////////////////////////////////////////
 
 	public GameObject particlePrefab;
+	public bool touchBody = true;
 
 	//////////////////////////////////////////////////////////////
 	///////////////////////// PARAMETERS /////////////////////////
@@ -58,7 +59,7 @@ public class CubilineTarget : MonoBehaviour
 
 	void OnTriggerEnter(Collider other)
 	{
-		if (other.tag == "Player" || other.tag == "Finish")
+		if (other.tag == "Player" || (other.tag == "Finish" && touchBody))
 		{
 			Destroy(gameObject, 1.0f);
 			GetComponent<CubilineTarget>().targetScale = Vector3.zero;

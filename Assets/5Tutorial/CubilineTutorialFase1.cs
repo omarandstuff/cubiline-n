@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public class CubilineTutorialFase1 : MonoBehaviour
 {
@@ -13,6 +14,48 @@ public class CubilineTutorialFase1 : MonoBehaviour
 	public Follow followTarget;
 	public Transform outTarget;
 
+	public Transform canvasInf;
+	public GameObject welcomeInfPrefab;
+	public GameObject keyboardInfPrefab;
+	public GameObject keyboardSpeedInfPrefab;
+	public GameObject touchInfPrefab;
+	public GameObject touchSpeedInfPrefab;
+
+	public GameObject blueBlockPrefab;
+
+	public GameObject bigBlueTarget;
+	public GameObject bigBlueInfoPrefab;
+
+	public GameObject greenTarget;
+	public GameObject greenBlockInfPrefab;
+
+	public GameObject bigGreenTarget;
+	public GameObject bigGreenBlockInfPrefab;
+
+	public GameObject orangeTarget;
+	public GameObject orangeBlockInfPrefab;
+
+	public GameObject bigOrangeTarget;
+	public GameObject bigOrangeBlockInfPrefab;
+
+	public GameObject grayTarget;
+	public GameObject grayBlockInfPrefab;
+
+	public GameObject bigGrayTarget;
+	public GameObject bigGrayBlockInfPrefab;
+
+	public GameObject x2Target;
+	public GameObject x4Target;
+	public GameObject x2BlockInfPrefab;
+	public GameObject x4BlockInfPrefab;
+	public GameObject combinedBlockInfPrefab;
+
+	public GameObject purpleTarget;
+	public GameObject purpleBlockInfPrefab;
+
+	public GameObject readyBlockInfPrefab;
+
+
 	//////////////////////////////////////////////////////////////
 	////////////////////// CONTROL VARIABLES /////////////////////
 	//////////////////////////////////////////////////////////////
@@ -26,19 +69,432 @@ public class CubilineTutorialFase1 : MonoBehaviour
 	private Touch touchAtBegin;
 
 	private float timeOfGame;
+
+	private GameObject currentInf;
+
+	private bool showing = true;
+
+	private bool welcomeDone;
+	private bool moveDone;
+	private bool moveFinish;
+	private bool speedDone;
+	private bool blueDone;
+	private bool bigBlueDone;
+	private bool greenDone;
+	private bool bigGreenDone;
+	private bool orangeDone;
+	private bool bigOrangeDone;
+	private bool grayDone;
+	private bool bigGrayDone;
+	private bool x2Done;
+	private bool x4Done;
+	private bool combinedDone;
+	private bool purpleDone;
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// MONO BEHAVIOR /////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////
 
-	void Start()
+	IEnumerator Start()
 	{
 		// Used for register de time the palyer has playing.
 		timeOfGame = Time.time;
 
 		// Audio directive.
 		CubilineMusicPlayer.inMenu = false;
+		CubilineMusicPlayer.singleton.Stop();
 
 		Reset();
+
+		yield return new WaitForSeconds(1);
+		AddInf(welcomeInfPrefab);
+
+		yield return new WaitForSeconds(3);
+		currentInf.GetComponent<PortalInf>().TakeOut();
+		Destroy(currentInf, 2.0f);
+
+		yield return new WaitForSeconds(0.5f);
+		if (InputMedaitor.singleton.currentInput == InputMedaitor.INPUT_KIND.TOUCH)
+			AddInf(touchInfPrefab);
+		else
+			AddInf(keyboardInfPrefab);
+
+		welcomeDone = true;
+
+	}
+
+	public IEnumerator GotMoved()
+	{
+		if (!moveDone && welcomeDone)
+		{
+			moveDone = true;
+			yield return new WaitForSeconds(3);
+			currentInf.GetComponent<PortalInf>().TakeOut();
+			Destroy(currentInf, 2.0f);
+			moveFinish = true;
+
+			yield return new WaitForSeconds(0.5f);
+			if (InputMedaitor.singleton.currentInput == InputMedaitor.INPUT_KIND.TOUCH)
+				AddInf(touchSpeedInfPrefab);
+			else
+				AddInf(keyboardSpeedInfPrefab);
+		}
+		else
+		{
+			yield return new WaitForSeconds(0);
+		}
+	}
+
+	public IEnumerator GotSpeed()
+	{
+		if (!speedDone && moveFinish)
+		{
+			speedDone = true;
+			yield return new WaitForSeconds(3);
+			currentInf.GetComponent<PortalInf>().TakeOut();
+			Destroy(currentInf, 2.0f);
+
+			yield return new WaitForSeconds(0.5f);
+			arenaController.GetComponent<CubilineTargetController>().commonTargetCount = 6;
+			AddInf(blueBlockPrefab);
+
+			uiController.ShowUI();
+		}
+		else
+		{
+			yield return new WaitForSeconds(0);
+		}
+	}
+
+	public IEnumerator BlueTouched()
+	{
+		if (!blueDone)
+		{
+			blueDone = true;
+			yield return new WaitForSeconds(8);
+			currentInf.GetComponent<PortalInf>().TakeOut();
+			Destroy(currentInf, 2.0f);
+
+			arenaController.GetComponent<CubilineTargetController>().commonTargetCount = 0;
+			player.UnGrow(100);
+			player.SetScore(0);
+
+			yield return new WaitForSeconds(0.5f);
+			AddInf(bigBlueInfoPrefab);
+			AllocatePrefabInArena(bigBlueTarget);
+		}
+		else
+		{
+			yield return new WaitForSeconds(0);
+		}
+	}
+
+	public IEnumerator BigBlueTouched()
+	{
+		if (!bigBlueDone)
+		{
+			bigBlueDone = true;
+			yield return new WaitForSeconds(3);
+			currentInf.GetComponent<PortalInf>().TakeOut();
+			Destroy(currentInf, 2.0f);
+
+			yield return new WaitForSeconds(13);
+			player.UnGrow(100);
+			player.SetScore(0);
+
+			yield return new WaitForSeconds(0.5f);
+			AddInf(greenBlockInfPrefab);
+			AllocatePrefabInArena(greenTarget);
+		}
+		else
+		{
+			yield return new WaitForSeconds(0);
+		}
+	}
+
+	public IEnumerator GreenTouched()
+	{
+		if (!greenDone)
+		{
+			greenDone = true;
+			yield return new WaitForSeconds(1);
+			currentInf.GetComponent<PortalInf>().TakeOut();
+			Destroy(currentInf, 2.0f);
+
+			yield return new WaitForSeconds(1);
+			player.SetScore(0);
+
+			yield return new WaitForSeconds(0.5f);
+			AddInf(grayBlockInfPrefab);
+			AllocatePrefabInArena(grayTarget , 1.0f);
+		}
+		else
+		{
+			yield return new WaitForSeconds(0);
+		}
+	}
+
+	public IEnumerator BigGreenTouched()
+	{
+		if (!bigGreenDone)
+		{
+			bigGreenDone = true;
+			yield return new WaitForSeconds(1);
+			currentInf.GetComponent<PortalInf>().TakeOut();
+			Destroy(currentInf, 2.0f);
+
+			yield return new WaitForSeconds(1);
+			player.SetScore(0);
+
+			yield return new WaitForSeconds(0.5f);
+			AddInf(bigGrayBlockInfPrefab);
+			AllocatePrefabInArena(bigGrayTarget, -1.0f);
+		}
+		else
+		{
+			yield return new WaitForSeconds(0);
+		}
+	}
+
+	public IEnumerator OrangeTouched()
+	{
+		if (!orangeDone)
+		{
+			orangeDone = true;
+			yield return new WaitForSeconds(1);
+			currentInf.GetComponent<PortalInf>().TakeOut();
+			Destroy(currentInf, 2.0f);
+
+			yield return new WaitForSeconds(1);
+			player.SetScore(0);
+
+			yield return new WaitForSeconds(0.5f);
+			AddInf(bigOrangeBlockInfPrefab);
+			AllocatePrefabInArena(bigOrangeTarget, 1.0f);
+		}
+		else
+		{
+			yield return new WaitForSeconds(0);
+		}
+	}
+
+	public IEnumerator BigOrangeTouched()
+	{
+		if (!bigOrangeDone)
+		{
+			bigOrangeDone = true;
+			yield return new WaitForSeconds(1);
+			currentInf.GetComponent<PortalInf>().TakeOut();
+			Destroy(currentInf, 2.0f);
+
+			yield return new WaitForSeconds(1);
+			player.SetScore(0);
+
+			yield return new WaitForSeconds(0.5f);
+			AddInf(x2BlockInfPrefab);
+			AllocatePrefabInArena(x2Target);
+		}
+		else
+		{
+			yield return new WaitForSeconds(0);
+		}
+	}
+
+	public IEnumerator GrayTouched()
+	{
+		if (!grayDone)
+		{
+			grayDone = true;
+			yield return new WaitForSeconds(1);
+			currentInf.GetComponent<PortalInf>().TakeOut();
+			Destroy(currentInf, 2.0f);
+
+			yield return new WaitForSeconds(1);
+			player.SetScore(0);
+
+			yield return new WaitForSeconds(0.5f);
+			AddInf(bigGreenBlockInfPrefab);
+			AllocatePrefabInArena(bigGreenTarget);
+		}
+		else
+		{
+			yield return new WaitForSeconds(0);
+		}
+	}
+
+	public IEnumerator BigGrayTouched()
+	{
+		if (!bigGrayDone)
+		{
+			bigGrayDone = true;
+			yield return new WaitForSeconds(1);
+			currentInf.GetComponent<PortalInf>().TakeOut();
+			Destroy(currentInf, 2.0f);
+
+			yield return new WaitForSeconds(1);
+			player.SetScore(0);
+
+			yield return new WaitForSeconds(0.5f);
+			AddInf(orangeBlockInfPrefab);
+			AllocatePrefabInArena(orangeTarget);
+		}
+		else
+		{
+			yield return new WaitForSeconds(0);
+		}
+	}
+
+	public IEnumerator X2Touched()
+	{
+		if (!x2Done)
+		{
+			x2Done = true;
+			arenaController.GetComponent<CubilineTargetController>().commonTargetCount = 6;
+			yield return new WaitForSeconds(3);
+			currentInf.GetComponent<PortalInf>().TakeOut();
+			Destroy(currentInf, 2.0f);
+
+			yield return new WaitForSeconds(7.2f);
+			player.UnGrow(100);
+			player.SetScore(0);
+			arenaController.GetComponent<CubilineTargetController>().commonTargetCount = 0;
+
+			yield return new WaitForSeconds(0.5f);
+			AddInf(x4BlockInfPrefab);
+			AllocatePrefabInArena(x4Target, 1.0f);
+		}
+		else
+		{
+			yield return new WaitForSeconds(0);
+		}
+	}
+
+	public IEnumerator X4Touched()
+	{
+		if (!x4Done)
+		{
+			x4Done = true;
+			arenaController.GetComponent<CubilineTargetController>().commonTargetCount = 6;
+			yield return new WaitForSeconds(3);
+			currentInf.GetComponent<PortalInf>().TakeOut();
+			Destroy(currentInf, 2.0f);
+
+			yield return new WaitForSeconds(7.5f);
+			player.UnGrow(100);
+			player.SetScore(0);
+
+			yield return new WaitForSeconds(0.5f);
+			AddInf(combinedBlockInfPrefab);
+			AllocatePrefabInArena(x2Target, -0.5f);
+			AllocatePrefabInArena(x4Target , 0.5f);
+		}
+		else
+		{
+			yield return new WaitForSeconds(0);
+		}
+	}
+
+	public IEnumerator CombinedTouched()
+	{
+		if (!combinedDone && x2Done && x4Done)
+		{
+			combinedDone = true;
+			arenaController.GetComponent<CubilineTargetController>().commonTargetCount = 6;
+			yield return new WaitForSeconds(3);
+			currentInf.GetComponent<PortalInf>().TakeOut();
+			Destroy(currentInf, 2.0f);
+
+			yield return new WaitForSeconds(7.5f);
+			player.UnGrow(100);
+
+			yield return new WaitForSeconds(0.5f);
+			AddInf(purpleBlockInfPrefab);
+			AllocatePrefabInArena(purpleTarget);
+		}
+		else
+		{
+			yield return new WaitForSeconds(0);
+		}
+	}
+
+	public IEnumerator MagnetTouched()
+	{
+		if (!purpleDone)
+		{
+			purpleDone = true;
+			yield return new WaitForSeconds(3);
+			currentInf.GetComponent<PortalInf>().TakeOut();
+			Destroy(currentInf, 2.0f);
+
+			arenaController.GetComponent<CubilineTargetController>().commonTargetCount = 0;
+
+			yield return new WaitForSeconds(0.5f);
+			AddInf(readyBlockInfPrefab);
+
+			yield return new WaitForSeconds(2);
+			currentInf.GetComponent<PortalInf>().TakeOut();
+			Destroy(currentInf, 2.0f);
+
+			player.UnGrow(100);
+			player.SetScore(0);
+
+			arenaController.GetComponent<CubilineTargetController>().commonTargetCount = 6;
+			arenaController.GetComponent<CubilineTargetController>().enableSpecialTargets = true;
+			showing = false;
+			player.playerKind = CubilinePlayerController.PLAYER_KIND.ARCADE;
+			arenaController.GetComponent<CubilineTargetController>().gameKind = CubilinePlayerController.PLAYER_KIND.ARCADE;
+			GetComponent<AudioSource>().Stop();
+			CubilineMusicPlayer.singleton.Play();
+		}
+		else
+		{
+			yield return new WaitForSeconds(0);
+		}
+	}
+
+	void AllocatePrefabInArena(GameObject target, float offset = 0.0f)
+	{
+		Vector3 position = new Vector3();
+		if(player.headPlace == CubilinePlayerController.PLACE.FRONT)
+		{
+			position.z = -8;
+			position.x = offset;
+		}
+		else if (player.headPlace == CubilinePlayerController.PLACE.BACK)
+		{
+			position.z = 8;
+			position.x = offset;
+		}
+		else if (player.headPlace == CubilinePlayerController.PLACE.RIGHT)
+		{
+			position.x = 8;
+			position.z = offset;
+		}
+		else if (player.headPlace == CubilinePlayerController.PLACE.LEFT)
+		{
+			position.x = -8;
+			position.z = offset;
+		}
+		else if (player.headPlace == CubilinePlayerController.PLACE.TOP)
+		{
+			position.y = 8;
+			position.x = offset;
+		}
+		else if (player.headPlace == CubilinePlayerController.PLACE.BOTTOM)
+		{
+			position.y = -8;
+			position.x = offset;
+		}
+
+		GameObject t = Instantiate(target, position, Quaternion.identity) as GameObject;
+		t.GetComponent<CubilineTarget>().touchBody = false;
+	}
+
+	void AddInf(GameObject prefab)
+	{
+		currentInf = Instantiate(prefab);
+		currentInf.transform.SetParent(canvasInf);
+		currentInf.GetComponent<RectTransform>().offsetMax = Vector2.zero;
+		currentInf.GetComponent<RectTransform>().offsetMin = Vector2.zero;
 	}
 
 	void Update()
@@ -122,25 +578,61 @@ public class CubilineTutorialFase1 : MonoBehaviour
 			if(pauseMenu == null)
 			{
 				if (e.keyCode == KeyCode.A || e.keyCode == KeyCode.LeftArrow)
+				{
 					player.AddTurn(CubilinePlayerController.TURN.LEFT);
+					if (player.playerKind == CubilinePlayerController.PLAYER_KIND.TUTORIAL)
+						StartCoroutine(GotMoved());
+				}
 				else if (e.keyCode == KeyCode.D || e.keyCode == KeyCode.RightArrow)
+				{
 					player.AddTurn(CubilinePlayerController.TURN.RIGHT);
+					if (player.playerKind == CubilinePlayerController.PLAYER_KIND.TUTORIAL)
+						StartCoroutine(GotMoved());
+				}
 				else if (e.keyCode == KeyCode.W || e.keyCode == KeyCode.UpArrow)
+				{
 					player.AddTurn(CubilinePlayerController.TURN.UP);
+					if (player.playerKind == CubilinePlayerController.PLAYER_KIND.TUTORIAL)
+						StartCoroutine(GotMoved());
+				}
 				else if (e.keyCode == KeyCode.S || e.keyCode == KeyCode.DownArrow)
+				{
 					player.AddTurn(CubilinePlayerController.TURN.DOWN);
+					if (player.playerKind == CubilinePlayerController.PLAYER_KIND.TUTORIAL)
+						StartCoroutine(GotMoved());
+				}
 				else if (e.keyCode == KeyCode.LeftArrow)
+				{
 					player.AddTurn(CubilinePlayerController.TURN.LEFT);
+					if (player.playerKind == CubilinePlayerController.PLAYER_KIND.TUTORIAL)
+						StartCoroutine(GotMoved());
+				}
 				else if (e.keyCode == KeyCode.RightArrow)
+				{
 					player.AddTurn(CubilinePlayerController.TURN.RIGHT);
+					if (player.playerKind == CubilinePlayerController.PLAYER_KIND.TUTORIAL)
+						StartCoroutine(GotMoved());
+				}
 				else if (e.keyCode == KeyCode.UpArrow)
+				{
 					player.AddTurn(CubilinePlayerController.TURN.UP);
+					if (player.playerKind == CubilinePlayerController.PLAYER_KIND.TUTORIAL)
+						StartCoroutine(GotMoved());
+				}
 				else if (e.keyCode == KeyCode.DownArrow)
+				{
 					player.AddTurn(CubilinePlayerController.TURN.DOWN);
+					if (player.playerKind == CubilinePlayerController.PLAYER_KIND.TUTORIAL)
+						StartCoroutine(GotMoved());
+				}
 				else if (e.keyCode == KeyCode.Space)
-					player.speed = CubilineApplication.singleton.settings.arcadeLineSpeed * 2.0f;
+				{
+					player.speed = 8;
+					if (player.playerKind == CubilinePlayerController.PLAYER_KIND.TUTORIAL)
+						StartCoroutine(GotSpeed());
+				}
 			}
-			if (e.keyCode == KeyCode.Escape && !menuKey) // Menu
+			if (e.keyCode == KeyCode.Escape && !menuKey && !showing) // Menu
 			{
 				menuKey = true;
 
@@ -163,8 +655,8 @@ public class CubilineTutorialFase1 : MonoBehaviour
 		else if (e.type == EventType.keyUp)
 		{
 			if (e.keyCode == KeyCode.Space)
-				player.speed = CubilineApplication.singleton.settings.arcadeLineSpeed;
-			else if (e.keyCode == KeyCode.Escape)
+				player.speed = 4;
+			else if (e.keyCode == KeyCode.Escape && !showing)
 				menuKey = false;
 		}
 	}
@@ -175,6 +667,11 @@ public class CubilineTutorialFase1 : MonoBehaviour
 		if (Input.touchCount > 0)
 		{
 			Touch touch = Input.GetTouch(0);
+
+			if (touch.phase == TouchPhase.Stationary)
+				player.speed = 8;
+			else
+				player.speed = 4;
 
 			if (touch.phase == TouchPhase.Began)
 			{
@@ -208,19 +705,19 @@ public class CubilineTutorialFase1 : MonoBehaviour
 
 	public void Reset()
 	{
-		arenaController.Reset(CubilineApplication.singleton.settings.arcadeCubeSize);
-		followCamera.transform.localPosition = new Vector3(0.0f, 0.0f, -CubilineApplication.singleton.settings.arcadeCubeSize * 2.0f);
+		arenaController.Reset(15);
+		followCamera.transform.localPosition = new Vector3(0.0f, 0.0f, -15 * 2.0f);
 
-		player.Reset(CubilineApplication.singleton.settings.arcadeCubeSize);
-		player.speed = CubilineApplication.singleton.settings.arcadeLineSpeed;
-		player.hardMove = CubilineApplication.singleton.settings.arcadeHardMove;
+		player.Reset(15);
+		player.speed = 4;
+		player.hardMove = false;
 
-		followTarget.transform.position = new Vector3(-CubilineApplication.singleton.settings.arcadeCubeSize * 2, 0, -CubilineApplication.singleton.settings.arcadeCubeSize / 2);
+		followTarget.transform.position = new Vector3(-30, 0, -7.5f);
 	}
 
 	void GoOut()
 	{
-		outTarget.transform.position = followCamera.transform.localPosition + (followCamera.transform.localPosition - followCamera.target.transform.localPosition).normalized * CubilineApplication.singleton.settings.arcadeCubeSize;
+		outTarget.transform.position = followCamera.transform.localPosition + (followCamera.transform.localPosition - followCamera.target.transform.localPosition).normalized * 15;
 		followTarget.target = outTarget;
 		followTarget.followSmoothTime = 0.8f;
 	}

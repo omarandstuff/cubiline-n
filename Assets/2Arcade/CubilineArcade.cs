@@ -176,6 +176,11 @@ public class CubilineArcade : MonoBehaviour
 		{
 			Touch touch = Input.GetTouch(0);
 
+			if (touch.phase == TouchPhase.Stationary)
+				player.speed = CubilineApplication.singleton.settings.arcadeLineSpeed * 2.0f;
+			else
+				player.speed = CubilineApplication.singleton.settings.arcadeLineSpeed;
+
 			if (touch.phase == TouchPhase.Began)
 			{
 				touchAtBegin = touch;

@@ -8,6 +8,7 @@ public class CubilinePlayerController : MonoBehaviour
 	//////////////////////////////////////////////////////////////
 	///////////////////////// COMPONENTS /////////////////////////
 	//////////////////////////////////////////////////////////////
+	public CubilineTutorialFase1 tutorialHolder;
 	public CubilineSlotController slotController;
 	public CubilineTargetController targetController;
 	public Follow ghost;
@@ -209,7 +210,7 @@ public class CubilinePlayerController : MonoBehaviour
 			{
 				multiplerCurrentTime -= Time.deltaTime;
 
-				if (playerKind == PLAYER_KIND.ARCADE)
+				if (playerKind == PLAYER_KIND.ARCADE || playerKind == PLAYER_KIND.TUTORIAL)
 					uiController.multiplerTime = multiplerCurrentTime / multiplerTime;
 				else if (playerKind == PLAYER_KIND.ARCADE_COOP)
 					coopUIController.multiplerTime = multiplerCurrentTime / multiplerTime;
@@ -217,7 +218,7 @@ public class CubilinePlayerController : MonoBehaviour
 			else
 			{
 				multipler = 0;
-				if (playerKind == PLAYER_KIND.ARCADE)
+				if (playerKind == PLAYER_KIND.ARCADE || playerKind == PLAYER_KIND.TUTORIAL)
 					uiController.multipler = multipler;
 				else if (playerKind == PLAYER_KIND.ARCADE_COOP)
 					coopUIController.multipler = multipler;
@@ -339,6 +340,10 @@ public class CubilinePlayerController : MonoBehaviour
 			uiController.score = arcadeScore;
 			uiController.length = (uint)bodyLength;
 		}
+		else if (playerKind == PLAYER_KIND.TUTORIAL)
+		{
+			uiController.score = arcadeScore;
+		}
 		else if (playerKind == PLAYER_KIND.ARCADE_COOP)
 		{
 			coopUIController.score = arcadeScore;
@@ -371,7 +376,7 @@ public class CubilinePlayerController : MonoBehaviour
 			target.activated = true;
 			target.activator = head;
 
-			if (playerKind == PLAYER_KIND.ARCADE || playerKind == PLAYER_KIND.ARCADE_COOP)
+			if (playerKind == PLAYER_KIND.ARCADE || playerKind == PLAYER_KIND.ARCADE_COOP || playerKind == PLAYER_KIND.TUTORIAL)
 			{
 				if (target.toGrow >= 0)
 				{
@@ -381,15 +386,10 @@ public class CubilinePlayerController : MonoBehaviour
 					UnGrow(-target.toGrow);
 			}
 
-			if(targetController == null)
-			{
-				Destroy(target.gameObject, 1.0f);
-				target.GetComponent<CubilineTarget>().targetScale = Vector3.zero;
-			}
-			else
-			{
-				targetController.DismissCommon(target.index);
-			}
+			if (playerKind == PLAYER_KIND.TUTORIAL)
+				StartCoroutine(tutorialHolder.BlueTouched());
+
+			targetController.DismissCommon(target.index);
 
 			if (playerNumber == 0)
 				AddScore((uint)target.score);
@@ -403,7 +403,7 @@ public class CubilinePlayerController : MonoBehaviour
 			target.activated = true;
 			target.activator = head;
 
-			if (playerKind == PLAYER_KIND.ARCADE)
+			if (playerKind == PLAYER_KIND.ARCADE || playerKind == PLAYER_KIND.TUTORIAL)
 			{
 				if (target.toGrow >= 0)
 				{
@@ -416,6 +416,23 @@ public class CubilinePlayerController : MonoBehaviour
 					Start2Xmultipler();
 				else if (target.targetTag == "4x")
 					Start4Xmultipler();
+
+				if (playerKind == PLAYER_KIND.TUTORIAL)
+				{
+					if (target.targetTag == "Green")
+						StartCoroutine(tutorialHolder.GreenTouched());
+					else if (target.targetTag == "Big Green")
+						StartCoroutine(tutorialHolder.BigGreenTouched());
+					else if (target.targetTag == "Orange")
+						StartCoroutine(tutorialHolder.OrangeTouched());
+					else if (target.targetTag == "Big Orange")
+						StartCoroutine(tutorialHolder.BigOrangeTouched());
+					else if (target.targetTag == "Gray")
+						StartCoroutine(tutorialHolder.GrayTouched());
+					else if (target.targetTag == "Big Gray")
+						StartCoroutine(tutorialHolder.BigGrayTouched());
+				}
+					
 			}
 			else if (playerKind == PLAYER_KIND.ARCADE_COOP)
 			{
@@ -454,10 +471,14 @@ public class CubilinePlayerController : MonoBehaviour
 				if (target.targetTag == "Big Target")
 				{
 					targetController.ApplyBigBlue();
+					if(playerKind == PLAYER_KIND.TUTORIAL)
+						StartCoroutine(tutorialHolder.BigBlueTouched());
 				}
 				else if (target.targetTag == "Magnet")
 				{
 					targetController.ApplyMagnet(head);
+					if (playerKind == PLAYER_KIND.TUTORIAL)
+						StartCoroutine(tutorialHolder.MagnetTouched());
 				}
 			}
 		}
@@ -467,6 +488,11 @@ public class CubilinePlayerController : MonoBehaviour
 			{
 				Destroy(Instantiate(finishParticle, head.position, Quaternion.identity), 8.0f);
 				status = STATUS.FINISH;
+			}
+			else if (playerKind == PLAYER_KIND.TUTORIAL)
+			{
+				Destroy(Instantiate(finishParticle, head.position, Quaternion.identity), 8.0f);
+				UnGrow(10000);
 			}
 		}
 	}
@@ -487,6 +513,11 @@ public class CubilinePlayerController : MonoBehaviour
 				CubilineApplication.singleton.player.bestArcadeLength = (uint)bodyLength;
 				CubilineApplication.singleton.player.newLengthRecord = true;
 			}
+		}
+		else if (playerKind == PLAYER_KIND.TUTORIAL)
+		{
+			uiController.plusLength = units;
+			return;
 		}
 		else if (playerKind == PLAYER_KIND.ARCADE_COOP)
 		{
@@ -513,12 +544,18 @@ public class CubilinePlayerController : MonoBehaviour
 			uiController.plusLength = -realUngorw;
 			CubilineApplication.singleton.player.lastArcadeLength = (uint)bodyLength;
 		}
+		else if (playerKind == PLAYER_KIND.TUTORIAL)
+		{
+			uiController.plusLength = -realUngorw;
+			return;
+		}
 		else if (playerKind == PLAYER_KIND.ARCADE_COOP)
 		{
 			coopUIController.plusLength = -realUngorw;
 			if (player1 != null)
 				player1.coopLength -= realUngorw;
 		}
+
 		CubilineApplication.singleton.CheckToyLevelAchievement();
 		CubilineApplication.singleton.CheckBlackToyLevelAchievement();
 	}
@@ -531,6 +568,13 @@ public class CubilinePlayerController : MonoBehaviour
 
 		if(playerKind == PLAYER_KIND.ARCADE)
 			uiController.multipler = multipler;
+		else if (playerKind == PLAYER_KIND.TUTORIAL)
+		{
+			uiController.multipler = multipler;
+			StartCoroutine(tutorialHolder.CombinedTouched());
+			StartCoroutine(tutorialHolder.X2Touched());
+			return;
+		}
 		else if (playerKind == PLAYER_KIND.ARCADE_COOP)
 			coopUIController.multipler = multipler;
 
@@ -547,6 +591,13 @@ public class CubilinePlayerController : MonoBehaviour
 
 		if (playerKind == PLAYER_KIND.ARCADE)
 			uiController.multipler = multipler;
+		else if (playerKind == PLAYER_KIND.TUTORIAL)
+		{
+			uiController.multipler = multipler;
+			StartCoroutine(tutorialHolder.CombinedTouched());
+			StartCoroutine(tutorialHolder.X4Touched());
+			return;
+		}
 		else if (playerKind == PLAYER_KIND.ARCADE_COOP)
 			coopUIController.multipler = multipler;
 
@@ -574,6 +625,16 @@ public class CubilinePlayerController : MonoBehaviour
 				CubilineApplication.singleton.player.newRecord = true;
 			}
 		}
+		else if (playerKind == PLAYER_KIND.TUTORIAL)
+		{
+			arcadeScore += score * (uint)(multiplerCurrentTime > 0 ? multipler : 1);
+
+			uiController.plusScore = score * (uint)(multiplerCurrentTime > 0 ? multipler : 1);
+			uiController.score = arcadeScore;
+			uiController.length = (uint)bodyLength;
+
+			return;
+		}
 		else if (playerKind == PLAYER_KIND.ARCADE_COOP)
 		{
 			arcadeScore += score * (uint)(multiplerCurrentTime > 0 ? multipler : 1);
@@ -594,6 +655,14 @@ public class CubilinePlayerController : MonoBehaviour
 		CubilineApplication.singleton.CheckScoreColorAchievement();
 		CubilineApplication.singleton.CheckLengthColorAchievement();
 		CubilineApplication.singleton.CheckFillColorAchievement();
+	}
+
+	public void SetScore(int score)
+	{
+		arcadeScore = (uint)score;
+
+		uiController.score = arcadeScore;
+		uiController.length = (uint)bodyLength;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
