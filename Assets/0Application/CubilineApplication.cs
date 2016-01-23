@@ -87,6 +87,7 @@ public class SettingsData
 	public uint coopLineSpeed = 4;
 	public uint coopCubeSize = 15;
 	public bool coopHardMove = false;
+	public bool notFirstTime;
 }
 
 public class PlayerData

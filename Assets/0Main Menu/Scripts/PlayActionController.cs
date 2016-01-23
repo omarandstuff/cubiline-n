@@ -12,8 +12,12 @@ public class PlayActionController : ActionContentController
 	//////////////////////////////////////// MONO BEHAVIOR /////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////
 
-	void Start()
+	void Awake()
 	{
+		if (CubilineApplication.singleton.settings.notFirstTime)
+			SceneName = "loby_game_scene";
+		else
+			SceneName = "tutorial_scene";
 	}
 
 	public override void Select()

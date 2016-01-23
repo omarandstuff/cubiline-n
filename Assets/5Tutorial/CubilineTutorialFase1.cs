@@ -99,6 +99,9 @@ public class CubilineTutorialFase1 : MonoBehaviour
 		// Used for register de time the palyer has playing.
 		timeOfGame = Time.time;
 
+		CubilineApplication.singleton.settings.notFirstTime = true;
+		CubilineApplication.singleton.SaveSettings();
+
 		// Audio directive.
 		CubilineMusicPlayer.inMenu = false;
 		CubilineMusicPlayer.singleton.Stop();
