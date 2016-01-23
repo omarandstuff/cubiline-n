@@ -486,7 +486,7 @@ public class CubilinePlayerController : MonoBehaviour
 		{
 			if(playerKind == PLAYER_KIND.ARCADE || playerKind == PLAYER_KIND.ARCADE_COOP)
 			{
-				Destroy(Instantiate(finishParticle, head.position, Quaternion.identity), 8.0f);
+				if (CubilineApplication.singleton.settings.particles) Destroy(Instantiate(finishParticle, head.position, Quaternion.identity), 8.0f);
 				status = STATUS.FINISH;
 			}
 			else if (playerKind == PLAYER_KIND.TUTORIAL)

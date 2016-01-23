@@ -68,8 +68,8 @@ public class PlayerActionController : ActionContentController
 
 		arcadeTimePlayed.text = hours.ToString("D" + 2) + ":" + minutes.ToString("D" + 2) + ":" + seconds.ToString("D" + 2);
 
-		arcadeBestLength.text = CubilineApplication.singleton.player.bestArcadeLength.ToString() + "m";
-		arcadeTotalLength.text = CubilineApplication.singleton.player.totalArcadeLength.ToString() + "m";
+		arcadeBestLength.text = CubilineApplication.singleton.player.bestArcadeLength.ToString() + "u";
+		arcadeTotalLength.text = CubilineApplication.singleton.player.totalArcadeLength.ToString() + "u";
 
 
 		coopHighScore.text = CubilineApplication.singleton.player.bestCoopScore.ToString();
@@ -86,8 +86,8 @@ public class PlayerActionController : ActionContentController
 
 		coopTimePlayed.text = hours.ToString("D" + 2) + ":" + minutes.ToString("D" + 2) + ":" + seconds.ToString("D" + 2);
 
-		coopBestLength.text = CubilineApplication.singleton.player.bestCoopLength.ToString() + "m";
-		coopTotalLength.text = CubilineApplication.singleton.player.totalCoopLength.ToString() + "m";
+		coopBestLength.text = CubilineApplication.singleton.player.bestCoopLength.ToString() + "u";
+		coopTotalLength.text = CubilineApplication.singleton.player.totalCoopLength.ToString() + "u";
 
 
 		blueBlockCount.text = CubilineApplication.singleton.achievements.blueCount.ToString();

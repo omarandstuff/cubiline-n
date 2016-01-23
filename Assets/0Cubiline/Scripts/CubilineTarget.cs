@@ -67,7 +67,9 @@ public class CubilineTarget : MonoBehaviour
 
 			if (GetComponent<ControlAchievement>() != null)
 				GetComponent<ControlAchievement>().Check();
-			Destroy(Instantiate(particlePrefab, transform.position, Quaternion.identity), 8.0f);
+
+			if(CubilineApplication.singleton.settings.particles) Destroy(Instantiate(particlePrefab, transform.position, Quaternion.identity), 8.0f);
+
 			foreach (Collider c in GetComponents<Collider>())
 				c.enabled = false;
 			if(GetComponent<MeshRenderer>() != null) GetComponent<MeshRenderer>().enabled = false;

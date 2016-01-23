@@ -715,6 +715,9 @@ public class CubilineTutorialFase1 : MonoBehaviour
 		player.speed = 4;
 		player.hardMove = false;
 
+		followCamera.GetComponent<UnityStandardAssets.ImageEffects.DepthOfField>().enabled = CubilineApplication.singleton.settings.depthOfField;
+		followCamera.GetComponent<UnityStandardAssets.ImageEffects.ScreenSpaceAmbientOcclusion>().enabled = CubilineApplication.singleton.settings.ambientOcclusion;
+
 		followTarget.transform.position = new Vector3(-30, 0, -7.5f);
 	}
 

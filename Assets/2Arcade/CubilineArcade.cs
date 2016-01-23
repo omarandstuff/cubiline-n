@@ -220,6 +220,9 @@ public class CubilineArcade : MonoBehaviour
 		player.speed = CubilineApplication.singleton.settings.arcadeLineSpeed;
 		player.hardMove = CubilineApplication.singleton.settings.arcadeHardMove;
 
+		followCamera.GetComponent<UnityStandardAssets.ImageEffects.DepthOfField>().enabled = CubilineApplication.singleton.settings.depthOfField;
+		followCamera.GetComponent<UnityStandardAssets.ImageEffects.ScreenSpaceAmbientOcclusion>().enabled = CubilineApplication.singleton.settings.ambientOcclusion;
+
 		followTarget.transform.position = new Vector3(-CubilineApplication.singleton.settings.arcadeCubeSize * 2, 0, -CubilineApplication.singleton.settings.arcadeCubeSize / 2);
 	}
 
