@@ -190,11 +190,16 @@ public class CubilineApplication : MonoBehaviour
 
 		thisone = this;
 		DontDestroyOnLoad(gameObject);
+
 		achievements = new AchievementsData();
 		settings = new SettingsData();
 		player = new PlayerData();
+
+
 		LoadAll();
+
 		deviceID = SystemInfo.deviceUniqueIdentifier;
+
 		AudioListener.volume = settings.masterSoundLevel;
 
 		if(settings.qualityIndex == -1)
@@ -204,9 +209,9 @@ public class CubilineApplication : MonoBehaviour
 			settings.qualityIndex = 2;
 #endif
 			SaveSettings();
-		}
 
-		QualitySettings.SetQualityLevel(settings.qualityIndex, true);
+			QualitySettings.SetQualityLevel(settings.qualityIndex, true);
+		}
 	}
 
 	public void LoadAll()

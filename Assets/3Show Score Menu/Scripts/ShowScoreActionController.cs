@@ -105,7 +105,7 @@ public class ShowScoreActionController : ActionContentController
 
 
 		// Create a download object
-		WWW download = new WWW("https://cubiline.com/MGOD", form);
+		WWW download = new WWW("http://cubiline.com/MGOD", form);
 
 		// Wait until the download is done
 		yield return new WaitForSeconds(1);
