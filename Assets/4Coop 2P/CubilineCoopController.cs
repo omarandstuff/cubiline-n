@@ -155,7 +155,7 @@ public class CubilineCoopController : MonoBehaviour
 					player2.AddTurn(CubilinePlayerController.TURN.UP);
 				else if (e.keyCode == KeyCode.DownArrow)
 					player2.AddTurn(CubilinePlayerController.TURN.DOWN);
-				else if (e.keyCode == KeyCode.RightControl)
+				else if (e.keyCode == KeyCode.P)
 					player2.speed = CubilineApplication.singleton.settings.coopLineSpeed * 2.0f;
 			}
 			if (e.keyCode == KeyCode.Escape && !menuKey) // Menu
