@@ -16,6 +16,8 @@ public class CubilineCoopController : MonoBehaviour
 	public Follow followTarget2;
 	public Transform outTarget1;
 	public Transform outTarget2;
+	public Material player1Material;
+	public Material player2Material;
 
 	//////////////////////////////////////////////////////////////
 	////////////////////// CONTROL VARIABLES /////////////////////
@@ -43,6 +45,10 @@ public class CubilineCoopController : MonoBehaviour
 
 		// Audio directive.
 		CubilineMusicPlayer.inMenu = false;
+
+		// Ensecure player color
+		player1Material.color = CubilineApplication.singleton.settings.securePlayer1Color;
+		player2Material.color = CubilineApplication.singleton.settings.securePlayer2Color;
 
 		DoScreenOrientation();
 		Reset();

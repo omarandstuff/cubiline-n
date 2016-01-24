@@ -93,6 +93,12 @@ public class SettingsData
 	public bool depthOfField;
 	public bool ambientOcclusion;
 	public float masterSoundLevel = 1;
+
+	[XmlIgnore]
+	public Color securePlayer1Color;
+
+	[XmlIgnore]
+	public Color securePlayer2Color;
 }
 
 public class PlayerData

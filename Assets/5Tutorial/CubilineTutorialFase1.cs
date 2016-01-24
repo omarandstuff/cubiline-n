@@ -13,6 +13,7 @@ public class CubilineTutorialFase1 : MonoBehaviour
 	public CubilineUIController uiController;
 	public Follow followTarget;
 	public Transform outTarget;
+	public Material player1Material;
 
 	public Transform canvasInf;
 	public GameObject welcomeInfPrefab;
@@ -103,6 +104,9 @@ public class CubilineTutorialFase1 : MonoBehaviour
 		// Audio directive.
 		CubilineMusicPlayer.inMenu = false;
 		CubilineMusicPlayer.singleton.Stop();
+
+		// Ensecure player color
+		player1Material.color = new Color(49.0f / 255.0f, 66.0f / 255.0f, 89.0f / 255.0f);
 
 		Reset();
 

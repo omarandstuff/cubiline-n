@@ -166,6 +166,7 @@ public class LineColorSelector : ActionContentController
 
 	private void ApplyColor()
 	{
+		CubilineApplication.singleton.settings.securePlayer1Color = selectedColor;
 		player1Material.color = selectedColor;
 	}
 }

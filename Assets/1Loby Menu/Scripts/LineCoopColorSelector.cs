@@ -238,11 +238,13 @@ public class LineCoopColorSelector : ActionContentController
 
 	private void ApplyPlayer1Color()
 	{
+		CubilineApplication.singleton.settings.securePlayer1Color = selectedPlayer1Color;
 		player1Material.color = selectedPlayer1Color;
 	}
 
 	private void ApplyPlayer2Color()
 	{
+		CubilineApplication.singleton.settings.securePlayer2Color = selectedPlayer2Color;
 		player2Material.color = selectedPlayer2Color;
 	}
 }

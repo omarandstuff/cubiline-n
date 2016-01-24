@@ -12,6 +12,7 @@ public class CubilineArcade : MonoBehaviour
 	public CubilineUIController uiController;
 	public Follow followTarget;
 	public Transform outTarget;
+	public Material player1Material;
 
 	//////////////////////////////////////////////////////////////
 	////////////////////// CONTROL VARIABLES /////////////////////
@@ -37,6 +38,9 @@ public class CubilineArcade : MonoBehaviour
 
 		// Audio directive.
 		CubilineMusicPlayer.inMenu = false;
+
+		// Ensecure player color
+		player1Material.color = CubilineApplication.singleton.settings.securePlayer1Color;
 
 		Reset();
 	}
