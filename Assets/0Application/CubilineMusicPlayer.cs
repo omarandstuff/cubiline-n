@@ -34,6 +34,7 @@ public class CubilineMusicPlayer : MonoBehaviour
 	private uint[] indexList = new uint[0];
 
 	private bool playing = true;
+	private bool paused;
 
 	void Awake()
 	{
@@ -54,6 +55,7 @@ public class CubilineMusicPlayer : MonoBehaviour
 	
 	void Update ()
 	{
+		if (paused) return;
 		if (!playing) return;
 		if (!lastInMenu && inMenu)
 			PlaySong(0);
@@ -114,5 +116,20 @@ public class CubilineMusicPlayer : MonoBehaviour
 	public void Play()
 	{
 		playing = true;
+	}
+
+	public void Pause(bool play)
+	{
+		if(!play)
+		{
+			GetComponent<AudioSource>().Pause();
+			paused = true;
+		}
+		else
+		{
+			if (playing)
+				GetComponent<AudioSource>().Play();
+			paused = false;
+		}
 	}
 }

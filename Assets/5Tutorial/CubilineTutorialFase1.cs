@@ -72,8 +72,6 @@ public class CubilineTutorialFase1 : MonoBehaviour
 
 	private GameObject currentInf;
 
-	private bool showing = true;
-
 	private bool welcomeDone;
 	private bool moveDone;
 	private bool moveFinish;
@@ -442,7 +440,6 @@ public class CubilineTutorialFase1 : MonoBehaviour
 
 			arenaController.GetComponent<CubilineTargetController>().commonTargetCount = 6;
 			arenaController.GetComponent<CubilineTargetController>().enableSpecialTargets = true;
-			showing = false;
 			player.playerKind = CubilinePlayerController.PLAYER_KIND.ARCADE;
 			arenaController.GetComponent<CubilineTargetController>().gameKind = CubilinePlayerController.PLAYER_KIND.ARCADE;
 			GetComponent<AudioSource>().Stop();
@@ -513,6 +510,8 @@ public class CubilineTutorialFase1 : MonoBehaviour
 				CubilineApplication.singleton.CheckBlackKnowledgeLevelAchievement();
 				CubilineApplication.singleton.SaveAchievements();
 
+				CubilineMusicPlayer.singleton.Pause(true);
+
 				if (status == STATUS.GIONG_OUT)
 				{
 					Application.LoadLevel("main_menu_scene");
@@ -538,6 +537,7 @@ public class CubilineTutorialFase1 : MonoBehaviour
 				arenaController.status = CubilinePlayerController.STATUS.PLAYING;
 				Destroy(pauseMenu.gameObject, 0.5f);
 				pauseMenu = null;
+				GetComponent<AudioSource>().Play();
 			}
 			else if(pauseMenu.status == PauseMenuController.STATUS.MAIN_MENU)
 			{
@@ -545,6 +545,13 @@ public class CubilineTutorialFase1 : MonoBehaviour
 				uiController.GoOut();
 				CubilineApplication.singleton.SavePlayer();
 				GoOut();
+				GetComponent<AudioSource>().Pause();
+				if(currentInf != null)
+				{
+					currentInf.GetComponent<PortalInf>().TakeOut();
+					Destroy(currentInf, 2.0f);
+				}
+				
 			}
 		}
 
@@ -635,7 +642,7 @@ public class CubilineTutorialFase1 : MonoBehaviour
 						StartCoroutine(GotSpeed());
 				}
 			}
-			if (e.keyCode == KeyCode.Escape && !menuKey && !showing) // Menu
+			if (e.keyCode == KeyCode.Escape && !menuKey) // Menu
 			{
 				menuKey = true;
 
@@ -646,12 +653,14 @@ public class CubilineTutorialFase1 : MonoBehaviour
 					arenaController.status = CubilinePlayerController.STATUS.PLAYING;
 					Destroy(pauseMenu.gameObject, 0.5f);
 					pauseMenu = null;
+					GetComponent<AudioSource>().Play();
 				}
 				else
 				{
 					player.status = CubilinePlayerController.STATUS.PAUSED;
 					arenaController.status = CubilinePlayerController.STATUS.PAUSED;
 					pauseMenu = Instantiate(pauseMenuBase);
+					GetComponent<AudioSource>().Pause();
 				}
 			}
 		}
@@ -659,7 +668,7 @@ public class CubilineTutorialFase1 : MonoBehaviour
 		{
 			if (e.keyCode == KeyCode.Space)
 				player.speed = 4;
-			else if (e.keyCode == KeyCode.Escape && !showing)
+			else if (e.keyCode == KeyCode.Escape)
 				menuKey = false;
 		}
 	}

@@ -10,6 +10,11 @@ public class PauseMenuController : MonoBehaviour
 	public EaseImageOpasity[] buttons;
 	public EaseTextOpasity[] texts;
 
+	void Start()
+	{
+		CubilineMusicPlayer.singleton.Pause(false);
+	}
+
 	void FixedUpdate()
 	{
 		if(status != STATUS.NONE)
@@ -27,10 +32,12 @@ public class PauseMenuController : MonoBehaviour
 	public void Continue()
 	{
 		status = STATUS.CONTINUE;
+		CubilineMusicPlayer.singleton.Pause(true);
 	}
 
 	public void MainMenu()
 	{
 		status = STATUS.MAIN_MENU;
+		CubilineMusicPlayer.singleton.Pause(true);
 	}
 }

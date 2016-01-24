@@ -90,8 +90,9 @@ public class MenuController : MonoBehaviour
 
 		// Reset time scale.
 		Time.timeScale = 1.0f;
-	
-		if (CubilineMusicPlayer.singleton != null) CubilineMusicPlayer.singleton.Play();
+
+		
+		CubilineMusicPlayer.singleton.Play();
 
 		// Check For the preciois one.
 		CubilineApplication.singleton.CheckBoxLevelAchievement();
