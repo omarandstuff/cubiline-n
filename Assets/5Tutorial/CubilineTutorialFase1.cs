@@ -685,9 +685,17 @@ public class CubilineTutorialFase1 : MonoBehaviour
 			Touch touch = Input.GetTouch(0);
 
 			if (touch.phase == TouchPhase.Stationary)
+			{
+				if (player.playerKind == CubilinePlayerController.PLAYER_KIND.TUTORIAL)
+					StartCoroutine(GotSpeed());
 				player.speed = 8;
+			}
 			else
+			{
+				if (player.playerKind == CubilinePlayerController.PLAYER_KIND.TUTORIAL)
+					StartCoroutine(GotSpeed());
 				player.speed = 4;
+			}
 
 			if (touch.phase == TouchPhase.Began)
 			{
@@ -700,16 +708,32 @@ public class CubilineTutorialFase1 : MonoBehaviour
 				if (Mathf.Abs(delta.x) > Mathf.Abs(delta.y))
 				{
 					if (delta.x > 5)
+					{
 						player.AddTurn(CubilinePlayerController.TURN.RIGHT);
+						if (player.playerKind == CubilinePlayerController.PLAYER_KIND.TUTORIAL)
+							StartCoroutine(GotMoved());
+					}
 					else if (delta.x < -5)
+					{
 						player.AddTurn(CubilinePlayerController.TURN.LEFT);
+						if (player.playerKind == CubilinePlayerController.PLAYER_KIND.TUTORIAL)
+							StartCoroutine(GotMoved());
+					}
 				}
 				else
 				{
 					if (delta.y > 5)
+					{
 						player.AddTurn(CubilinePlayerController.TURN.UP);
+						if (player.playerKind == CubilinePlayerController.PLAYER_KIND.TUTORIAL)
+							StartCoroutine(GotMoved());
+					}
 					else if (delta.y < -5)
+					{
 						player.AddTurn(CubilinePlayerController.TURN.DOWN);
+						if (player.playerKind == CubilinePlayerController.PLAYER_KIND.TUTORIAL)
+							StartCoroutine(GotMoved());
+					}
 				}
 			}
 		}

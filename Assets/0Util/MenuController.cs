@@ -67,6 +67,7 @@ public class MenuController : MonoBehaviour
 	private Vector3 rotationVelocity = Vector3.zero; // Used for SmoothDamp
 	private Vector2 lastMousePosition; // When using mouse get the last mouse X coord to add to the InRotation.
 	private bool flipReady; // Play the sound of their people?
+	private Vector2 lastTouchPos;
 
 	/////////////////////////// ACTION ///////////////////////////
 	private GameObject currentModelAction; // In teh selected side, this model is the active action.
@@ -156,6 +157,10 @@ public class MenuController : MonoBehaviour
 	{
 		// If using or simulating mouse with collider get the coordinates to get letter the delta position. 
 		lastMousePosition = Input.mousePosition;
+		if (Input.touchCount > 0) // If touching get position of touch.
+		{
+			lastTouchPos = Input.GetTouch(0).position;
+		}
 		// Can be call to the action.
 		actionReady = true;
 		// If it is a kind of action as just a model action its ease scale for effect of pressing.
@@ -167,16 +172,17 @@ public class MenuController : MonoBehaviour
 		float axis = 0;
 		if (Input.touchCount > 0) // If touching get the delta coords to add to InRotation.
 		{
-			axis = Input.GetTouch(0).deltaPosition.x;
+			axis = (Input.GetTouch(0).position - lastTouchPos).x / menuCamera.pixelWidth;
+			lastTouchPos = Input.GetTouch(0).position;
 		}
 		else // Then get the delta mouse coordinates position using the last mouse position coords.
 		{
 			Vector2 currentMousePosition = Input.mousePosition;
-			axis = (currentMousePosition - lastMousePosition).x;
+			axis = (currentMousePosition - lastMousePosition).x / menuCamera.pixelWidth;
 			lastMousePosition = currentMousePosition;
 		}
 		// Add that delta position at the maner of geting a proportion from the screen width in  deegres.
-		inRotation.y -= ((90.0f * axis) / menuCamera.pixelWidth) * slideSencibility;
+		inRotation.y -= (90.0f * axis) * slideSencibility;
 
 		// Action rotation needs to know if we are reachign a target rotation 45° before.
 		actionRotation.y = targetRotation.y + (inRotation.y > 0 ? Mathf.Ceil(((int)inRotation.y / 45) / 2.0f) : Mathf.Floor(((int)inRotation.y / 45) / 2.0f)) * 90;

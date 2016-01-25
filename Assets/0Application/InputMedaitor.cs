@@ -41,7 +41,9 @@ public class InputMedaitor : MonoBehaviour
 
 	void OnGUI()
 	{
-		if (Input.anyKey)
+		if (Input.touchCount > 0)
+			currentInput = INPUT_KIND.TOUCH;
+		else if (Input.anyKey)
 			currentInput = INPUT_KIND.KEYBOAR_MOUSE;
 		else if (Input.GetJoystickNames().Length > 0)
 			currentInput = INPUT_KIND.JOYSTICK;
