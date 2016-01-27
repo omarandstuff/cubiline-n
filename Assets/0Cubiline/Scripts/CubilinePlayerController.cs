@@ -184,13 +184,15 @@ public class CubilinePlayerController : MonoBehaviour
 		{
 			head.localPosition = smoothHead.localPosition;
 		}
-		
 
-		// Control what zone is the head on.
-		ControlPlaceChange();
+		// Control i fwe are in the no place zone
+		ControlNoPlace();
 
 		// Do turn if are there some to do.
 		ControlTurn();
+
+		// Control what zone is the head on.
+		ControlPlaceChange();
 
 		// Control the body if it wasn't control for a turn or zone change already.
 		if (!toNew)
@@ -872,6 +874,55 @@ public class CubilinePlayerController : MonoBehaviour
 			toTurnPosition.y -= arenaLogicalLimit;
 			toTurnPosition.y = (int)toTurnPosition.y - 1;
 			toTurnPosition.y += arenaLogicalLimit;
+		}
+	}
+
+	void ControlNoPlace()
+	{
+		Vector3 headPosition = smoothHead.localPosition;
+
+		// headDirection and stuff.
+		if (headPlace == PLACE.FRONT)
+		{
+			noPalce = false;
+			// Take care of the no zone stuff.
+			if (headPosition.x > arenaPlaceLimit || headPosition.x < -arenaPlaceLimit || headPosition.y > arenaPlaceLimit || headPosition.y < -arenaPlaceLimit)
+				noPalce = true;
+		}
+		else if (headPlace == PLACE.BACK)
+		{
+			noPalce = false;
+			// Take care of the no zone stuff.
+			if (headPosition.x > arenaPlaceLimit || headPosition.x < -arenaPlaceLimit || headPosition.y > arenaPlaceLimit || headPosition.y < -arenaPlaceLimit)
+				noPalce = true;
+		}
+		else if (headPlace == PLACE.RIGHT)
+		{
+			noPalce = false;
+			// Take care of the no zone stuff.
+			if (headPosition.z > arenaPlaceLimit || headPosition.z < -arenaPlaceLimit || headPosition.y > arenaPlaceLimit || headPosition.y < -arenaPlaceLimit)
+				noPalce = true;
+		}
+		else if (headPlace == PLACE.LEFT)
+		{
+			noPalce = false;
+			// Take care of the no zone stuff.
+			if (headPosition.z > arenaPlaceLimit || headPosition.z < -arenaPlaceLimit || headPosition.y > arenaPlaceLimit || headPosition.y < -arenaPlaceLimit)
+				noPalce = true;
+		}
+		else if (headPlace == PLACE.TOP)
+		{
+			noPalce = false;
+			// Take care of the no zone stuff.
+			if (headPosition.z > arenaPlaceLimit || headPosition.z < -arenaPlaceLimit || headPosition.x > arenaPlaceLimit || headPosition.x < -arenaPlaceLimit)
+				noPalce = true;
+		}
+		else if (headPlace == PLACE.BOTTOM)
+		{
+			noPalce = false;
+			// Take care of the no zone stuff.
+			if (headPosition.z > arenaPlaceLimit || headPosition.z < -arenaPlaceLimit || headPosition.x > arenaPlaceLimit || headPosition.x < -arenaPlaceLimit)
+				noPalce = true;
 		}
 	}
 

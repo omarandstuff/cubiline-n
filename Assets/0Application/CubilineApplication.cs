@@ -5,6 +5,13 @@ using System.IO;
 using System.Xml.Serialization;
 using UnityEngine;
 
+#if UNITY_ANDROID
+using GooglePlayGames;
+using GooglePlayGames.BasicApi;
+#endif
+
+using UnityEngine.SocialPlatforms;
+
 public class AchievementsData
 {
 	public uint blueCount;
@@ -181,6 +188,9 @@ public class CubilineApplication : MonoBehaviour
 
 	public static string deviceID;
 
+	// Social //
+	public int logedIn;
+
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// MONO BEHAVIOR /////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -200,25 +210,75 @@ public class CubilineApplication : MonoBehaviour
 		achievements = new AchievementsData();
 		settings = new SettingsData();
 		player = new PlayerData();
-
-
 		LoadAll();
 
-		deviceID = SystemInfo.deviceUniqueIdentifier;
 
+		deviceID = SystemInfo.deviceUniqueIdentifier;
 		AudioListener.volume = settings.masterSoundLevel;
 
-		if(settings.qualityIndex == -1)
+
+		// First Level of quality
+		if (settings.qualityIndex == -1)
 		{
 			settings.qualityIndex = 0;
-#if !UNITY_WP8_1
+
+#if UNITY_WSA_10_0
 			settings.qualityIndex = 2;
+			QualitySettings.SetQualityLevel(settings.qualityIndex, true);
 #endif
 			SaveSettings();
-
-			QualitySettings.SetQualityLevel(settings.qualityIndex, true);
 		}
+
+
+		// Social API if any.
+		StartSocialAPI();
 	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////// SOCIAL API ///////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////
+
+	void StartSocialAPI()
+	{
+#if UNITY_ANDROID
+		StartGoogleGameServices();
+		LogIn();
+#endif
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////// GOOGLE PLAY GAME SERVICES ///////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////
+
+#if UNITY_ANDROID
+	private void StartGoogleGameServices()
+	{
+		PlayGamesClientConfiguration config = new PlayGamesClientConfiguration.Builder().EnableSavedGames().Build();
+
+		PlayGamesPlatform.InitializeInstance(config);
+		
+		// recommended for debugging:
+		//PlayGamesPlatform.DebugLogEnabled = true;
+		
+		// Activate the Google Play Games platform
+		PlayGamesPlatform.Activate();
+	}
+#endif
+
+	private void LogIn()
+	{
+
+#if UNITY_ANDROID
+		Social.localUser.Authenticate((bool success) =>
+		{
+		});
+#endif
+
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////// SAVE / LOAD //////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////////////
 
 	public void LoadAll()
 	{
@@ -299,7 +359,6 @@ public class CubilineApplication : MonoBehaviour
 		stream.Close();
 #endif
 	}
-
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// ACHIEVEMENTS //////////////////////////////////////////
