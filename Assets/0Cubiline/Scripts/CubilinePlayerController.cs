@@ -933,11 +933,6 @@ public class CubilinePlayerController : MonoBehaviour
 		// headDirection and stuff.
 		if (headPlace == PLACE.FRONT)
 		{
-			noPalce = false;
-			// Take care of the no zone stuff.
-			if (headPosition.x > arenaPlaceLimit || headPosition.x < -arenaPlaceLimit || headPosition.y > arenaPlaceLimit || headPosition.y < -arenaPlaceLimit)
-				noPalce = true;
-
 			if (headPosition.x >= arenaLogicalLimit)
 			{
 				// New up.
@@ -1061,11 +1056,6 @@ public class CubilinePlayerController : MonoBehaviour
 		}
 		else if (headPlace == PLACE.BACK)
 		{
-			noPalce = false;
-			// Take care of the no zone stuff.
-			if (headPosition.x > arenaPlaceLimit || headPosition.x < -arenaPlaceLimit || headPosition.y > arenaPlaceLimit || headPosition.y < -arenaPlaceLimit)
-				noPalce = true;
-
 			if (headPosition.x >= arenaLogicalLimit)
 			{
 				// New up.
@@ -1189,11 +1179,6 @@ public class CubilinePlayerController : MonoBehaviour
 		}
 		else if (headPlace == PLACE.RIGHT)
 		{
-			noPalce = false;
-			// Take care of the no zone stuff.
-			if (headPosition.z > arenaPlaceLimit || headPosition.z < -arenaPlaceLimit || headPosition.y > arenaPlaceLimit || headPosition.y < -arenaPlaceLimit)
-				noPalce = true;
-
 			if (headPosition.z <= -arenaLogicalLimit)
 			{
 				// New up.
@@ -1317,11 +1302,6 @@ public class CubilinePlayerController : MonoBehaviour
 		}
 		else if (headPlace == PLACE.LEFT)
 		{
-			noPalce = false;
-			// Take care of the no zone stuff.
-			if (headPosition.z > arenaPlaceLimit || headPosition.z < -arenaPlaceLimit || headPosition.y > arenaPlaceLimit || headPosition.y < -arenaPlaceLimit)
-				noPalce = true;
-
 			if (headPosition.z <= -arenaLogicalLimit)
 			{
 				// New up.
@@ -1445,11 +1425,6 @@ public class CubilinePlayerController : MonoBehaviour
 		}
 		else if (headPlace == PLACE.TOP)
 		{
-			noPalce = false;
-			// Take care of the no zone stuff.
-			if (headPosition.z > arenaPlaceLimit || headPosition.z < -arenaPlaceLimit || headPosition.x > arenaPlaceLimit || headPosition.x < -arenaPlaceLimit)
-				noPalce = true;
-
 			if (headPosition.z <= -arenaLogicalLimit)
 			{
 				// New up.
@@ -1573,11 +1548,6 @@ public class CubilinePlayerController : MonoBehaviour
 		}
 		else if (headPlace == PLACE.BOTTOM)
 		{
-			noPalce = false;
-			// Take care of the no zone stuff.
-			if (headPosition.z > arenaPlaceLimit || headPosition.z < -arenaPlaceLimit || headPosition.x > arenaPlaceLimit || headPosition.x < -arenaPlaceLimit)
-				noPalce = true;
-
 			if (headPosition.z <= -arenaLogicalLimit)
 			{
 				// New up.
