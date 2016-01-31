@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class MenuController : MonoBehaviour
 {
@@ -116,7 +117,7 @@ public class MenuController : MonoBehaviour
 		else if (focalTarget.transform.localPosition == focalTarget.outValues) // If outgoing and the focal target gets to the side where the menu is not visible.
 		{
 			// Load the next scene.
-			Application.LoadLevel(nextScene);
+			SceneManager.LoadScene(nextScene);
 		}
 	}
 

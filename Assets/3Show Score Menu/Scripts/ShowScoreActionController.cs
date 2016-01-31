@@ -42,7 +42,9 @@ public class ShowScoreActionController : ActionContentController
 		length.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
 		length.GetComponent<EaseTextOpasity>().easeFace = EaseFloat.EASE_FACE.IN;
 
-		if (CubilineApplication.singleton.player.newRecord)
+		bool newRecord = CubilineApplication.singleton.lastComment == "arcade_scene" ? CubilineApplication.singleton.player.newRecord : CubilineApplication.singleton.player.coopNewRecord;
+
+		if (newRecord)
 		{
 			newScoreRecord.GetComponent<EaseRotation>().easeFace = EaseVector3.EASE_FACE.IN;
 			newScoreRecord.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
@@ -56,7 +58,9 @@ public class ShowScoreActionController : ActionContentController
 		time.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
 		time.GetComponent<EaseTextOpasity>().easeFace = EaseFloat.EASE_FACE.IN;
 
-		if (CubilineApplication.singleton.player.newLengthRecord)
+		newRecord = CubilineApplication.singleton.lastComment == "arcade_scene" ? CubilineApplication.singleton.player.newLengthRecord : CubilineApplication.singleton.player.coopNewLengthRecord;
+
+		if (newRecord)
 		{
 			newLengthRecord.GetComponent<EaseRotation>().easeFace = EaseVector3.EASE_FACE.IN;
 			newLengthRecord.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;

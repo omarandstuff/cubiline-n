@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CubilineCoopController : MonoBehaviour
 {
@@ -69,11 +70,11 @@ public class CubilineCoopController : MonoBehaviour
 
 				if (status == STATUS.GIONG_OUT)
 				{
-					Application.LoadLevel("main_menu_scene");
+					SceneManager.LoadScene("main_menu_scene");
 				}
 				else if (status == STATUS.SHOW_SCORE)
 				{
-					Application.LoadLevel("show_score_scene");
+					SceneManager.LoadScene("show_score_scene");
 				}
 			}
 			return;
@@ -183,7 +184,7 @@ public class CubilineCoopController : MonoBehaviour
 		{
 			if (e.keyCode == KeyCode.Space)
 				player1.speed = CubilineApplication.singleton.settings.coopLineSpeed;
-			if (e.keyCode == KeyCode.RightControl)
+			if (e.keyCode == KeyCode.P)
 				player2.speed = CubilineApplication.singleton.settings.coopLineSpeed;
 			else if (e.keyCode == KeyCode.Escape)
 				menuKey = false;
@@ -298,6 +299,9 @@ public class CubilineCoopController : MonoBehaviour
 		arenaController.Reset(CubilineApplication.singleton.settings.coopCubeSize);
 		followCamera1.transform.localPosition = new Vector3(0.0f, 0.0f, -CubilineApplication.singleton.settings.coopCubeSize * 2.0f);
 		followCamera1.transform.localPosition = new Vector3(0.0f, 0.0f, -CubilineApplication.singleton.settings.coopCubeSize * 2.0f);
+
+		CubilineApplication.singleton.player.lastArcadeScore = 0;
+		CubilineApplication.singleton.player.lastArcadeLength = 0;
 
 		player1.Reset(CubilineApplication.singleton.settings.coopCubeSize);
 		player1.speed = CubilineApplication.singleton.settings.coopLineSpeed;

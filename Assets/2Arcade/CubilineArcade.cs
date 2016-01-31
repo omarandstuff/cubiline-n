@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CubilineArcade : MonoBehaviour
 {
@@ -60,11 +61,11 @@ public class CubilineArcade : MonoBehaviour
 
 				if (status == STATUS.GIONG_OUT)
 				{
-					Application.LoadLevel("main_menu_scene");
+					SceneManager.LoadScene("main_menu_scene");
 				}
 				else if (status == STATUS.SHOW_SCORE)
 				{
-					Application.LoadLevel("show_score_scene");
+					SceneManager.LoadScene("show_score_scene");
 				}
 			}
 			return;
@@ -221,6 +222,9 @@ public class CubilineArcade : MonoBehaviour
 	{
 		arenaController.Reset(CubilineApplication.singleton.settings.arcadeCubeSize);
 		followCamera.transform.localPosition = new Vector3(0.0f, 0.0f, -CubilineApplication.singleton.settings.arcadeCubeSize * 2.0f);
+
+		CubilineApplication.singleton.player.lastCoopScore = 0;
+		CubilineApplication.singleton.player.lastCoopLength = 0;
 
 		player.Reset(CubilineApplication.singleton.settings.arcadeCubeSize);
 		player.speed = CubilineApplication.singleton.settings.arcadeLineSpeed;

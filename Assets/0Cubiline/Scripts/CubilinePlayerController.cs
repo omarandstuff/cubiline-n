@@ -564,8 +564,11 @@ public class CubilinePlayerController : MonoBehaviour
 
 	public void Start2Xmultipler()
 	{
-		multipler += 2;
-		multipler = Math.Min(multipler, 8);
+		if(multipler == 0)
+			multipler = 2;
+		else
+			multipler *= 2;
+
 		multiplerCurrentTime = multiplerTime;
 
 		if(playerKind == PLAYER_KIND.ARCADE)
@@ -581,14 +584,17 @@ public class CubilinePlayerController : MonoBehaviour
 			coopUIController.multipler = multipler;
 
 		CubilineApplication.singleton.achievements.diceCheck1 = true;
-		if (multipler >= 6)
+		if (multipler >= 8)
 			CubilineApplication.singleton.achievements.blackdiceCheck1 = true;
 	}
 
 	public void Start4Xmultipler()
 	{
-		multipler += 4;
-		multipler = Math.Min(multipler, 8);
+		if (multipler == 0)
+			multipler = 4;
+		else
+			multipler *= 4;
+
 		multiplerCurrentTime = multiplerTime;
 
 		if (playerKind == PLAYER_KIND.ARCADE)
@@ -604,7 +610,7 @@ public class CubilinePlayerController : MonoBehaviour
 			coopUIController.multipler = multipler;
 
 		CubilineApplication.singleton.achievements.diceCheck1 = true;
-		if (multipler >= 6)
+		if (multipler >= 8)
 			CubilineApplication.singleton.achievements.blackdiceCheck1 = true;
 	}
 
