@@ -529,6 +529,18 @@ public class CubilinePlayerController : MonoBehaviour
 
 			if (player1 != null)
 				player1.coopLength += units;
+			else
+			{
+				CubilineApplication.singleton.player.lastCoopLength = (uint)bodyLength + (uint)_coopLength;
+
+				coopUIController.length = CubilineApplication.singleton.player.lastCoopLength;
+
+				if (CubilineApplication.singleton.player.lastCoopLength > CubilineApplication.singleton.player.bestCoopLength)
+				{
+					CubilineApplication.singleton.player.bestCoopLength = CubilineApplication.singleton.player.lastCoopLength;
+					CubilineApplication.singleton.player.coopNewLengthRecord = true;
+				}
+			}
 		}
 		CubilineApplication.singleton.CheckToyLevelAchievement();
 		CubilineApplication.singleton.CheckBlackToyLevelAchievement();
@@ -554,8 +566,21 @@ public class CubilinePlayerController : MonoBehaviour
 		else if (playerKind == PLAYER_KIND.ARCADE_COOP)
 		{
 			coopUIController.plusLength = -realUngorw;
+
 			if (player1 != null)
 				player1.coopLength -= realUngorw;
+			else
+			{
+				CubilineApplication.singleton.player.lastCoopLength = (uint)bodyLength + (uint)_coopLength;
+
+				coopUIController.length = CubilineApplication.singleton.player.lastCoopLength;
+
+				if (CubilineApplication.singleton.player.lastCoopLength > CubilineApplication.singleton.player.bestCoopLength)
+				{
+					CubilineApplication.singleton.player.bestCoopLength = CubilineApplication.singleton.player.lastCoopLength;
+					CubilineApplication.singleton.player.coopNewLengthRecord = true;
+				}
+			}
 		}
 
 		CubilineApplication.singleton.CheckToyLevelAchievement();
@@ -652,7 +677,6 @@ public class CubilinePlayerController : MonoBehaviour
 			if(score > 0) coopUIController.plusScore = score * (uint)(multiplerCurrentTime > 0 ? multipler : 1);
 			coopUIController.score = arcadeScore;
 
-			coopUIController.length = (uint)bodyLength + (uint)coopLength;
 			if (CubilineApplication.singleton.player.bestCoopScore < arcadeScore)
 			{
 				CubilineApplication.singleton.player.bestCoopScore = arcadeScore;

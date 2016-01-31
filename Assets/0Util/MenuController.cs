@@ -192,7 +192,7 @@ public class MenuController : MonoBehaviour
 		SetAction();
 
 		// If the player keeps rotating the cube means he don't want to activate the action, he is just rotating.
-		if (axis != 0)
+		if (Mathf.Abs(inRotation.y) > 3)
 		{
 			actionReady = false;
 			if (currentModelAction != null && currentModelAction.GetComponent<EaseScale>() != null) currentModelAction.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
