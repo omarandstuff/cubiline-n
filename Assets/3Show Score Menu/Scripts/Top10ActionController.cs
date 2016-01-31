@@ -66,7 +66,7 @@ public class Top10ActionController : ActionContentController
 		if (!string.IsNullOrEmpty(download.error))
 		{
 			print("Error Geting Scores: " + download.error);
-			names[0].text = download.error;
+			names[5].text = "No internet connection.";
 		}
 		else
 		{

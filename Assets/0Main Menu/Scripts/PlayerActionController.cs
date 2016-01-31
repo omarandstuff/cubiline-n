@@ -2,6 +2,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using System.Collections;
 
 public class PlayerActionController : ActionContentController
 {
@@ -168,6 +169,7 @@ public class PlayerActionController : ActionContentController
 		{
 			CubilineApplication.singleton.player.nickName = nickNameInput.text;
 			CubilineApplication.singleton.SavePlayer();
+			StartCoroutine(PublicNickname());
 		}
 		Unselect();
 	}
@@ -198,5 +200,26 @@ public class PlayerActionController : ActionContentController
 			text.text = (dateSpan.Minutes == 1 ? "A Minute Ago" : dateSpan.Minutes.ToString() + " Minutes Ago");
 		else if (dateSpan.Seconds > 0)
 			text.text = (dateSpan.Seconds == 1 ? "A Second Ago" : dateSpan.Seconds.ToString() + " Seconds Ago");
+	}
+
+	private IEnumerator PublicNickname()
+	{
+		// Create a form object for sending high score data to the server
+		WWWForm form = new WWWForm();
+		form.AddField("arcade[player]", CubilineApplication.singleton.player.nickName);
+		form.AddField("arcade[device_id]", CubilineApplication.deviceID);
+
+		// Create a download object
+		WWW download = new WWW("http://cubiline.com/MGODN", form);
+
+		// Wait until the download is done
+		yield return download;
+
+		Debug.Log(download.text);
+
+		if (!string.IsNullOrEmpty(download.error))
+		{
+			Debug.Log("Error downloading: " + download.error);
+		}
 	}
 }

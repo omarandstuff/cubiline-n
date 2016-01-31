@@ -104,15 +104,11 @@ public class ShowScoreActionController : ActionContentController
 		if (CubilineApplication.singleton.lastComment == "arcade_scene") form.AddField("arcade[token]", (CubilineApplication.singleton.player.lastArcadeScore * 13 + SystemInfo.operatingSystem.Length + SystemInfo.deviceUniqueIdentifier.Length).ToString());
 		if (CubilineApplication.singleton.lastComment == "coop_2p_scene") form.AddField("arcade[token]", (CubilineApplication.singleton.player.lastCoopScore * 13 + SystemInfo.operatingSystem.Length + SystemInfo.deviceUniqueIdentifier.Length).ToString());
 
-#if UNITY_WSA_10_0
-#endif
-
-
 		// Create a download object
 		WWW download = new WWW("http://cubiline.com/MGOD", form);
 
 		// Wait until the download is done
-		yield return new WaitForSeconds(1);
+		yield return download;
 
 		if (!string.IsNullOrEmpty(download.error))
 		{
