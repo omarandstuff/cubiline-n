@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using UnityEngine.SceneManagement;
+//using UnityEngine.SceneManagement;
 
 public class CubilineCoopController : MonoBehaviour
 {
@@ -70,11 +70,11 @@ public class CubilineCoopController : MonoBehaviour
 
 				if (status == STATUS.GIONG_OUT)
 				{
-					SceneManager.LoadScene("main_menu_scene");
+					Application.LoadLevel("main_menu_scene");
 				}
 				else if (status == STATUS.SHOW_SCORE)
 				{
-					SceneManager.LoadScene("show_score_scene");
+					Application.LoadLevel("show_score_scene");
 				}
 			}
 			return;

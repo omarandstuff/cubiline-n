@@ -222,7 +222,7 @@ public class CubilineApplication : MonoBehaviour
 		{
 			settings.qualityIndex = 0;
 
-#if UNITY_WSA_10_0
+#if UNITY_WSA_10_0 || UNITY_WSA_8_1
 			settings.qualityIndex = 2;
 			QualitySettings.SetQualityLevel(settings.qualityIndex, true);
 #endif

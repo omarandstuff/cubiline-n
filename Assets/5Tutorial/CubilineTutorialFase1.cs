@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+//using UnityEngine.SceneManagement;
 
 public class CubilineTutorialFase1 : MonoBehaviour
 {
@@ -519,11 +519,11 @@ public class CubilineTutorialFase1 : MonoBehaviour
 
 				if (status == STATUS.GIONG_OUT)
 				{
-					SceneManager.LoadScene("main_menu_scene");
+					Application.LoadLevel("main_menu_scene");
 				}
 				else if (status == STATUS.SHOW_SCORE)
 				{
-					SceneManager.LoadScene("show_score_scene");
+					Application.LoadLevel("show_score_scene");
 				}
 			}
 			return;
