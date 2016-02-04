@@ -38,67 +38,67 @@ public class LineColorSelector : ActionContentController
 
 	void Start()
 	{
-		toggles[CubilineApplication.singleton.settings.player1ColorIndex].isOn = true;
-		SelectColor(CubilineApplication.singleton.settings.player1ColorIndex.ToString());
+		toggles[CubilineApplication.singleton.player.player1ColorIndex].isOn = true;
+		SelectColor(CubilineApplication.singleton.player.player1ColorIndex.ToString());
 		ApplyColor();
 
-		if(!CubilineApplication.singleton.achievements.blueAchieve)
+		if(!CubilineApplication.singleton.player.blueAchieve)
 		{
 			blockBlue.SetActive(true);
 			lockIcon.SetActive(true);
 			leyend.gameObject.SetActive(true);
 			unlocked = false;
 		}
-		if (!CubilineApplication.singleton.achievements.orangeAchieve)
+		if (!CubilineApplication.singleton.player.orangeAchieve)
 		{
 			blockOrange.SetActive(true);
 			lockIcon.SetActive(true);
 			leyend.gameObject.SetActive(true);
 			unlocked = false;
 		}
-		if (!CubilineApplication.singleton.achievements.greenAchieve)
+		if (!CubilineApplication.singleton.player.greenAchieve)
 		{
 			blockGreen.SetActive(true);
 			lockIcon.SetActive(true);
 			leyend.gameObject.SetActive(true);
 			unlocked = false;
 		}
-		if (!CubilineApplication.singleton.achievements.yellowAchieve)
+		if (!CubilineApplication.singleton.player.yellowAchieve)
 		{
 			blockYellow.SetActive(true);
 			lockIcon.SetActive(true);
 			leyend.gameObject.SetActive(true);
 			unlocked = false;
 		}
-		if (!CubilineApplication.singleton.achievements.redAchieve)
+		if (!CubilineApplication.singleton.player.redAchieve)
 		{
 			blockRed.SetActive(true);
 			lockIcon.SetActive(true);
 			leyend.gameObject.SetActive(true);
 			unlocked = false;
 		}
-		if (!CubilineApplication.singleton.achievements.purpleAchieve)
+		if (!CubilineApplication.singleton.player.purpleAchieve)
 		{
 			blockPurple.SetActive(true);
 			lockIcon.SetActive(true);
 			leyend.gameObject.SetActive(true);
 			unlocked = false;
 		}
-		if (!CubilineApplication.singleton.achievements.byScoreColorAchieve)
+		if (!CubilineApplication.singleton.player.byScoreColorAchieve)
 		{
 			blockScore.SetActive(true);
 			lockIcon.SetActive(true);
 			leyend.gameObject.SetActive(true);
 			unlocked = false;
 		}
-		if (!CubilineApplication.singleton.achievements.byLengthColorAchieve)
+		if (!CubilineApplication.singleton.player.byLengthColorAchieve)
 		{
 			blockLength.SetActive(true);
 			lockIcon.SetActive(true);
 			leyend.gameObject.SetActive(true);
 			unlocked = false;
 		}
-		if (!CubilineApplication.singleton.achievements.byFillColorAchieve)
+		if (!CubilineApplication.singleton.player.byFillColorAchieve)
 		{
 			blockFill.SetActive(true);
 			lockIcon.SetActive(true);
@@ -153,20 +153,20 @@ public class LineColorSelector : ActionContentController
 	public void OkAction()
 	{
 		ApplyColor();
-		CubilineApplication.singleton.settings.player1ColorIndex = selectedIndex;
+		CubilineApplication.singleton.player.player1ColorIndex = selectedIndex;
 		CubilineApplication.singleton.SaveSettings();
 		Unselect();
 	}
 
 	public void CancelAction()
 	{
-		toggles[CubilineApplication.singleton.settings.player1ColorIndex].isOn = true;
+		toggles[CubilineApplication.singleton.player.player1ColorIndex].isOn = true;
 		Unselect();
 	}
 
 	private void ApplyColor()
 	{
-		CubilineApplication.singleton.settings.securePlayer1Color = selectedColor;
+		CubilineApplication.singleton.player.securePlayer1Color = selectedColor;
 		player1Material.color = selectedColor;
 	}
 }

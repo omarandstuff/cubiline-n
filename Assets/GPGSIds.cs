@@ -24,7 +24,26 @@
 
 public static class GPGSIds
 {
+        public const string achievement_orange_eater = "CgkI3IussIgQEAIQBQ"; // <GPGSID>
+        public const string achievement_anaconda = "CgkI3IussIgQEAIQDA"; // <GPGSID>
+        public const string achievement_luckiest_player = "CgkI3IussIgQEAIQDw"; // <GPGSID>
+        public const string achievement_green_eater = "CgkI3IussIgQEAIQBg"; // <GPGSID>
+        public const string achievement_cubiline_player = "CgkI3IussIgQEAIQCg"; // <GPGSID>
+        public const string achievement_wiseman = "CgkI3IussIgQEAIQEQ"; // <GPGSID>
+        public const string achievement_colorfull = "CgkI3IussIgQEAIQEA"; // <GPGSID>
         public const string leaderboard_high_score = "CgkI3IussIgQEAIQAQ"; // <GPGSID>
+        public const string achievement_blue_eater = "CgkI3IussIgQEAIQBA"; // <GPGSID>
+        public const string achievement_indianapolis_500 = "CgkI3IussIgQEAIQCw"; // <GPGSID>
+        public const string leaderboard_longest = "CgkI3IussIgQEAIQAg"; // <GPGSID>
+        public const string achievement_big_player = "CgkI3IussIgQEAIQDQ"; // <GPGSID>
+        public const string achievement_multiplier_eater = "CgkI3IussIgQEAIQCQ"; // <GPGSID>
+        public const string achievement_open_the_box = "CgkI3IussIgQEAIQAw"; // <GPGSID>
+        public const string achievement_gray_eater = "CgkI3IussIgQEAIQBw"; // <GPGSID>
+        public const string achievement_magnet_eater = "CgkI3IussIgQEAIQCA"; // <GPGSID>
+        public const string achievement_lucky_player = "CgkI3IussIgQEAIQDg"; // <GPGSID>
+        public const string achievement_strategist_player = "CgkI3IussIgQEAIQFA"; // <GPGSID>
+        public const string achievement_logical_player = "CgkI3IussIgQEAIQEw"; // <GPGSID>
+        public const string achievement_cubiline_fan = "CgkI3IussIgQEAIQEg"; // <GPGSID>
 
 }
 

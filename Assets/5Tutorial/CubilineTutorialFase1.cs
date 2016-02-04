@@ -99,7 +99,7 @@ public class CubilineTutorialFase1 : MonoBehaviour
 		// Used for register de time the palyer has playing.
 		timeOfGame = Time.time;
 
-		CubilineApplication.singleton.settings.notFirstTime = true;
+		CubilineApplication.singleton.player.notFirstTime = true;
 		CubilineApplication.singleton.SaveSettings();
 
 		// Audio directive.
@@ -506,14 +506,12 @@ public class CubilineTutorialFase1 : MonoBehaviour
 	{
 		if(status != STATUS.PLAYING)
 		{
-			if((followTarget.transform.position - outTarget.position).magnitude < CubilineApplication.singleton.settings.arcadeCubeSize)
+			if((followTarget.transform.position - outTarget.position).magnitude < CubilineApplication.singleton.player.arcadeCubeSize)
 			{
 				// Player game inf
 				CubilineApplication.singleton.player.arcadeTimePlayed += Time.time - timeOfGame;
-				CubilineApplication.singleton.SavePlayer();
-
 				CubilineApplication.singleton.CheckBlackKnowledgeLevelAchievement();
-				CubilineApplication.singleton.SaveAchievements();
+				CubilineApplication.singleton.SavePlayer();
 
 				CubilineMusicPlayer.singleton.Pause(true);
 
@@ -573,11 +571,11 @@ public class CubilineTutorialFase1 : MonoBehaviour
 			CubilineApplication.singleton.player.arcadeGamesPlayed++;
 			CubilineApplication.singleton.player.arcadeTimePlayed += Time.time - timeOfGame;
 			CubilineApplication.singleton.player.lastArcadeTime = Time.time - timeOfGame;
-			CubilineApplication.singleton.SavePlayer();
 
 			CubilineApplication.singleton.CheckRedColorAchievement();
 			CubilineApplication.singleton.CheckBlackKnowledgeLevelAchievement();
-			CubilineApplication.singleton.SaveAchievements();
+
+			CubilineApplication.singleton.SavePlayer();
 
 			CubilineApplication.singleton.lastComment = "arcade_scene";
 

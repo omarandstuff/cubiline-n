@@ -225,8 +225,8 @@ public class CubilinePlayerController : MonoBehaviour
 				else if (playerKind == PLAYER_KIND.ARCADE_COOP)
 					coopUIController.multipler = multipler;
 
-				CubilineApplication.singleton.achievements.diceCheck1 = false;
-				CubilineApplication.singleton.achievements.blackdiceCheck1 = false;
+				AchievementsData.diceCheck1 = false;
+				AchievementsData.blackdiceCheck1 = false;
 			}
 		}
 		else
@@ -608,9 +608,9 @@ public class CubilinePlayerController : MonoBehaviour
 		else if (playerKind == PLAYER_KIND.ARCADE_COOP)
 			coopUIController.multipler = multipler;
 
-		CubilineApplication.singleton.achievements.diceCheck1 = true;
+		AchievementsData.diceCheck1 = true;
 		if (multipler >= 8)
-			CubilineApplication.singleton.achievements.blackdiceCheck1 = true;
+			AchievementsData.blackdiceCheck1 = true;
 	}
 
 	public void Start4Xmultipler()
@@ -634,9 +634,9 @@ public class CubilinePlayerController : MonoBehaviour
 		else if (playerKind == PLAYER_KIND.ARCADE_COOP)
 			coopUIController.multipler = multipler;
 
-		CubilineApplication.singleton.achievements.diceCheck1 = true;
+		AchievementsData.diceCheck1 = true;
 		if (multipler >= 8)
-			CubilineApplication.singleton.achievements.blackdiceCheck1 = true;
+			AchievementsData.blackdiceCheck1 = true;
 	}
 
 	public void AddScore(uint score)

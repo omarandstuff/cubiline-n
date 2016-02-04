@@ -1,8 +1,12 @@
 ﻿using UnityEngine.UI;
 using UnityEngine;
-using System.Collections.Generic;
 using System;
 using System.Collections;
+
+#if UNITY_ANDROID
+using GooglePlayGames;
+using GooglePlayGames.BasicApi;
+#endif
 
 public class PlayerActionController : ActionContentController
 {
@@ -91,36 +95,36 @@ public class PlayerActionController : ActionContentController
 		coopTotalLength.text = CubilineApplication.singleton.player.totalCoopLength.ToString() + "u";
 
 
-		blueBlockCount.text = CubilineApplication.singleton.achievements.blueCount.ToString();
-		orangeBlockCount.text = CubilineApplication.singleton.achievements.orangeCount.ToString();
-		greenBlockCount.text = CubilineApplication.singleton.achievements.greenCount.ToString();
-		grayBlockCount.text = CubilineApplication.singleton.achievements.grayCount.ToString();
-		purpleBlockCount.text = CubilineApplication.singleton.achievements.purpleCount.ToString();
-		multiplierBlockCount.text = CubilineApplication.singleton.achievements.yellowCount.ToString();
+		blueBlockCount.text = CubilineApplication.singleton.player.blueCount.ToString();
+		orangeBlockCount.text = CubilineApplication.singleton.player.orangeCount.ToString();
+		greenBlockCount.text = CubilineApplication.singleton.player.greenCount.ToString();
+		grayBlockCount.text = CubilineApplication.singleton.player.grayCount.ToString();
+		purpleBlockCount.text = CubilineApplication.singleton.player.purpleCount.ToString();
+		multiplierBlockCount.text = CubilineApplication.singleton.player.yellowCount.ToString();
 
 		int levelsCount = 1;
-		if (CubilineApplication.singleton.achievements.blackCubeAchieve) levelsCount++;
-		if (CubilineApplication.singleton.achievements.diceAchieve) levelsCount++;
-		if (CubilineApplication.singleton.achievements.blackDiceAchieve) levelsCount++;
-		if (CubilineApplication.singleton.achievements.toyAchieve) levelsCount++;
-		if (CubilineApplication.singleton.achievements.blackToyAchieve) levelsCount++;
-		if (CubilineApplication.singleton.achievements.paperAchieve) levelsCount++;
-		if (CubilineApplication.singleton.achievements.blackPaperAchieve) levelsCount++;
-		if (CubilineApplication.singleton.achievements.incognitAchieve) levelsCount++;
-		if (CubilineApplication.singleton.achievements.blackIncognitAchieve) levelsCount++;
+		if (CubilineApplication.singleton.player.blackCubeAchieve) levelsCount++;
+		if (CubilineApplication.singleton.player.diceAchieve) levelsCount++;
+		if (CubilineApplication.singleton.player.blackDiceAchieve) levelsCount++;
+		if (CubilineApplication.singleton.player.toyAchieve) levelsCount++;
+		if (CubilineApplication.singleton.player.blackToyAchieve) levelsCount++;
+		if (CubilineApplication.singleton.player.paperAchieve) levelsCount++;
+		if (CubilineApplication.singleton.player.blackPaperAchieve) levelsCount++;
+		if (CubilineApplication.singleton.player.incognitAchieve) levelsCount++;
+		if (CubilineApplication.singleton.player.blackIncognitAchieve) levelsCount++;
 
 		levels.text = levelsCount.ToString() + "/10";
 
 		int colorsCount = 1;
-		if (CubilineApplication.singleton.achievements.blueAchieve) colorsCount++;
-		if (CubilineApplication.singleton.achievements.orangeAchieve) colorsCount++;
-		if (CubilineApplication.singleton.achievements.greenAchieve) colorsCount++;
-		if (CubilineApplication.singleton.achievements.yellowAchieve) colorsCount++;
-		if (CubilineApplication.singleton.achievements.redAchieve) colorsCount++;
-		if (CubilineApplication.singleton.achievements.purpleAchieve) colorsCount++;
-		if (CubilineApplication.singleton.achievements.byScoreColorAchieve) colorsCount += 6;
-		if (CubilineApplication.singleton.achievements.byLengthColorAchieve) colorsCount += 6;
-		if (CubilineApplication.singleton.achievements.byFillColorAchieve) colorsCount += 2;
+		if (CubilineApplication.singleton.player.blueAchieve) colorsCount++;
+		if (CubilineApplication.singleton.player.orangeAchieve) colorsCount++;
+		if (CubilineApplication.singleton.player.greenAchieve) colorsCount++;
+		if (CubilineApplication.singleton.player.yellowAchieve) colorsCount++;
+		if (CubilineApplication.singleton.player.redAchieve) colorsCount++;
+		if (CubilineApplication.singleton.player.purpleAchieve) colorsCount++;
+		if (CubilineApplication.singleton.player.byScoreColorAchieve) colorsCount += 6;
+		if (CubilineApplication.singleton.player.byLengthColorAchieve) colorsCount += 6;
+		if (CubilineApplication.singleton.player.byFillColorAchieve) colorsCount += 2;
 
 		colors.text = colorsCount.ToString() + "/ 21";
 	}
@@ -178,6 +182,28 @@ public class PlayerActionController : ActionContentController
 	{
 		nickNameInput.text = CubilineApplication.singleton.player.nickName;
 		Unselect();
+	}
+
+	public void ShowLeaderboardAction()
+	{
+#if UNITY_ANDROID
+		Social.ShowLeaderboardUI();
+#endif
+	}
+
+	public void ShowAchievementsAction()
+	{
+#if UNITY_ANDROID
+		Social.ShowAchievementsUI();
+#endif
+	}
+
+	public void ShowSaveGamesAction()
+	{
+	}
+
+	private void SaveGameLoaded()
+	{
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////

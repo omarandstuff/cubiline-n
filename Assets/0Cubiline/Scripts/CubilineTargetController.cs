@@ -93,8 +93,8 @@ public class CubilineTargetController : MonoBehaviour
 				else if (gameKind == CubilinePlayerController.PLAYER_KIND.ARCADE_COOP)
 					coopUIController.specialCommon = false;
 
-				CubilineApplication.singleton.achievements.diceCheck2 = false;
-				CubilineApplication.singleton.achievements.blackdiceCheck2 = false;
+				AchievementsData.diceCheck2 = false;
+				AchievementsData.blackdiceCheck2 = false;
 			}
 		}
 
@@ -214,8 +214,8 @@ public class CubilineTargetController : MonoBehaviour
 		else if (gameKind == CubilinePlayerController.PLAYER_KIND.ARCADE_COOP)
 			coopUIController.specialCommon = true;
 
-		CubilineApplication.singleton.achievements.diceCheck2 = true;
-		CubilineApplication.singleton.achievements.blackdiceCheck2 = true;
+		AchievementsData.diceCheck2 = true;
+		AchievementsData.blackdiceCheck2 = true;
 	}
 
 	public void ApplyMagnet(Transform activator)
@@ -239,12 +239,12 @@ public class CubilineTargetController : MonoBehaviour
 			}
 		}
 
-		CubilineApplication.singleton.achievements.diceCheck3 = true;
-		CubilineApplication.singleton.achievements.blackdiceCheck3 = true;
+		AchievementsData.diceCheck3 = true;
+		AchievementsData.blackdiceCheck3 = true;
 		CubilineApplication.singleton.CheckDiceLevelAchievement();
 		CubilineApplication.singleton.CheckBlackDiceLevelAchievement();
-		CubilineApplication.singleton.achievements.diceCheck3 = false;
-		CubilineApplication.singleton.achievements.blackdiceCheck3 = false;
+		AchievementsData.diceCheck3 = false;
+		AchievementsData.blackdiceCheck3 = false;
 	}
 
 }

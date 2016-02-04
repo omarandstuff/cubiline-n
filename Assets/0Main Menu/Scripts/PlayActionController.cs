@@ -14,7 +14,7 @@ public class PlayActionController : ActionContentController
 
 	void Awake()
 	{
-		if (CubilineApplication.singleton.settings.notFirstTime)
+		if (CubilineApplication.singleton.player.notFirstTime)
 			SceneName = "loby_game_scene";
 		else
 			SceneName = "tutorial_scene";

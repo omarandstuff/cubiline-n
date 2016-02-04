@@ -50,14 +50,14 @@ public class CubilineArenaController : MonoBehaviour
 		{
 			if (level == null)
 			{
-				level = Instantiate(CubilineApplication.singleton.levels[CubilineApplication.singleton.settings.arcadeLevelIndex].levelPrefav);
+				level = Instantiate(CubilineApplication.singleton.levels[CubilineApplication.singleton.player.arcadeLevelIndex].levelPrefav);
 			}
 		}
 		else if (gameKind == CubilinePlayerController.PLAYER_KIND.ARCADE_COOP)
 		{
 			if (level == null)
 			{
-				level = Instantiate(CubilineApplication.singleton.levels[CubilineApplication.singleton.settings.coopLevelIndex].levelPrefav);
+				level = Instantiate(CubilineApplication.singleton.levels[CubilineApplication.singleton.player.coopLevelIndex].levelPrefav);
 			}
 		}
 		else if (gameKind == CubilinePlayerController.PLAYER_KIND.TUTORIAL)

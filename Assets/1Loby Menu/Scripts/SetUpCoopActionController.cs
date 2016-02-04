@@ -17,9 +17,9 @@ public class SetUpCoopActionController : ActionContentController
 
 	void Start()
 	{
-		sizeSlider.value = CubilineApplication.singleton.settings.coopCubeSize;
-		speedSlider.value = CubilineApplication.singleton.settings.coopLineSpeed;
-		hardToggle.isOn = CubilineApplication.singleton.settings.coopHardMove;
+		sizeSlider.value = CubilineApplication.singleton.player.coopCubeSize;
+		speedSlider.value = CubilineApplication.singleton.player.coopLineSpeed;
+		hardToggle.isOn = CubilineApplication.singleton.player.coopHardMove;
 	}
 
 	public override void Select()
@@ -55,9 +55,9 @@ public class SetUpCoopActionController : ActionContentController
 	{
 		Unselect();
 
-		CubilineApplication.singleton.settings.coopCubeSize = (uint)sizeSlider.value;
-		CubilineApplication.singleton.settings.coopLineSpeed = (uint)speedSlider.value;
-		CubilineApplication.singleton.settings.coopHardMove = hardToggle.isOn;
+		CubilineApplication.singleton.player.coopCubeSize = (uint)sizeSlider.value;
+		CubilineApplication.singleton.player.coopLineSpeed = (uint)speedSlider.value;
+		CubilineApplication.singleton.player.coopHardMove = hardToggle.isOn;
 
 		CubilineApplication.singleton.SaveSettings();
 	}
@@ -65,8 +65,8 @@ public class SetUpCoopActionController : ActionContentController
 	public void CancelAction()
 	{
 		Unselect();
-		sizeSlider.value = CubilineApplication.singleton.settings.coopCubeSize;
-		speedSlider.value = CubilineApplication.singleton.settings.coopLineSpeed;
-		hardToggle.isOn = CubilineApplication.singleton.settings.coopHardMove;
+		sizeSlider.value = CubilineApplication.singleton.player.coopCubeSize;
+		speedSlider.value = CubilineApplication.singleton.player.coopLineSpeed;
+		hardToggle.isOn = CubilineApplication.singleton.player.coopHardMove;
 	}
 }

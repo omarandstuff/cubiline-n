@@ -80,75 +80,75 @@ public class LineCoopColorSelector : ActionContentController
 
 	void Start()
 	{
-		toggles[CubilineApplication.singleton.settings.player1ColorIndex].isOn = true;
+		toggles[CubilineApplication.singleton.player.player1ColorIndex].isOn = true;
 		_player1Selecting = true;
 
-		selectedPlayer1Index = CubilineApplication.singleton.settings.player1ColorIndex;
+		selectedPlayer1Index = CubilineApplication.singleton.player.player1ColorIndex;
 		selectedPlayer1Color = toggles[selectedPlayer1Index].transform.GetChild(1).GetComponent<Image>().color;
 
-		selectedPlayer2Index = CubilineApplication.singleton.settings.player2ColorIndex;
+		selectedPlayer2Index = CubilineApplication.singleton.player.player2ColorIndex;
 		selectedPlayer2Color = toggles[selectedPlayer2Index].transform.GetChild(1).GetComponent<Image>().color;
 
 		ApplyPlayer1Color();
 		ApplyPlayer2Color();
 
-		if (!CubilineApplication.singleton.achievements.blueAchieve)
+		if (!CubilineApplication.singleton.player.blueAchieve)
 		{
 			blockBlue.SetActive(true);
 			lockIcon.SetActive(true);
 			leyend.gameObject.SetActive(true);
 			unloked = false;
 		}
-		if (!CubilineApplication.singleton.achievements.orangeAchieve)
+		if (!CubilineApplication.singleton.player.orangeAchieve)
 		{
 			blockOrange.SetActive(true);
 			lockIcon.SetActive(true);
 			leyend.gameObject.SetActive(true);
 			unloked = false;
 		}
-		if (!CubilineApplication.singleton.achievements.greenAchieve)
+		if (!CubilineApplication.singleton.player.greenAchieve)
 		{
 			blockGreen.SetActive(true);
 			lockIcon.SetActive(true);
 			leyend.gameObject.SetActive(true);
 			unloked = false;
 		}
-		if (!CubilineApplication.singleton.achievements.yellowAchieve)
+		if (!CubilineApplication.singleton.player.yellowAchieve)
 		{
 			blockYellow.SetActive(true);
 			lockIcon.SetActive(true);
 			leyend.gameObject.SetActive(true);
 			unloked = false;
 		}
-		if (!CubilineApplication.singleton.achievements.redAchieve)
+		if (!CubilineApplication.singleton.player.redAchieve)
 		{
 			blockRed.SetActive(true);
 			lockIcon.SetActive(true);
 			leyend.gameObject.SetActive(true);
 			unloked = false;
 		}
-		if (!CubilineApplication.singleton.achievements.purpleAchieve)
+		if (!CubilineApplication.singleton.player.purpleAchieve)
 		{
 			blockPurple.SetActive(true);
 			lockIcon.SetActive(true);
 			leyend.gameObject.SetActive(true);
 			unloked = false;
 		}
-		if (!CubilineApplication.singleton.achievements.byScoreColorAchieve)
+		if (!CubilineApplication.singleton.player.byScoreColorAchieve)
 		{
 			blockScore.SetActive(true);
 			lockIcon.SetActive(true);
 			leyend.gameObject.SetActive(true);
 			unloked = false;
 		}
-		if (!CubilineApplication.singleton.achievements.byLengthColorAchieve)
+		if (!CubilineApplication.singleton.player.byLengthColorAchieve)
 		{
 			blockLength.SetActive(true);
 			lockIcon.SetActive(true);
 			leyend.gameObject.SetActive(true);
 			unloked = false;
 		}
-		if (!CubilineApplication.singleton.achievements.byFillColorAchieve)
+		if (!CubilineApplication.singleton.player.byFillColorAchieve)
 		{
 			blockFill.SetActive(true);
 			lockIcon.SetActive(true);
@@ -159,10 +159,10 @@ public class LineCoopColorSelector : ActionContentController
 
 	public override void Select()
 	{
-		selectedPlayer1Index = CubilineApplication.singleton.settings.player1ColorIndex;
+		selectedPlayer1Index = CubilineApplication.singleton.player.player1ColorIndex;
 		selectedPlayer1Color = toggles[selectedPlayer1Index].transform.GetChild(1).GetComponent<Image>().color;
 
-		selectedPlayer2Index = CubilineApplication.singleton.settings.player2ColorIndex;
+		selectedPlayer2Index = CubilineApplication.singleton.player.player2ColorIndex;
 		selectedPlayer2Color = toggles[selectedPlayer2Index].transform.GetChild(1).GetComponent<Image>().color;
 
 		okButton.GetComponent<EaseImageOpasity>().easeFace = EaseFloat.EASE_FACE.IN;
@@ -220,8 +220,8 @@ public class LineCoopColorSelector : ActionContentController
 	{
 		ApplyPlayer1Color();
 		ApplyPlayer2Color();
-		CubilineApplication.singleton.settings.player1ColorIndex = selectedPlayer1Index;
-		CubilineApplication.singleton.settings.player2ColorIndex = selectedPlayer2Index;
+		CubilineApplication.singleton.player.player1ColorIndex = selectedPlayer1Index;
+		CubilineApplication.singleton.player.player2ColorIndex = selectedPlayer2Index;
 		CubilineApplication.singleton.SaveSettings();
 		Unselect();
 	}
@@ -229,22 +229,22 @@ public class LineCoopColorSelector : ActionContentController
 	public void CancelAction()
 	{
 		if (_player1Selecting)
-			toggles[CubilineApplication.singleton.settings.player1ColorIndex].isOn = true;
+			toggles[CubilineApplication.singleton.player.player1ColorIndex].isOn = true;
 		else
-			toggles[CubilineApplication.singleton.settings.player2ColorIndex].isOn = true;
+			toggles[CubilineApplication.singleton.player.player2ColorIndex].isOn = true;
 
 		Unselect();
 	}
 
 	private void ApplyPlayer1Color()
 	{
-		CubilineApplication.singleton.settings.securePlayer1Color = selectedPlayer1Color;
+		CubilineApplication.singleton.player.securePlayer1Color = selectedPlayer1Color;
 		player1Material.color = selectedPlayer1Color;
 	}
 
 	private void ApplyPlayer2Color()
 	{
-		CubilineApplication.singleton.settings.securePlayer2Color = selectedPlayer2Color;
+		CubilineApplication.singleton.player.securePlayer2Color = selectedPlayer2Color;
 		player2Material.color = selectedPlayer2Color;
 	}
 }

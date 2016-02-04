@@ -51,9 +51,9 @@ public class CubeSelector : ActionContentController
 		GetUnlocked();
 		selectorFixer.unlocked = unlocked;
 		if(gameKind == CubilinePlayerController.PLAYER_KIND.ARCADE)
-			selectorFixer.SetLevelIndex((int)CubilineApplication.singleton.settings.arcadeLevelIndex);
+			selectorFixer.SetLevelIndex((int)CubilineApplication.singleton.player.arcadeLevelIndex);
 		else if (gameKind == CubilinePlayerController.PLAYER_KIND.ARCADE_COOP)
-			selectorFixer.SetLevelIndex((int)CubilineApplication.singleton.settings.coopLevelIndex);
+			selectorFixer.SetLevelIndex((int)CubilineApplication.singleton.player.coopLevelIndex);
 	}
 
 	public override void Select()
@@ -92,18 +92,18 @@ public class CubeSelector : ActionContentController
 		if (unlocked[selectorFixer.levelIndex])
 		{
 			if (gameKind == CubilinePlayerController.PLAYER_KIND.ARCADE)
-				CubilineApplication.singleton.settings.arcadeLevelIndex = (uint)selectorFixer.levelIndex;
+				CubilineApplication.singleton.player.arcadeLevelIndex = (uint)selectorFixer.levelIndex;
 			else if (gameKind == CubilinePlayerController.PLAYER_KIND.ARCADE_COOP)
-				CubilineApplication.singleton.settings.coopLevelIndex = (uint)selectorFixer.levelIndex;
+				CubilineApplication.singleton.player.coopLevelIndex = (uint)selectorFixer.levelIndex;
 			
 			CubilineApplication.singleton.SaveSettings();
 		}
 		else
 		{
 			if (gameKind == CubilinePlayerController.PLAYER_KIND.ARCADE)
-				selectorFixer.SetLevelIndex((int)CubilineApplication.singleton.settings.arcadeLevelIndex);
+				selectorFixer.SetLevelIndex((int)CubilineApplication.singleton.player.arcadeLevelIndex);
 			else if (gameKind == CubilinePlayerController.PLAYER_KIND.ARCADE_COOP)
-				selectorFixer.SetLevelIndex((int)CubilineApplication.singleton.settings.coopLevelIndex);
+				selectorFixer.SetLevelIndex((int)CubilineApplication.singleton.player.coopLevelIndex);
 		}
 		Unselect();
 	}
@@ -112,24 +112,24 @@ public class CubeSelector : ActionContentController
 	{
 		scroll.inertia = false;
 		if (gameKind == CubilinePlayerController.PLAYER_KIND.ARCADE)
-			selectorFixer.SetLevelIndex((int)CubilineApplication.singleton.settings.arcadeLevelIndex);
+			selectorFixer.SetLevelIndex((int)CubilineApplication.singleton.player.arcadeLevelIndex);
 		else if (gameKind == CubilinePlayerController.PLAYER_KIND.ARCADE_COOP)
-			selectorFixer.SetLevelIndex((int)CubilineApplication.singleton.settings.coopLevelIndex);
+			selectorFixer.SetLevelIndex((int)CubilineApplication.singleton.player.coopLevelIndex);
 		Unselect();
 	}
 
 	private void GetUnlocked()
 	{
 		unlocked[0] = true;
-		unlocked[1] = CubilineApplication.singleton.achievements.blackCubeAchieve;
-		unlocked[2] = CubilineApplication.singleton.achievements.diceAchieve;
-		unlocked[3] = CubilineApplication.singleton.achievements.blackDiceAchieve;
-		unlocked[4] = CubilineApplication.singleton.achievements.toyAchieve;
-		unlocked[5] = CubilineApplication.singleton.achievements.blackToyAchieve;
-		unlocked[6] = CubilineApplication.singleton.achievements.paperAchieve;
-		unlocked[7] = CubilineApplication.singleton.achievements.blackPaperAchieve;
-		unlocked[8] = CubilineApplication.singleton.achievements.incognitAchieve;
-		unlocked[9] = CubilineApplication.singleton.achievements.blackIncognitAchieve;
+		unlocked[1] = CubilineApplication.singleton.player.blackCubeAchieve;
+		unlocked[2] = CubilineApplication.singleton.player.diceAchieve;
+		unlocked[3] = CubilineApplication.singleton.player.blackDiceAchieve;
+		unlocked[4] = CubilineApplication.singleton.player.toyAchieve;
+		unlocked[5] = CubilineApplication.singleton.player.blackToyAchieve;
+		unlocked[6] = CubilineApplication.singleton.player.paperAchieve;
+		unlocked[7] = CubilineApplication.singleton.player.blackPaperAchieve;
+		unlocked[8] = CubilineApplication.singleton.player.incognitAchieve;
+		unlocked[9] = CubilineApplication.singleton.player.blackIncognitAchieve;
 
 		if(unlocked[1])
 		{

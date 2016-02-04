@@ -28,6 +28,8 @@ public class CubilineArcade : MonoBehaviour
 	private Touch touchAtBegin;
 
 	private float timeOfGame;
+
+	private uint arenaSize;
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// MONO BEHAVIOR /////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -41,7 +43,7 @@ public class CubilineArcade : MonoBehaviour
 		CubilineMusicPlayer.inMenu = false;
 
 		// Ensecure player color
-		player1Material.color = CubilineApplication.singleton.settings.securePlayer1Color;
+		player1Material.color = CubilineApplication.singleton.player.securePlayer1Color;
 
 		Reset();
 	}
@@ -50,14 +52,12 @@ public class CubilineArcade : MonoBehaviour
 	{
 		if(status != STATUS.PLAYING)
 		{
-			if((followTarget.transform.position - outTarget.position).magnitude < CubilineApplication.singleton.settings.arcadeCubeSize)
+			if((followTarget.transform.position - outTarget.position).magnitude < CubilineApplication.singleton.player.arcadeCubeSize)
 			{
 				// Player game inf
 				CubilineApplication.singleton.player.arcadeTimePlayed += Time.time - timeOfGame;
-				CubilineApplication.singleton.SavePlayer();
-
 				CubilineApplication.singleton.CheckBlackKnowledgeLevelAchievement();
-				CubilineApplication.singleton.SaveAchievements();
+				CubilineApplication.singleton.SavePlayer();
 
 				if (status == STATUS.GIONG_OUT)
 				{
@@ -107,11 +107,11 @@ public class CubilineArcade : MonoBehaviour
 			CubilineApplication.singleton.player.arcadeGamesPlayed++;
 			CubilineApplication.singleton.player.arcadeTimePlayed += Time.time - timeOfGame;
 			CubilineApplication.singleton.player.lastArcadeTime = Time.time - timeOfGame;
-			CubilineApplication.singleton.SavePlayer();
 
 			CubilineApplication.singleton.CheckRedColorAchievement();
 			CubilineApplication.singleton.CheckBlackKnowledgeLevelAchievement();
-			CubilineApplication.singleton.SaveAchievements();
+
+			CubilineApplication.singleton.SavePlayer();
 
 			CubilineApplication.singleton.lastComment = "arcade_scene";
 
@@ -143,7 +143,7 @@ public class CubilineArcade : MonoBehaviour
 				else if (e.keyCode == KeyCode.DownArrow)
 					player.AddTurn(CubilinePlayerController.TURN.DOWN);
 				else if (e.keyCode == KeyCode.Space)
-					player.speed = CubilineApplication.singleton.settings.arcadeLineSpeed * 2.0f;
+					player.speed = CubilineApplication.singleton.player.arcadeLineSpeed * 2.0f;
 			}
 			if (e.keyCode == KeyCode.Escape && !menuKey) // Menu
 			{
@@ -168,7 +168,7 @@ public class CubilineArcade : MonoBehaviour
 		else if (e.type == EventType.keyUp)
 		{
 			if (e.keyCode == KeyCode.Space)
-				player.speed = CubilineApplication.singleton.settings.arcadeLineSpeed;
+				player.speed = CubilineApplication.singleton.player.arcadeLineSpeed;
 			else if (e.keyCode == KeyCode.Escape)
 				menuKey = false;
 		}
@@ -183,10 +183,10 @@ public class CubilineArcade : MonoBehaviour
 
 			if (touch.phase == TouchPhase.Stationary)
 			{
-				player.speed = CubilineApplication.singleton.settings.arcadeLineSpeed * 2.0f;
+				player.speed = CubilineApplication.singleton.player.arcadeLineSpeed * 2.0f;
 			}
 			else
-				player.speed = CubilineApplication.singleton.settings.arcadeLineSpeed;
+				player.speed = CubilineApplication.singleton.player.arcadeLineSpeed;
 
 			if (touch.phase == TouchPhase.Began)
 			{
@@ -220,25 +220,27 @@ public class CubilineArcade : MonoBehaviour
 
 	public void Reset()
 	{
-		arenaController.Reset(CubilineApplication.singleton.settings.arcadeCubeSize);
-		followCamera.transform.localPosition = new Vector3(0.0f, 0.0f, -CubilineApplication.singleton.settings.arcadeCubeSize * 2.0f);
+		arenaSize = CubilineApplication.singleton.player.arcadeCubeSize + (CubilineApplication.singleton.player.arcadeCubeSize % 2 == 0 ? 1u : 0u);
+		arenaController.Reset(arenaSize);
+		followCamera.transform.localPosition = new Vector3(0.0f, 0.0f, -arenaSize * 2.0f);
 
+		// Because othrt things.
 		CubilineApplication.singleton.player.lastCoopScore = 0;
 		CubilineApplication.singleton.player.lastCoopLength = 0;
 
-		player.Reset(CubilineApplication.singleton.settings.arcadeCubeSize);
-		player.speed = CubilineApplication.singleton.settings.arcadeLineSpeed;
-		player.hardMove = CubilineApplication.singleton.settings.arcadeHardMove;
+		player.Reset(arenaSize);
+		player.speed = CubilineApplication.singleton.player.arcadeLineSpeed;
+		player.hardMove = CubilineApplication.singleton.player.arcadeHardMove;
 
 		followCamera.GetComponent<UnityStandardAssets.ImageEffects.DepthOfField>().enabled = CubilineApplication.singleton.settings.depthOfField;
 		followCamera.GetComponent<UnityStandardAssets.ImageEffects.ScreenSpaceAmbientOcclusion>().enabled = CubilineApplication.singleton.settings.ambientOcclusion;
 
-		followTarget.transform.position = new Vector3(-CubilineApplication.singleton.settings.arcadeCubeSize * 2, 0, -CubilineApplication.singleton.settings.arcadeCubeSize / 2);
+		followTarget.transform.position = new Vector3(-arenaSize * 2, 0, -arenaSize / 2);
 	}
 
 	void GoOut()
 	{
-		outTarget.transform.position = followCamera.transform.localPosition + (followCamera.transform.localPosition - followCamera.target.transform.localPosition).normalized * CubilineApplication.singleton.settings.arcadeCubeSize;
+		outTarget.transform.position = followCamera.transform.localPosition + (followCamera.transform.localPosition - followCamera.target.transform.localPosition).normalized * arenaSize;
 		followTarget.target = outTarget;
 		followTarget.followSmoothTime = 0.8f;
 	}

@@ -17,9 +17,9 @@ public class SetUpActionController : ActionContentController
 
 	void Start()
 	{
-		sizeSlider.value = CubilineApplication.singleton.settings.arcadeCubeSize;
-		speedSlider.value = CubilineApplication.singleton.settings.arcadeLineSpeed;
-		hardToggle.isOn = CubilineApplication.singleton.settings.arcadeHardMove;
+		sizeSlider.value = CubilineApplication.singleton.player.arcadeCubeSize;
+		speedSlider.value = CubilineApplication.singleton.player.arcadeLineSpeed;
+		hardToggle.isOn = CubilineApplication.singleton.player.arcadeHardMove;
 	}
 
 	public override void Select()
@@ -55,9 +55,9 @@ public class SetUpActionController : ActionContentController
 	{
 		Unselect();
 
-		CubilineApplication.singleton.settings.arcadeCubeSize = (uint)sizeSlider.value;
-		CubilineApplication.singleton.settings.arcadeLineSpeed = (uint)speedSlider.value;
-		CubilineApplication.singleton.settings.arcadeHardMove = hardToggle.isOn;
+		CubilineApplication.singleton.player.arcadeCubeSize = (uint)sizeSlider.value;
+		CubilineApplication.singleton.player.arcadeLineSpeed = (uint)speedSlider.value;
+		CubilineApplication.singleton.player.arcadeHardMove = hardToggle.isOn;
 
 		CubilineApplication.singleton.SaveSettings();
 	}
@@ -65,8 +65,8 @@ public class SetUpActionController : ActionContentController
 	public void CancelAction()
 	{
 		Unselect();
-		sizeSlider.value = CubilineApplication.singleton.settings.arcadeCubeSize;
-		speedSlider.value = CubilineApplication.singleton.settings.arcadeLineSpeed;
-		hardToggle.isOn = CubilineApplication.singleton.settings.arcadeHardMove;
+		sizeSlider.value = CubilineApplication.singleton.player.arcadeCubeSize;
+		speedSlider.value = CubilineApplication.singleton.player.arcadeLineSpeed;
+		hardToggle.isOn = CubilineApplication.singleton.player.arcadeHardMove;
 	}
 }
