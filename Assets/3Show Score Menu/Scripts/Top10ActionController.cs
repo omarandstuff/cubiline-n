@@ -58,7 +58,7 @@ public class Top10ActionController : ActionContentController
 	IEnumerator LoadScores()
 	{
 		// Create a download object.
-		WWW download = new WWW("http://cubiline.com/MGODS");
+		WWW download = new WWW("http://www.cubiline.com/MGODS");
 
 		// Wait until the download is done
 		yield return download;

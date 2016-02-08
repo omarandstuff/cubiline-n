@@ -198,8 +198,6 @@ public class CubilineApplication : MonoBehaviour
 		thisone = this;
 		DontDestroyOnLoad(gameObject);
 
-		Environment.SetEnvironmentVariable("MONO_REFLECTION_SERIALIZER", "yes");
-
 		settings = new SettingsData();
 		player = new PlayerData();
 		LoadAll();
