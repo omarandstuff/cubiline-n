@@ -89,6 +89,7 @@ public class ShowScoreActionController : ActionContentController
 
 	private IEnumerator PublicScore()
 	{
+#if !UNITY_WEBGL
 		// Create a form object for sending high score data to the server
 		WWWForm form = new WWWForm();
 		form.AddField("arcade[player]", CubilineApplication.singleton.player.nickName);
@@ -114,5 +115,8 @@ public class ShowScoreActionController : ActionContentController
 		{
 			print("Error downloading: " + download.error);
 		}
+#else
+		yield return new WaitForSeconds(0);
+#endif
 	}
 }

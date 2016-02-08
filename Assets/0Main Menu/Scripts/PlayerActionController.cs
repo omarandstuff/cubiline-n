@@ -57,7 +57,7 @@ public class PlayerActionController : ActionContentController
 
 	void Start()
 	{
-		nickNameInput.text = CubilineApplication.singleton.player.nickName;
+		if(nickNameInput != null) nickNameInput.text = CubilineApplication.singleton.player.nickName;
 
 		arcadeHighScore.text = CubilineApplication.singleton.player.bestArcadeScore.ToString();
 		if(CubilineApplication.singleton.player.bestArcadeScoreDateTime.Year != 1)
@@ -167,7 +167,7 @@ public class PlayerActionController : ActionContentController
 
 	public void OkAction()
 	{
-		if(nickNameInput.text == "")
+		if(nickNameInput.text == "" && nickNameInput != null)
 			nickNameInput.text = CubilineApplication.singleton.player.nickName;
 		else
 		{
@@ -180,7 +180,7 @@ public class PlayerActionController : ActionContentController
 
 	public void CancelAction()
 	{
-		nickNameInput.text = CubilineApplication.singleton.player.nickName;
+		if (nickNameInput != null) nickNameInput.text = CubilineApplication.singleton.player.nickName;
 		Unselect();
 	}
 
