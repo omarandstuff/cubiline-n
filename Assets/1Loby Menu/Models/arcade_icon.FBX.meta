@@ -1,20 +1,75 @@
 fileFormatVersion: 2
-guid: bcf6d8c37201cfb48987e8ea95131098
-timeCreated: 1447191081
+guid: 2746a0db678206c41993cb74f5e9fdeb
+timeCreated: 1459662005
 licenseType: Free
 ModelImporter:
   serializedVersion: 18
   fileIDToRecycleName:
     100000: //RootNode
+    100002: block 004
+    100004: block 005
+    100006: block 006
+    100008: block 007
+    100010: block 008
+    100012: block 009
+    100014: block 010
+    100016: block 011
+    100018: block 1
+    100020: block 2
+    100022: block 3
+    100024: single_player_model
     400000: //RootNode
-    2300000: //RootNode
-    3300000: //RootNode
-    4300000: Plane001
-    4300002: play_model
-    6400000: //RootNode
+    400002: block 004
+    400004: block 005
+    400006: block 006
+    400008: block 007
+    400010: block 008
+    400012: block 009
+    400014: block 010
+    400016: block 011
+    400018: block 1
+    400020: block 2
+    400022: block 3
+    400024: single_player_model
+    2300000: block 004
+    2300002: block 005
+    2300004: block 006
+    2300006: block 007
+    2300008: block 008
+    2300010: block 009
+    2300012: block 010
+    2300014: block 011
+    2300016: block 1
+    2300018: block 2
+    2300020: block 3
+    2300022: single_player_model
+    3300000: block 004
+    3300002: block 005
+    3300004: block 006
+    3300006: block 007
+    3300008: block 008
+    3300010: block 009
+    3300012: block 010
+    3300014: block 011
+    3300016: block 1
+    3300018: block 2
+    3300020: block 3
+    3300022: single_player_model
+    4300000: single_player_model
+    4300002: block 2
+    4300004: block 1
+    4300006: block 3
+    4300008: block 004
+    4300010: block 005
+    4300012: block 006
+    4300014: block 007
+    4300016: block 008
+    4300018: block 009
+    4300020: block 010
+    4300022: block 011
     9500000: //RootNode
   materials:
-    importMaterials: 0
+    importMaterials: 1
     materialName: 0
     materialSearch: 1
   animations:
@@ -38,7 +93,7 @@ ModelImporter:
     lODScreenPercentages: []
     globalScale: 1
     meshCompression: 0
-    addColliders: 1
+    addColliders: 0
     importBlendShapes: 1
     swapUVChannels: 0
     generateSecondaryUV: 0

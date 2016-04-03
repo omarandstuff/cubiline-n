@@ -1,22 +1,15 @@
 fileFormatVersion: 2
-guid: 549efd1415b993b409a88577718cee71
-timeCreated: 1449806590
+guid: df9243cd1ad58b34aa77c6633f20ce10
+timeCreated: 1459662006
 licenseType: Free
 ModelImporter:
   serializedVersion: 18
   fileIDToRecycleName:
     100000: //RootNode
-    100002: go_model
-    100004: go_model 1
     400000: //RootNode
-    400002: go_model
-    400004: go_model 1
-    2300000: go_model
-    2300002: go_model 1
-    3300000: go_model
-    3300002: go_model 1
-    4300000: go_model
-    4300002: go_model
+    2300000: //RootNode
+    3300000: //RootNode
+    4300000: play_model
     9500000: //RootNode
   materials:
     importMaterials: 1

@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: b374b0242dacad04c8c97b23a7674074
-timeCreated: 1447215403
+guid: ecd52759e86c82a46aa33086929ab1c6
+timeCreated: 1459662006
 licenseType: Free
 ModelImporter:
   serializedVersion: 18
@@ -9,11 +9,10 @@ ModelImporter:
     400000: //RootNode
     2300000: //RootNode
     3300000: //RootNode
-    4300000: Box001
-    4300002: Cubiline Title
+    4300000: play_model
     9500000: //RootNode
   materials:
-    importMaterials: 0
+    importMaterials: 1
     materialName: 0
     materialSearch: 1
   animations:

@@ -1,22 +1,15 @@
 fileFormatVersion: 2
-guid: c9c4077707cd3014d93eeee907cfb735
-timeCreated: 1453464461
+guid: 13b7a5f62e7aa284e9bed0eedc04b3cb
+timeCreated: 1459662364
 licenseType: Free
 ModelImporter:
   serializedVersion: 18
   fileIDToRecycleName:
-    100000: frame
-    100002: incognit
-    100004: //RootNode
-    400000: frame
-    400002: incognit
-    400004: //RootNode
-    2300000: frame
-    2300002: incognit
-    3300000: frame
-    3300002: incognit
-    4300000: frame
-    4300002: incognit
+    100000: //RootNode
+    400000: //RootNode
+    2300000: //RootNode
+    3300000: //RootNode
+    4300000: Main Menu Model
     9500000: //RootNode
   materials:
     importMaterials: 1

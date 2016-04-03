@@ -1,18 +1,25 @@
 fileFormatVersion: 2
-guid: 07a73a4f100986246ae06434f08e376b
-timeCreated: 1449027924
+guid: a90742d0dc862c943821daf2a810f7cd
+timeCreated: 1459662006
 licenseType: Free
 ModelImporter:
   serializedVersion: 18
   fileIDToRecycleName:
-    100000: //RootNode
-    400000: //RootNode
-    2300000: //RootNode
-    3300000: //RootNode
-    4300000: single_player_model
+    100000: frame
+    100002: incognit
+    100004: //RootNode
+    400000: frame
+    400002: incognit
+    400004: //RootNode
+    2300000: frame
+    2300002: incognit
+    3300000: frame
+    3300002: incognit
+    4300000: frame
+    4300002: incognit
     9500000: //RootNode
   materials:
-    importMaterials: 0
+    importMaterials: 1
     materialName: 0
     materialSearch: 1
   animations:
