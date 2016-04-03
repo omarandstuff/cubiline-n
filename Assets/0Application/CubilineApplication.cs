@@ -3,17 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml.Serialization;
-using UnityEngine;
-
-#if UNITY_ANDROID
-using GooglePlayGames;
-using GooglePlayGames.BasicApi;
-using GooglePlayGames.BasicApi.SavedGame;
 using System.Text;
 using System.Security.Cryptography;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
-#endif
+using UnityEngine;
 
 [Serializable]
 public class SettingsData
@@ -210,12 +204,8 @@ public class CubilineApplication : MonoBehaviour
 		// First Level of quality
 		if (settings.qualityIndex == -1)
 		{
-			settings.qualityIndex = 0;
+			settings.qualityIndex = 1;
 
-#if UNITY_WSA_10_0 || UNITY_WSA_8_1
-			settings.qualityIndex = 2;
-			QualitySettings.SetQualityLevel(settings.qualityIndex, true);
-#endif
 			SaveSettings();
 		}
 
@@ -230,40 +220,12 @@ public class CubilineApplication : MonoBehaviour
 
 	void StartSocialAPI()
 	{
-#if UNITY_ANDROID
-		StartGoogleGameServices();
-		LogIn();
-#endif
+
 	}
-
-	////////////////////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////// GOOGLE PLAY GAME SERVICES ///////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////////////////////
-
-#if UNITY_ANDROID
-	private void StartGoogleGameServices()
-	{
-		PlayGamesClientConfiguration config = new PlayGamesClientConfiguration.Builder().EnableSavedGames().Build();
-
-		PlayGamesPlatform.InitializeInstance(config);
-
-		// Activate the Google Play Games platform
-		PlayGamesPlatform.Activate();
-	}
-#endif
 
 	private void LogIn()
 	{
-#if UNITY_ANDROID
-		if (logedIn) Social.localUser.Authenticate((bool success) =>
-		{
-			if(success)
-			{
-				if (logedIn) Social.ReportProgress(GPGSIds.achievement_open_the_box, 100.0f, (bool success_) => { });
-				logedIn = true;
-			}
-		});
-#endif
+
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -287,33 +249,15 @@ public class CubilineApplication : MonoBehaviour
 		XmlSerializer serializer = new XmlSerializer(typeof(SettingsData));
 		FileStream stream = new FileStream(Application.persistentDataPath + "/c_s_d.dat", FileMode.Create);
 		serializer.Serialize(stream, settings);
-#if !UNITY_WSA_10_0 || UNITY_EDITOR
 		stream.Close();
-#endif
 	}
 
 	public void SavePlayer()
 	{
-#if UNITY_WSA || UNITY_WP8_1
-		XmlSerializer serializer = new XmlSerializer(typeof(PlayerData));
-		FileStream stream = new FileStream(Application.persistentDataPath + "/c_p_d.dat", FileMode.Create);
-		serializer.Serialize(stream, player);
-
-#if !UNITY_WSA_10_0 || UNITY_EDITOR
-		stream.Close();
-#endif
-
-#endif
-
-#if UNITY_ANDROID
 		IFormatter formatter = new BinaryFormatter();
 		Stream stream = new FileStream(Application.persistentDataPath + "/c_p_d.dat", FileMode.Create, FileAccess.Write, FileShare.None);
 		formatter.Serialize(stream, player);
 		stream.Close();
-
-		if (logedIn) if (logedIn) Social.ReportScore(Math.Max(player.bestArcadeScore, player.bestCoopScore), GPGSIds.leaderboard_high_score, (bool success) => { });
-		if (logedIn) if (logedIn) Social.ReportScore(Math.Max(player.bestArcadeLength, player.bestCoopLength), GPGSIds.leaderboard_longest, (bool success) => {});
-#endif
 	}
 
 	public void LoadSettings()
@@ -322,31 +266,16 @@ public class CubilineApplication : MonoBehaviour
 		XmlSerializer serializer = new XmlSerializer(typeof(SettingsData));
 		FileStream stream = new FileStream(Application.persistentDataPath + "/c_s_d.dat", FileMode.Open);
 		settings = serializer.Deserialize(stream) as SettingsData;
-
-#if !UNITY_WSA_10_0 || UNITY_EDITOR
 		stream.Close();
-#endif
 	}
 
 	public void LoadPlayer()
 	{
 		if (!File.Exists(Application.persistentDataPath + "/c_p_d.dat")) return;
-#if UNITY_WSA || UNITY_WP8_1
-		XmlSerializer serializer = new XmlSerializer(typeof(PlayerData));
-		FileStream stream = new FileStream(Application.persistentDataPath + "/c_p_d.dat", FileMode.Open);
-		player = serializer.Deserialize(stream) as PlayerData;
-
-#if !UNITY_WSA_10_0 || UNITY_EDITOR
-		stream.Close();
-#endif
-#endif
-
-#if UNITY_ANDROID
 		IFormatter formatter = new BinaryFormatter();
 		Stream stream = new FileStream(Application.persistentDataPath + "/c_p_d.dat", FileMode.Open, FileAccess.Read, FileShare.Read);
 		player = (PlayerData)formatter.Deserialize(stream);
 		stream.Close();
-#endif
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -357,9 +286,6 @@ public class CubilineApplication : MonoBehaviour
 	{
 		if (!player.blueAchieve)
 		{
-#if UNITY_ANDROID
-			if (logedIn) Social.ReportProgress(GPGSIds.achievement_blue_eater, Mathf.Min(player.blueCount, AchievementsData.blueColorTraget) / AchievementsData.blueColorTraget * 100, (bool success) => { });
-#endif
 			if (player.blueCount >= AchievementsData.blueColorTraget)
 			{
 				player.blueAchieve = true;
@@ -376,9 +302,6 @@ public class CubilineApplication : MonoBehaviour
 	{
 		if (!player.orangeAchieve)
 		{
-#if UNITY_ANDROID
-			if (logedIn) Social.ReportProgress(GPGSIds.achievement_orange_eater, Mathf.Min(player.orangeCount, AchievementsData.orangeColorTraget) / AchievementsData.orangeColorTraget * 100, (bool success) => { });
-#endif
 			if (player.orangeCount >= AchievementsData.orangeColorTraget)
 			{
 				player.orangeAchieve = true;
@@ -395,9 +318,6 @@ public class CubilineApplication : MonoBehaviour
 	{
 		if (!player.greenAchieve)
 		{
-#if UNITY_ANDROID
-			if (logedIn) Social.ReportProgress(GPGSIds.achievement_green_eater, Mathf.Min(player.greenCount, AchievementsData.greenColorTraget) / AchievementsData.greenColorTraget * 100, (bool success) => { });
-#endif
 			if (player.greenCount >= AchievementsData.greenColorTraget)
 			{
 				player.greenAchieve = true;
@@ -414,9 +334,6 @@ public class CubilineApplication : MonoBehaviour
 	{
 		if (!player.yellowAchieve)
 		{
-#if UNITY_ANDROID
-			if (logedIn) Social.ReportProgress(GPGSIds.achievement_multiplier_eater, Mathf.Min(player.yellowCount, AchievementsData.yellowColorTraget) / AchievementsData.yellowColorTraget * 100, (bool success) => { });
-#endif
 			if (player.yellowCount >= AchievementsData.yellowColorTraget)
 			{
 				player.yellowAchieve = true;
@@ -433,9 +350,6 @@ public class CubilineApplication : MonoBehaviour
 	{
 		if (!player.redAchieve)
 		{
-#if UNITY_ANDROID
-			if (logedIn) Social.ReportProgress(GPGSIds.achievement_cubiline_player, Mathf.Min(player.arcadeGamesPlayed + player.coopGamesPlayed, AchievementsData.redColorTraget) / AchievementsData.redColorTraget * 100, (bool success) => { });
-#endif
 			if (player.arcadeGamesPlayed + player.coopGamesPlayed >= AchievementsData.redColorTraget)
 			{
 				player.redAchieve = true;
@@ -452,9 +366,6 @@ public class CubilineApplication : MonoBehaviour
 	{
 		if (!player.purpleAchieve)
 		{
-#if UNITY_ANDROID
-			if (logedIn) Social.ReportProgress(GPGSIds.achievement_magnet_eater, Mathf.Min(player.purpleCount, AchievementsData.purpleColorTraget) / AchievementsData.purpleColorTraget * 100, (bool success) => { });
-#endif
 			if (player.purpleCount >= AchievementsData.purpleColorTraget)
 			{
 				player.purpleAchieve = true;
@@ -473,9 +384,6 @@ public class CubilineApplication : MonoBehaviour
 		{
 			if (player.lastArcadeScore >= AchievementsData.scoreColorTarget || player.lastCoopScore >= AchievementsData.scoreColorTarget)
 			{
-#if UNITY_ANDROID
-				if (logedIn) Social.ReportProgress(GPGSIds.achievement_big_player, 100.0f, (bool success) => { });
-#endif
 				player.byScoreColorAchieve = true;
 				inStack.Push(scoreColorAchivementPortalPrefab);
 				if (waithStack.Count == 0) ShowPortal();
@@ -492,9 +400,6 @@ public class CubilineApplication : MonoBehaviour
 		{
 			if (player.totalArcadeLength >= AchievementsData.lengthColorTraget || player.totalCoopLength >= AchievementsData.lengthColorTraget)
 			{
-#if UNITY_ANDROID
-				if (logedIn) Social.ReportProgress(GPGSIds.achievement_anaconda, 100.0f, (bool success) => { });
-#endif
 				player.byLengthColorAchieve = true;
 				inStack.Push(lengthColorAchivementPortalPrefab);
 				if (waithStack.Count == 0) ShowPortal();
@@ -511,9 +416,6 @@ public class CubilineApplication : MonoBehaviour
 		{
 			if (player.lastArcadeLength >= AchievementsData.fillColorTarget || player.lastCoopLength >= AchievementsData.fillColorTarget)
 			{
-#if UNITY_ANDROID
-				if (logedIn) Social.ReportProgress(GPGSIds.achievement_indianapolis_500, 100.0f, (bool success) => { });
-#endif
 				player.byFillColorAchieve = true;
 				inStack.Push(fillColorAchivementPortalPrefab);
 				if (waithStack.Count == 0) ShowPortal();
@@ -528,9 +430,6 @@ public class CubilineApplication : MonoBehaviour
 	{
 		if (!player.blackCubeAchieve)
 		{
-#if UNITY_ANDROID
-			if (logedIn) Social.ReportProgress(GPGSIds.achievement_gray_eater, Mathf.Min(player.grayCount, AchievementsData.blackCubeTarget) / AchievementsData.blackCubeTarget * 100, (bool success) => { });
-#endif
 			if (player.grayCount >= AchievementsData.blackCubeTarget)
 			{
 				player.blackCubeAchieve = true;
@@ -547,9 +446,6 @@ public class CubilineApplication : MonoBehaviour
 		{
 			if (AchievementsData.diceCheck1 && AchievementsData.diceCheck2 && AchievementsData.diceCheck3)
 			{
-#if UNITY_ANDROID
-				if (logedIn) Social.ReportProgress(GPGSIds.achievement_lucky_player, 100.0f, (bool success) => { });
-#endif
 				player.diceAchieve = true;
 				inStack.Push(diceLevelAchivementPortalPrefab);
 				if (waithStack.Count == 0) ShowPortal();
@@ -564,9 +460,6 @@ public class CubilineApplication : MonoBehaviour
 		{
 			if (AchievementsData.blackdiceCheck1 && AchievementsData.blackdiceCheck2 && AchievementsData.blackdiceCheck3)
 			{
-#if UNITY_ANDROID
-				if (logedIn) Social.ReportProgress(GPGSIds.achievement_luckiest_player, 100.0f, (bool success) => { });
-#endif
 				player.blackDiceAchieve = true;
 				inStack.Push(blackDiceLevelAchivementPortalPrefab);
 				if (waithStack.Count == 0) ShowPortal();
@@ -581,9 +474,6 @@ public class CubilineApplication : MonoBehaviour
 		{
 			if ((player.lastArcadeScore >= 100 && player.lastArcadeLength == 3) || (player.lastCoopScore >= 100 && player.lastCoopLength == 6))
 			{
-#if UNITY_ANDROID
-				if (logedIn) Social.ReportProgress(GPGSIds.achievement_logical_player, 100.0f, (bool success) => { });
-#endif
 				player.toyAchieve = true;
 				inStack.Push(toyLevelAchivementPortalPrefab);
 				if (waithStack.Count == 0) ShowPortal();
@@ -598,9 +488,6 @@ public class CubilineApplication : MonoBehaviour
 		{
 			if ((player.lastArcadeScore >= 200 && player.lastArcadeLength == 3) || (player.lastCoopScore >= 200 && player.lastCoopLength == 6))
 			{
-#if UNITY_ANDROID
-				if (logedIn) Social.ReportProgress(GPGSIds.achievement_strategist_player, 100.0f, (bool success) => { });
-#endif
 				player.blackToyAchieve = true;
 				inStack.Push(blackToyLevelAchivementPortalPrefab);
 				if (waithStack.Count == 0) ShowPortal();
@@ -613,9 +500,6 @@ public class CubilineApplication : MonoBehaviour
 	{
 		if (!player.paperAchieve)
 		{
-#if UNITY_ANDROID
-			if (logedIn) Social.ReportProgress(GPGSIds.achievement_open_the_box, 100.0f, (bool success) => { });
-#endif
 			player.paperAchieve = true;
 			inStack.Push(boxLevelAchivementPortalPrefab);
 			if (waithStack.Count == 0) ShowPortal();
@@ -629,9 +513,6 @@ public class CubilineApplication : MonoBehaviour
 		{
 			if(player.blueAchieve && player.orangeAchieve && player.greenAchieve && player.yellowAchieve && player.redAchieve && player.purpleAchieve && player.byScoreColorAchieve && player.byLengthColorAchieve && player.byFillColorAchieve)
 			{
-#if UNITY_ANDROID
-				if (logedIn) Social.ReportProgress(GPGSIds.achievement_colorfull, 100.0f, (bool success) => { });
-#endif
 				player.blackPaperAchieve = true;
 				inStack.Push(blackBoxLevelAchivementPortalPrefab);
 				if (waithStack.Count == 0) ShowPortal();
@@ -644,9 +525,6 @@ public class CubilineApplication : MonoBehaviour
 	{
 		if (!player.incognitAchieve)
 		{
-#if UNITY_ANDROID
-			if (logedIn) Social.ReportProgress(GPGSIds.achievement_wiseman, 100.0f, (bool success) => { });
-#endif
 			player.incognitAchieve = true;
 			inStack.Push(knowledgeLevelAchivementPortalPrefab);
 			if (waithStack.Count == 0) ShowPortal();
@@ -660,9 +538,6 @@ public class CubilineApplication : MonoBehaviour
 		{
 			if(player.arcadeTimePlayed + player.coopTimePlayed >= AchievementsData.blackIncognitTarget)
 			{
-#if UNITY_ANDROID
-				if (logedIn) Social.ReportProgress(GPGSIds.achievement_cubiline_fan, 100.0f, (bool success) => { });
-#endif
 				player.blackIncognitAchieve = true;
 				inStack.Push(blackKnowledgeLevelAchivementPortalPrefab);
 				if (waithStack.Count == 0) ShowPortal();
