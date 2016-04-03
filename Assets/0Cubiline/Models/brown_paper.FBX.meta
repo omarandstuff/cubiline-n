@@ -1,23 +1,38 @@
 fileFormatVersion: 2
-guid: 55261f7e0cfaefd459404c3a1431083f
-timeCreated: 1453335069
+guid: 1cadd3b5086ad484fae408f0eff8a16a
+timeCreated: 1459657822
 licenseType: Free
 ModelImporter:
   serializedVersion: 18
   fileIDToRecycleName:
-    100000: //RootNode
-    100002: Text002
-    400000: //RootNode
-    400002: Text002
-    2300000: //RootNode
-    2300002: Text002
-    3300000: //RootNode
-    3300002: Text002
+    100000: Box001
+    100002: //RootNode
+    100004: Plane001
+    100006: Plane002
+    100008: Plane003
+    400000: Box001
+    400002: //RootNode
+    400004: Plane001
+    400006: Plane002
+    400008: Plane003
+    2300000: Box001
+    2300002: //RootNode
+    2300004: Plane001
+    2300006: Plane002
+    2300008: Plane003
+    3300000: Box001
+    3300002: //RootNode
+    3300004: Plane001
+    3300006: Plane002
+    3300008: Plane003
     4300000: ChamferBox001
-    4300002: Text002
+    4300002: Plane001
+    4300004: Plane002
+    4300006: Plane003
+    4300008: Box001
     9500000: //RootNode
   materials:
-    importMaterials: 0
+    importMaterials: 1
     materialName: 0
     materialSearch: 1
   animations:

@@ -1,53 +1,23 @@
 fileFormatVersion: 2
-guid: 17aad783906280e418b5e00e855999da
-timeCreated: 1453330717
+guid: 9a4600c812765924f9fcc2816d7e41e7
+timeCreated: 1459657864
 licenseType: Free
 ModelImporter:
   serializedVersion: 18
   fileIDToRecycleName:
-    100000: five
-    100002: four
-    100004: logo
-    100006: one
-    100008: six
-    100010: three
-    100012: //RootNode
-    100014: two
-    400000: five
-    400002: four
-    400004: logo
-    400006: one
-    400008: six
-    400010: three
-    400012: //RootNode
-    400014: two
-    2300000: five
-    2300002: four
-    2300004: logo
-    2300006: one
-    2300008: six
-    2300010: three
-    2300012: //RootNode
-    2300014: two
-    3300000: five
-    3300002: four
-    3300004: logo
-    3300006: one
-    3300008: six
-    3300010: three
-    3300012: //RootNode
-    3300014: two
-    4300000: cube
-    4300002: two
-    4300004: five
-    4300006: six
-    4300008: three
-    4300010: four
-    4300012: one
-    4300014: logo
+    100000: //RootNode
+    100002: Text002
+    400000: //RootNode
+    400002: Text002
+    2300000: //RootNode
+    2300002: Text002
+    3300000: //RootNode
+    3300002: Text002
+    4300000: ChamferBox001
+    4300002: Text002
     9500000: //RootNode
   materials:
-    importMaterials: 0
+    importMaterials: 1
     materialName: 0
     materialSearch: 1
   animations:

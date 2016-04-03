@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: d500103f2e8fae04fb0b1adc88d313ff
-timeCreated: 1453323171
+guid: b95e100bcd8781c429d72ffedfea44a6
+timeCreated: 1459657823
 licenseType: Free
 ModelImporter:
   serializedVersion: 18
@@ -40,9 +40,10 @@ ModelImporter:
     4300008: six
     4300010: two
     4300012: three
+    4300014: dice
     9500000: //RootNode
   materials:
-    importMaterials: 0
+    importMaterials: 1
     materialName: 0
     materialSearch: 1
   animations:
