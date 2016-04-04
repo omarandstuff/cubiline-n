@@ -36,6 +36,8 @@ public class CubilineCoopController : MonoBehaviour
 	private float timeOfGame;
 
 	private uint arenaSize;
+
+	public bool pauseAction;
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// MONO BEHAVIOR /////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -133,7 +135,7 @@ public class CubilineCoopController : MonoBehaviour
 	void OnGUI()
 	{
 		Event e = Event.current;
-		if (e.type == EventType.KeyDown)
+		if (e.type == EventType.KeyDown || pauseAction)
 		{
 			if(pauseMenu == null)
 			{
@@ -158,9 +160,12 @@ public class CubilineCoopController : MonoBehaviour
 				else if (e.keyCode == KeyCode.P)
 					player2.speed = CubilineApplication.singleton.player.coopLineSpeed * 2.0f;
 			}
-			if (e.keyCode == KeyCode.Escape && !menuKey) // Menu
+			if ((e.keyCode == KeyCode.Escape && !menuKey) || pauseAction) // Menu
 			{
 				menuKey = true;
+
+				pauseAction = false;
+
 				if (pauseMenu != null)
 				{
 					player1.status = CubilinePlayerController.STATUS.PLAYING;
@@ -287,6 +292,11 @@ public class CubilineCoopController : MonoBehaviour
 				}
 			}
 		}
+	}
+
+	public void pauseActionButton()
+	{
+		pauseAction = true;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////

@@ -9,6 +9,7 @@ public class CubilineCoopUIController : MonoBehaviour
 
 	public EaseScore scoreText;	
 	public EaseScore lengthText;
+	public GameObject pauseButton;
 	public GameObject specialCommonBar;
 	public GameObject multiplerBar;
 	public GameObject multiplerHolder;
@@ -178,6 +179,9 @@ public class CubilineCoopUIController : MonoBehaviour
 
 		lengthText.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.IN;
 		lengthText.GetComponent<EaseTextOpasity>().easeFace = EaseTextOpasity.EASE_FACE.IN;
+
+		pauseButton.GetComponent<EaseImageOpasity> ().easeFace = EaseFloat.EASE_FACE.IN;
+		pauseButton.GetComponent<EaseScale> ().easeFace = EaseVector3.EASE_FACE.IN;
 	}
 
 	public void GoOut ()
@@ -196,6 +200,9 @@ public class CubilineCoopUIController : MonoBehaviour
 
 		specialCommonBar.GetComponent<EaseImageOpasity>().easeFace = EaseFloat.EASE_FACE.OUT;
 		specialCommonBar.GetComponent<EaseScale>().easeFace = EaseVector3.EASE_FACE.OUT;
+
+		pauseButton.GetComponent<EaseImageOpasity> ().easeFace = EaseFloat.EASE_FACE.OUT;
+		pauseButton.GetComponent<EaseScale> ().easeFace = EaseVector3.EASE_FACE.OUT;
 
 		if (enableVerticalDivision) verticalDivision.easeFace = EaseFloat.EASE_FACE.OUT;
 		if (enableHorizontalDivision) horizontalDivision.easeFace = EaseFloat.EASE_FACE.OUT;

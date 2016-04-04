@@ -30,6 +30,8 @@ public class CubilineArcade : MonoBehaviour
 	private float timeOfGame;
 
 	private uint arenaSize;
+
+	public bool pauseAction;
 	////////////////////////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////// MONO BEHAVIOR /////////////////////////////////////////
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -122,7 +124,7 @@ public class CubilineArcade : MonoBehaviour
 	void OnGUI()
 	{
 		Event e = Event.current;
-		if (e.type == EventType.KeyDown)
+		if (e.type == EventType.KeyDown || pauseAction)
 		{
 			if(pauseMenu == null)
 			{
@@ -145,9 +147,10 @@ public class CubilineArcade : MonoBehaviour
 				else if (e.keyCode == KeyCode.Space)
 					player.speed = CubilineApplication.singleton.player.arcadeLineSpeed * 2.0f;
 			}
-			if (e.keyCode == KeyCode.Escape && !menuKey) // Menu
+			if ((e.keyCode == KeyCode.Escape && !menuKey) || pauseAction) // Menu
 			{
 				menuKey = true;
+				pauseAction= false;
 
 				if (pauseMenu != null)
 				{
@@ -212,6 +215,11 @@ public class CubilineArcade : MonoBehaviour
 				}
 			}
 		}
+	}
+
+	public void pauseActionButton()
+	{
+		pauseAction = true;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////

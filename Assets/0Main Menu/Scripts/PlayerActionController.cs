@@ -186,16 +186,12 @@ public class PlayerActionController : ActionContentController
 
 	public void ShowLeaderboardAction()
 	{
-#if UNITY_ANDROID
 		Social.ShowLeaderboardUI();
-#endif
 	}
 
 	public void ShowAchievementsAction()
 	{
-#if UNITY_ANDROID
 		Social.ShowAchievementsUI();
-#endif
 	}
 
 	public void ShowSaveGamesAction()

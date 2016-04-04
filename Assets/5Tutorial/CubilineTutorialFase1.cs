@@ -74,6 +74,8 @@ public class CubilineTutorialFase1 : MonoBehaviour
 
 	private GameObject currentInf;
 
+	public bool pauseAction;
+
 	private bool welcomeDone;
 	private bool moveDone;
 	private bool moveFinish;
@@ -586,7 +588,7 @@ public class CubilineTutorialFase1 : MonoBehaviour
 	void OnGUI()
 	{
 		Event e = Event.current;
-		if (e.type == EventType.KeyDown)
+		if (e.type == EventType.KeyDown || pauseAction)
 		{
 			if(pauseMenu == null)
 			{
@@ -645,9 +647,10 @@ public class CubilineTutorialFase1 : MonoBehaviour
 						StartCoroutine(GotSpeed());
 				}
 			}
-			if (e.keyCode == KeyCode.Escape && !menuKey) // Menu
+			if (e.keyCode == KeyCode.Escape && !menuKey || pauseAction) // Menu
 			{
 				menuKey = true;
+				pauseAction = false;
 
 				if (pauseMenu != null)
 				{
@@ -736,6 +739,11 @@ public class CubilineTutorialFase1 : MonoBehaviour
 				}
 			}
 		}
+	}
+
+	public void pauseActionButton()
+	{
+		pauseAction = true;
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
