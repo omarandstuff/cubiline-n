@@ -7,6 +7,8 @@ using System.Text;
 using System.Security.Cryptography;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using UnityEngine.SocialPlatforms;
+using UnityEngine.SocialPlatforms.GameCenter;
 using UnityEngine;
 
 [Serializable]
@@ -220,12 +222,23 @@ public class CubilineApplication : MonoBehaviour
 
 	void StartSocialAPI()
 	{
-
+		LogIn ();
 	}
 
 	private void LogIn()
 	{
-
+		GameCenterPlatform.ShowDefaultAchievementCompletionBanner(true);
+		
+		Social.localUser.Authenticate( success => {
+			if (success)
+			{
+				CheckBoxLevelAchievement();
+			}
+			else
+			{
+				Debug.Log ("Failed to authenticate");
+			}
+		});
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////////
@@ -258,6 +271,11 @@ public class CubilineApplication : MonoBehaviour
 		Stream stream = new FileStream(Application.persistentDataPath + "/c_p_d.dat", FileMode.Create, FileAccess.Write, FileShare.None);
 		formatter.Serialize(stream, player);
 		stream.Close();
+
+		Social.ReportScore(player.lastArcadeScore, "high_score", (result) => {});
+		Social.ReportScore(player.lastCoopScore, "high_score", (result) => {});
+		Social.ReportScore(player.lastArcadeLength, "longest", (result) => {});
+		Social.ReportScore(player.lastCoopLength, "longest", (result) => {});
 	}
 
 	public void LoadSettings()
@@ -286,15 +304,20 @@ public class CubilineApplication : MonoBehaviour
 	{
 		if (!player.blueAchieve)
 		{
-			if (player.blueCount >= AchievementsData.blueColorTraget)
-			{
+			GKAchievementReporter.ReportAchievement ("blue_eater", (float)Math.Min (player.blueCount * 100.0 / AchievementsData.blueColorTraget, 100.0), true);
+			if (player.blueCount >= AchievementsData.blueColorTraget) {
 				player.blueAchieve = true;
-				inStack.Push(blueAchivementPortalPrefab);
-				if (waithStack.Count == 0) ShowPortal();
-				SavePlayer();
+				inStack.Push (blueAchivementPortalPrefab);
+				if (waithStack.Count == 0)
+					ShowPortal ();
+				SavePlayer ();
 
-				CheckBlackBoxLevelAchievement();
+				CheckBlackBoxLevelAchievement ();
 			}
+		}
+		else
+		{
+			GKAchievementReporter.ReportAchievement ("blue_eater", 100.0f, true);
 		}
 	}
 
@@ -302,6 +325,7 @@ public class CubilineApplication : MonoBehaviour
 	{
 		if (!player.orangeAchieve)
 		{
+			GKAchievementReporter.ReportAchievement( "orange_eater", (float)Math.Min(player.orangeCount * 100.0 / AchievementsData.orangeColorTraget, 100.0), true);
 			if (player.orangeCount >= AchievementsData.orangeColorTraget)
 			{
 				player.orangeAchieve = true;
@@ -312,12 +336,17 @@ public class CubilineApplication : MonoBehaviour
 				CheckBlackBoxLevelAchievement();
 			}
 		}
+		else
+		{
+			GKAchievementReporter.ReportAchievement ("orange_eater", 100.0f, true);
+		}
 	}
 
 	public void CheckGreenColorAchievement()
 	{
 		if (!player.greenAchieve)
 		{
+			GKAchievementReporter.ReportAchievement( "green_eater", (float)Math.Min(player.greenCount * 100.0 / AchievementsData.greenColorTraget, 100.0), true);
 			if (player.greenCount >= AchievementsData.greenColorTraget)
 			{
 				player.greenAchieve = true;
@@ -328,12 +357,17 @@ public class CubilineApplication : MonoBehaviour
 				CheckBlackBoxLevelAchievement();
 			}
 		}
+		else
+		{
+			GKAchievementReporter.ReportAchievement ("green_eater", 100.0f, true);
+		}
 	}
-
+			
 	public void CheckYellowColorAchievement()
 	{
 		if (!player.yellowAchieve)
 		{
+			GKAchievementReporter.ReportAchievement( "multiplier_eater", (float)Math.Min(player.yellowCount * 100.0 / AchievementsData.yellowColorTraget, 100.0), true);
 			if (player.yellowCount >= AchievementsData.yellowColorTraget)
 			{
 				player.yellowAchieve = true;
@@ -344,12 +378,17 @@ public class CubilineApplication : MonoBehaviour
 				CheckBlackBoxLevelAchievement();
 			}
 		}
+		else
+		{
+			GKAchievementReporter.ReportAchievement ("multiplier_eater", 100.0f, true);
+		}
 	}
-
+			
 	public void CheckRedColorAchievement()
 	{
 		if (!player.redAchieve)
 		{
+			GKAchievementReporter.ReportAchievement( "cubiline_player", (float)Math.Min((player.arcadeGamesPlayed + player.coopGamesPlayed) * 100.0 / AchievementsData.redColorTraget, 100.0), true);
 			if (player.arcadeGamesPlayed + player.coopGamesPlayed >= AchievementsData.redColorTraget)
 			{
 				player.redAchieve = true;
@@ -360,12 +399,17 @@ public class CubilineApplication : MonoBehaviour
 				CheckBlackBoxLevelAchievement();
 			}
 		}
+		else
+		{
+			GKAchievementReporter.ReportAchievement ("cubiline_player", 100.0f, true);
+		}
 	}
-
+	
 	public void CheckPurpleColorAchievement()
 	{
 		if (!player.purpleAchieve)
 		{
+			GKAchievementReporter.ReportAchievement( "magnet_eater", (float)Math.Min(player.purpleCount * 100.0 / AchievementsData.purpleColorTraget, 100.0), true);
 			if (player.purpleCount >= AchievementsData.purpleColorTraget)
 			{
 				player.purpleAchieve = true;
@@ -376,14 +420,20 @@ public class CubilineApplication : MonoBehaviour
 				CheckBlackBoxLevelAchievement();
 			}
 		}
+		else
+		{
+			GKAchievementReporter.ReportAchievement ("magnet_eater", 100.0f, true);
+		}
 	}
-
+			
 	public void CheckScoreColorAchievement()
 	{
 		if (!player.byScoreColorAchieve)
 		{
 			if (player.lastArcadeScore >= AchievementsData.scoreColorTarget || player.lastCoopScore >= AchievementsData.scoreColorTarget)
 			{
+				GKAchievementReporter.ReportAchievement( "big_player", 100.0f, true);
+
 				player.byScoreColorAchieve = true;
 				inStack.Push(scoreColorAchivementPortalPrefab);
 				if (waithStack.Count == 0) ShowPortal();
@@ -392,14 +442,20 @@ public class CubilineApplication : MonoBehaviour
 				CheckBlackBoxLevelAchievement();
 			}
 		}
+		else
+		{
+			GKAchievementReporter.ReportAchievement ("big_player", 100.0f, true);
+		}
 	}
-
+			
 	public void CheckLengthColorAchievement()
 	{
 		if (!player.byLengthColorAchieve)
 		{
 			if (player.totalArcadeLength >= AchievementsData.lengthColorTraget || player.totalCoopLength >= AchievementsData.lengthColorTraget)
 			{
+				GKAchievementReporter.ReportAchievement( "anaconda", 100.0f, true);
+
 				player.byLengthColorAchieve = true;
 				inStack.Push(lengthColorAchivementPortalPrefab);
 				if (waithStack.Count == 0) ShowPortal();
@@ -407,6 +463,10 @@ public class CubilineApplication : MonoBehaviour
 
 				CheckBlackBoxLevelAchievement();
 			}
+		}
+		else
+		{
+			GKAchievementReporter.ReportAchievement ("anaconda", 100.0f, true);
 		}
 	}
 
@@ -416,6 +476,8 @@ public class CubilineApplication : MonoBehaviour
 		{
 			if (player.lastArcadeLength >= AchievementsData.fillColorTarget || player.lastCoopLength >= AchievementsData.fillColorTarget)
 			{
+				GKAchievementReporter.ReportAchievement( "indianapolis_500", 100.0f, true);
+
 				player.byFillColorAchieve = true;
 				inStack.Push(fillColorAchivementPortalPrefab);
 				if (waithStack.Count == 0) ShowPortal();
@@ -424,12 +486,17 @@ public class CubilineApplication : MonoBehaviour
 				CheckBlackBoxLevelAchievement();
 			}
 		}
+		else
+		{
+			GKAchievementReporter.ReportAchievement ("indianapolis_500", 100.0f, true);
+		}
 	}
 
 	public void CheckBlackLevelAchievement()
 	{
 		if (!player.blackCubeAchieve)
 		{
+			GKAchievementReporter.ReportAchievement( "gray_eater", (float)Math.Min(player.grayCount * 100.0 / AchievementsData.blackCubeTarget, 100.0), true);
 			if (player.grayCount >= AchievementsData.blackCubeTarget)
 			{
 				player.blackCubeAchieve = true;
@@ -437,6 +504,10 @@ public class CubilineApplication : MonoBehaviour
 				if (waithStack.Count == 0) ShowPortal();
 				SavePlayer();
 			}
+		}
+		else
+		{
+			GKAchievementReporter.ReportAchievement ("gray_eater", 100.0f, true);
 		}
 	}
 
@@ -446,11 +517,17 @@ public class CubilineApplication : MonoBehaviour
 		{
 			if (AchievementsData.diceCheck1 && AchievementsData.diceCheck2 && AchievementsData.diceCheck3)
 			{
+				GKAchievementReporter.ReportAchievement( "lucky_player", 100.0f, true);
+
 				player.diceAchieve = true;
 				inStack.Push(diceLevelAchivementPortalPrefab);
 				if (waithStack.Count == 0) ShowPortal();
 				SavePlayer();
 			}
+		}
+		else
+		{
+			GKAchievementReporter.ReportAchievement ("lucky_player", 100.0f, true);
 		}
 	}
 
@@ -460,89 +537,131 @@ public class CubilineApplication : MonoBehaviour
 		{
 			if (AchievementsData.blackdiceCheck1 && AchievementsData.blackdiceCheck2 && AchievementsData.blackdiceCheck3)
 			{
+				GKAchievementReporter.ReportAchievement( "luckiest_player", 100.0f, true);
+
 				player.blackDiceAchieve = true;
 				inStack.Push(blackDiceLevelAchivementPortalPrefab);
 				if (waithStack.Count == 0) ShowPortal();
 				SavePlayer();
 			}
 		}
+		else
+		{
+			GKAchievementReporter.ReportAchievement ("luckiest_player", 100.0f, true);
+		}
 	}
-
+			
 	public void CheckToyLevelAchievement()
 	{
 		if (!player.toyAchieve)
 		{
 			if ((player.lastArcadeScore >= 100 && player.lastArcadeLength == 3) || (player.lastCoopScore >= 100 && player.lastCoopLength == 6))
 			{
+				GKAchievementReporter.ReportAchievement( "logical_player", 100.0f, true);
+
 				player.toyAchieve = true;
 				inStack.Push(toyLevelAchivementPortalPrefab);
 				if (waithStack.Count == 0) ShowPortal();
 				SavePlayer();
 			}
 		}
+		else
+		{
+			GKAchievementReporter.ReportAchievement ("logical_player", 100.0f, true);
+		}
 	}
-
+			
 	public void CheckBlackToyLevelAchievement()
 	{
 		if (!player.blackToyAchieve)
 		{
 			if ((player.lastArcadeScore >= 200 && player.lastArcadeLength == 3) || (player.lastCoopScore >= 200 && player.lastCoopLength == 6))
 			{
+				GKAchievementReporter.ReportAchievement( "strategist_player", 100.0f, true);
+
 				player.blackToyAchieve = true;
 				inStack.Push(blackToyLevelAchivementPortalPrefab);
 				if (waithStack.Count == 0) ShowPortal();
 				SavePlayer();
 			}
 		}
+		else
+		{
+			GKAchievementReporter.ReportAchievement ("strategist_player", 100.0f, true);
+		}
 	}
-
+			
 	public void CheckBoxLevelAchievement()
 	{
 		if (!player.paperAchieve)
 		{
+			GKAchievementReporter.ReportAchievement( "open_the_box", 100.0f, true);
+
 			player.paperAchieve = true;
 			inStack.Push(boxLevelAchivementPortalPrefab);
 			if (waithStack.Count == 0) ShowPortal();
 			SavePlayer();
 		}
+		else
+		{
+			GKAchievementReporter.ReportAchievement ("open_the_box", 100.0f, true);
+		}
 	}
-
+			
 	public void CheckBlackBoxLevelAchievement()
 	{
 		if (!player.blackPaperAchieve)
 		{
 			if(player.blueAchieve && player.orangeAchieve && player.greenAchieve && player.yellowAchieve && player.redAchieve && player.purpleAchieve && player.byScoreColorAchieve && player.byLengthColorAchieve && player.byFillColorAchieve)
 			{
+				GKAchievementReporter.ReportAchievement( "colorfull", 100.0f, true);
+
 				player.blackPaperAchieve = true;
 				inStack.Push(blackBoxLevelAchivementPortalPrefab);
 				if (waithStack.Count == 0) ShowPortal();
 				SavePlayer();
 			}
 		}
+		else
+		{
+			GKAchievementReporter.ReportAchievement ("colorfull", 100.0f, true);
+		}
 	}
-
+			
 	public void CheckKnowledgeLevelAchievement()
 	{
 		if (!player.incognitAchieve)
 		{
+			GKAchievementReporter.ReportAchievement( "wiseman", 100.0f, true);
+
 			player.incognitAchieve = true;
 			inStack.Push(knowledgeLevelAchivementPortalPrefab);
 			if (waithStack.Count == 0) ShowPortal();
 			SavePlayer();
 		}
+		else
+		{
+			GKAchievementReporter.ReportAchievement ("wiseman", 100.0f, true);
+		}
 	}
-
+			
 	public void CheckBlackKnowledgeLevelAchievement()
 	{
 		if (!player.blackIncognitAchieve)
 		{
 			if(player.arcadeTimePlayed + player.coopTimePlayed >= AchievementsData.blackIncognitTarget)
 			{
+				GKAchievementReporter.ReportAchievement( "cubiline_fan", 100.0f, true);
+
 				player.blackIncognitAchieve = true;
 				inStack.Push(blackKnowledgeLevelAchivementPortalPrefab);
 				if (waithStack.Count == 0) ShowPortal();
 				SavePlayer();
 			}
+		}
+		else
+		{
+			GKAchievementReporter.ReportAchievement ("cubiline_fan", 100.0f, true);
 		}
 	}
 
