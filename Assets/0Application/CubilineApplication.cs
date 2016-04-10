@@ -233,7 +233,7 @@ public class CubilineApplication : MonoBehaviour
 			if (success)
 			{
 				CheckBoxLevelAchievement();
-				if(player.nickName == "Awesome Player" && !player.notFirstTime)
+				if(player.nickName == "Awesome Player")
 				   player.nickName = Social.localUser.userName;
 			}
 			else
